@@ -1,8 +1,18 @@
+import { useState, useEffect } from 'react';
+
 const Cbom = () => {
+  const [cbomData, setCbomData] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch('http://localhost:8000/api/cbom')
+      .then(res => res.json())
+      .then(data => setCbomData(data))
+      .catch(err => console.error("Failed to fetch CBOM", err));
+  }, []);
   return (
-    <main className="ml-64 mt-16 p-8 bg-background min-h-screen">
+    <main className="md:ml-64 mt-16 p-4 sm:p-6 md:p-8 bg-background min-h-screen">
       {/* Page Header */}
-      <div className="mb-8 flex justify-between items-end">
+      <div className="mb-8 flex flex-col md:flex-row justify-between items-start md:items-end gap-4 md:gap-0">
         <div>
           <nav className="flex text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 gap-2">
             <span>Inventory</span>
@@ -12,18 +22,18 @@ const Cbom = () => {
           <h2 className="text-3xl font-extrabold tracking-tight text-on-surface">CBOM Explorer</h2>
           <p className="text-on-surface-variant mt-1 text-sm max-w-2xl">Detailed inventory of cryptographic assets, quantum-safe readiness, and certificate hierarchies across the enterprise network.</p>
         </div>
-        <div className="flex gap-3">
-          <button className="px-4 py-2 bg-surface-container-highest text-on-surface text-sm font-semibold rounded-lg hover:bg-slate-200 transition-colors flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+          <button onClick={() => window.open('http://localhost:8000/api/reports/download')} className="px-4 py-2 bg-surface-container-highest text-on-surface text-sm font-semibold rounded-lg hover:bg-slate-200 transition-colors flex items-center gap-2 w-full sm:w-auto">
             <span className="material-symbols-outlined text-[18px]">download</span> Export CBOM
           </button>
-          <button className="px-4 py-2 bg-gradient-to-br from-primary to-primary-container text-white text-sm font-semibold rounded-lg shadow-sm flex items-center gap-2">
+          <button onClick={() => alert("Asset Registration Flow initiated in new window")} className="px-4 py-2 bg-gradient-to-br from-primary to-primary-container text-white text-sm font-semibold rounded-lg shadow-sm flex items-center gap-2 w-full sm:w-auto">
             <span className="material-symbols-outlined text-[18px]">add</span> Register Asset
           </button>
         </div>
       </div>
 
       {/* Bento Grid: Top Charts & Metrics */}
-      <div className="grid grid-cols-12 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-6 mb-8">
         {/* Metric 1: Key Length Distribution */}
         <div className="col-span-12 md:col-span-4 bg-surface-container-lowest rounded-xl p-6 shadow-sm">
           <div className="flex justify-between items-start mb-6">
@@ -132,12 +142,12 @@ const Cbom = () => {
 
       {/* Main Data Table Section */}
       <section className="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden flex flex-col">
-        <div className="px-6 py-4 border-b border-surface-container-low flex flex-wrap gap-4 items-center justify-between">
-          <div className="flex items-center gap-4">
+        <div className="px-6 py-4 border-b border-surface-container-low flex flex-col sm:flex-row flex-wrap gap-4 items-start sm:items-center justify-between">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
             <h3 className="font-bold text-on-surface text-sm">Algorithm Inventory</h3>
             <div className="flex items-center bg-surface-container-low rounded px-2 py-1 gap-2 border border-outline-variant/20">
               <span className="material-symbols-outlined text-slate-400 text-[18px]">search</span>
-              <input className="bg-transparent border-none text-xs focus:ring-0 p-0 w-48 text-on-surface-variant placeholder:text-slate-400 outline-none" placeholder="Filter OID or Name..." type="text" />
+              <input className="bg-transparent border-none text-xs focus:ring-0 p-0 w-full sm:w-48 text-on-surface-variant placeholder:text-slate-400 outline-none" placeholder="Filter OID or Name..." type="text" />
             </div>
           </div>
           <div className="flex gap-2">
@@ -149,7 +159,7 @@ const Cbom = () => {
             </button>
           </div>
         </div>
-        <div className="overflow-x-auto no-scrollbar">
+        <div className="overflow-x-auto no-scrollbar w-full">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-surface-container-low/50">
@@ -162,158 +172,56 @@ const Cbom = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-surface-container-low">
-              {/* Row 1 */}
-              <tr className="hover:bg-surface-container-low transition-colors group">
-                <td className="px-6 py-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-2 h-2 rounded-full bg-tertiary"></div>
-                    <div>
-                      <p className="text-sm font-bold text-on-surface">AES-256-GCM</p>
-                      <p className="text-[10px] text-slate-500">Symmetric Encryption</p>
+              {cbomData.map((item, index) => (
+                <tr key={index} className="hover:bg-surface-container-low transition-colors group">
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-2 h-2 rounded-full ${item.state === 'Expired' || item.state === 'Vulnerable' ? 'bg-error' : item.pqc_ready ? 'bg-tertiary' : 'bg-primary'}`}></div>
+                      <div>
+                        <p className="text-sm font-bold text-on-surface">{item.algorithm_name}</p>
+                        <p className="text-[10px] text-slate-500">{item.type}</p>
+                      </div>
                     </div>
-                  </div>
-                </td>
-                <td className="px-6 py-4">
-                  <span className="text-xs font-mono bg-surface-container-high px-2 py-0.5 rounded text-on-surface">256-bit</span>
-                </td>
-                <td className="px-6 py-4">
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-tertiary-container/10 text-tertiary uppercase tracking-tight">Active</span>
-                </td>
-                <td className="px-6 py-4">
-                  <span className="text-[11px] font-mono text-slate-500">2.16.840.1.101.3.4.1.42</span>
-                </td>
-                <td className="px-6 py-4 text-center">
-                  <span className="material-symbols-outlined text-tertiary" style={{ fontVariationSettings: "'FILL' 1" }}>verified</span>
-                </td>
-                <td className="px-6 py-4 text-right">
-                  <button className="text-slate-400 hover:text-primary transition-colors">
-                    <span className="material-symbols-outlined text-[18px]">more_vert</span>
-                  </button>
-                </td>
-              </tr>
-              {/* Row 2 */}
-              <tr className="hover:bg-surface-container-low transition-colors group">
-                <td className="px-6 py-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-2 h-2 rounded-full bg-primary"></div>
-                    <div>
-                      <p className="text-sm font-bold text-on-surface">RSA-OAEP</p>
-                      <p className="text-[10px] text-slate-500">Asymmetric Key Wrap</p>
-                    </div>
-                  </div>
-                </td>
-                <td className="px-6 py-4">
-                  <span className="text-xs font-mono bg-surface-container-high px-2 py-0.5 rounded text-on-surface">2048-bit</span>
-                </td>
-                <td className="px-6 py-4">
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-secondary-container/10 text-secondary uppercase tracking-tight">Active</span>
-                </td>
-                <td className="px-6 py-4">
-                  <span className="text-[11px] font-mono text-slate-500">1.2.840.113549.1.1.7</span>
-                </td>
-                <td className="px-6 py-4 text-center">
-                  <span className="material-symbols-outlined text-slate-300">hourglass_empty</span>
-                </td>
-                <td className="px-6 py-4 text-right">
-                  <button className="text-slate-400 hover:text-primary transition-colors">
-                    <span className="material-symbols-outlined text-[18px]">more_vert</span>
-                  </button>
-                </td>
-              </tr>
-              {/* Row 3 */}
-              <tr className="hover:bg-surface-container-low transition-colors group">
-                <td className="px-6 py-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-2 h-2 rounded-full bg-error"></div>
-                    <div>
-                      <p className="text-sm font-bold text-on-surface">SHA-1</p>
-                      <p className="text-[10px] text-slate-500">Hashing Function</p>
-                    </div>
-                  </div>
-                </td>
-                <td className="px-6 py-4">
-                  <span className="text-xs font-mono bg-surface-container-high px-2 py-0.5 rounded text-on-surface">160-bit</span>
-                </td>
-                <td className="px-6 py-4">
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-error/10 text-error uppercase tracking-tight">Expired</span>
-                </td>
-                <td className="px-6 py-4">
-                  <span className="text-[11px] font-mono text-slate-500">1.3.14.3.2.26</span>
-                </td>
-                <td className="px-6 py-4 text-center">
-                  <span className="material-symbols-outlined text-error" style={{ fontVariationSettings: "'FILL' 1" }}>dangerous</span>
-                </td>
-                <td className="px-6 py-4 text-right">
-                  <button className="text-slate-400 hover:text-primary transition-colors">
-                    <span className="material-symbols-outlined text-[18px]">more_vert</span>
-                  </button>
-                </td>
-              </tr>
-              {/* Row 4 */}
-              <tr className="hover:bg-surface-container-low transition-colors group">
-                <td className="px-6 py-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-2 h-2 rounded-full bg-tertiary"></div>
-                    <div>
-                      <p className="text-sm font-bold text-on-surface">Dilithium2</p>
-                      <p className="text-[10px] text-slate-500">Post-Quantum Signature</p>
-                    </div>
-                  </div>
-                </td>
-                <td className="px-6 py-4">
-                  <span className="text-xs font-mono bg-surface-container-high px-2 py-0.5 rounded text-on-surface">Level 2</span>
-                </td>
-                <td className="px-6 py-4">
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-tertiary-container/10 text-tertiary uppercase tracking-tight">Active</span>
-                </td>
-                <td className="px-6 py-4">
-                  <span className="text-[11px] font-mono text-slate-500">2.16.840.1.101.3.4.3.17</span>
-                </td>
-                <td className="px-6 py-4 text-center">
-                  <span className="material-symbols-outlined text-tertiary" style={{ fontVariationSettings: "'FILL' 1" }}>verified</span>
-                </td>
-                <td className="px-6 py-4 text-right">
-                  <button className="text-slate-400 hover:text-primary transition-colors">
-                    <span className="material-symbols-outlined text-[18px]">more_vert</span>
-                  </button>
-                </td>
-              </tr>
-              {/* Row 5 */}
-              <tr className="hover:bg-surface-container-low transition-colors group">
-                <td className="px-6 py-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-2 h-2 rounded-full bg-tertiary"></div>
-                    <div>
-                      <p className="text-sm font-bold text-on-surface">ECC-P384</p>
-                      <p className="text-[10px] text-slate-500">Elliptic Curve Digital Signature</p>
-                    </div>
-                  </div>
-                </td>
-                <td className="px-6 py-4">
-                  <span className="text-xs font-mono bg-surface-container-high px-2 py-0.5 rounded text-on-surface">384-bit</span>
-                </td>
-                <td className="px-6 py-4">
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-tertiary-container/10 text-tertiary uppercase tracking-tight">Active</span>
-                </td>
-                <td className="px-6 py-4">
-                  <span className="text-[11px] font-mono text-slate-500">1.3.132.0.34</span>
-                </td>
-                <td className="px-6 py-4 text-center">
-                  <span className="material-symbols-outlined text-tertiary" style={{ fontVariationSettings: "'FILL' 1" }}>verified</span>
-                </td>
-                <td className="px-6 py-4 text-right">
-                  <button className="text-slate-400 hover:text-primary transition-colors">
-                    <span className="material-symbols-outlined text-[18px]">more_vert</span>
-                  </button>
-                </td>
-              </tr>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className="text-xs font-mono bg-surface-container-high px-2 py-0.5 rounded text-on-surface">{item.key_size}</span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-tight ${item.state === 'Expired' || item.state === 'Vulnerable' ? 'bg-error/10 text-error' : item.state === 'Active' && item.pqc_ready ? 'bg-tertiary-container/10 text-tertiary' : 'bg-secondary-container/10 text-secondary'}`}>
+                      {item.state}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className="text-[11px] font-mono text-slate-500">{item.oid}</span>
+                  </td>
+                  <td className="px-6 py-4 text-center">
+                    {item.pqc_ready ? (
+                      <span className="material-symbols-outlined text-tertiary" style={{ fontVariationSettings: "'FILL' 1" }}>verified</span>
+                    ) : item.state === 'Expired' ? (
+                      <span className="material-symbols-outlined text-error" style={{ fontVariationSettings: "'FILL' 1" }}>dangerous</span>
+                    ) : (
+                      <span className="material-symbols-outlined text-slate-300">hourglass_empty</span>
+                    )}
+                  </td>
+                  <td className="px-6 py-4 text-right">
+                    <button className="text-slate-400 hover:text-primary transition-colors">
+                      <span className="material-symbols-outlined text-[18px]">more_vert</span>
+                    </button>
+                  </td>
+                </tr>
+              ))}
+              {cbomData.length === 0 && (
+                <tr>
+                  <td colSpan={6} className="px-6 py-8 text-center text-on-surface-variant text-sm">No CBOM data found.</td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
         
         <div className="px-6 py-4 border-t border-surface-container-low flex items-center justify-between text-xs text-on-surface-variant font-medium">
           <p>Showing 5 of 142 detected cryptographic assets</p>
-          <div className="flex items-center gap-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
             <div className="flex items-center gap-1">
               <button className="w-8 h-8 flex items-center justify-center rounded hover:bg-surface-container-high disabled:opacity-30" disabled>
                 <span className="material-symbols-outlined text-[20px]">chevron_left</span>
@@ -330,7 +238,7 @@ const Cbom = () => {
       </section>
 
       {/* Technical Metadata Sidebar / Detail View Placeholder */}
-      <div className="mt-8 grid grid-cols-12 gap-6">
+      <div className="mt-8 grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-6">
         <div className="col-span-12 lg:col-span-8 bg-surface-container-lowest rounded-xl p-6 shadow-sm border border-outline-variant/5">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-bold text-on-surface text-sm">Certificate Dependency Chain</h3>

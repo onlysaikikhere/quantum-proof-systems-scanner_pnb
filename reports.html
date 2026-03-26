@@ -149,13 +149,13 @@
 </div>
 </nav>
 <!-- TopNavBar (Authority: JSON) -->
-<header class="fixed top-0 right-0 left-64 h-16 z-40 bg-white/80 backdrop-blur-md flex items-center justify-between px-8 w-full shadow-sm">
+<header class="fixed top-0 right-0 left-0 md:left-64 h-16 z-40 bg-white/80 backdrop-blur-md flex items-center justify-between px-8 w-full shadow-sm">
 <div class="flex items-center gap-6">
 <span class="text-blue-700 font-bold font-sans text-sm">PQC Readiness: 98%</span>
 <div class="h-4 w-px bg-outline-variant opacity-30"></div>
 <p class="text-on-surface font-semibold text-sm">Quantum-Proof Systems Scanner</p>
 </div>
-<div class="flex items-center gap-4">
+<div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
 <div class="relative">
 <span class="material-symbols-outlined text-on-surface-variant hover:text-blue-600 cursor-pointer transition-colors" data-icon="notifications">notifications</span>
 <span class="absolute top-0 right-0 w-2 h-2 bg-error rounded-full border-2 border-white"></span>
@@ -176,11 +176,11 @@
 <p class="text-on-surface-variant max-w-xl">Comprehensive analytical oversight of your organization's transition to post-quantum cryptographic standards.</p>
 </div>
 <div class="flex items-center gap-3">
-<button class="flex items-center gap-2 px-4 py-2.5 bg-surface-container-lowest text-on-surface border border-outline-variant/20 rounded-lg hover:bg-surface-container-low transition-colors shadow-sm font-medium text-sm">
+<button class="flex items-center gap-2 px-4 py-2.5 bg-surface-container-lowest text-on-surface border border-outline-variant/20 rounded-lg hover:bg-surface-container-low transition-colors shadow-sm font-medium text-sm w-full sm:w-auto">
 <span class="material-symbols-outlined text-lg" data-icon="calendar_month">calendar_month</span>
                         Schedule
                     </button>
-<button class="flex items-center gap-2 px-6 py-2.5 bg-gradient-to-br from-primary to-primary-container text-on-primary rounded-lg font-bold shadow-md hover:shadow-lg active:scale-95 transition-all text-sm">
+<button class="flex items-center gap-2 px-6 py-2.5 bg-gradient-to-br from-primary to-primary-container text-on-primary rounded-lg font-bold shadow-md hover:shadow-lg active:scale-95 transition-all text-sm w-full sm:w-auto">
 <span class="material-symbols-outlined text-lg" data-icon="download">download</span>
                         Export Report
                     </button>
@@ -307,7 +307,7 @@
 <div class="px-8 py-6 border-b border-outline-variant/5 flex items-center justify-between">
 <h3 class="text-sm font-bold text-on-surface uppercase tracking-wider">Historical Audit Logs</h3>
 <div class="flex items-center gap-2">
-<input class="px-4 py-1.5 text-xs bg-surface-container-low border-none rounded-lg focus:ring-1 focus:ring-primary w-64" placeholder="Filter by date or ID..." type="text"/>
+<input class="px-4 py-1.5 text-xs bg-surface-container-low border-none rounded-lg focus:ring-1 focus:ring-primary w-64 w-full sm:w-64" placeholder="Filter by date or ID..." type="text"/>
 <button class="p-1.5 hover:bg-surface-container-low rounded transition-colors">
 <span class="material-symbols-outlined text-on-surface-variant" data-icon="filter_list">filter_list</span>
 </button>
@@ -338,7 +338,7 @@
 </td>
 <td class="px-8 py-4 text-sm font-medium">System (Auto)</td>
 <td class="px-8 py-4 text-right">
-<button class="text-on-surface-variant hover:text-primary transition-colors">
+<button class="text-on-surface-variant hover:text-primary transition-colors w-full sm:w-auto">
 <span class="material-symbols-outlined" data-icon="visibility">visibility</span>
 </button>
 </td>
@@ -356,7 +356,7 @@
 </td>
 <td class="px-8 py-4 text-sm font-medium">Admin (j.doe)</td>
 <td class="px-8 py-4 text-right">
-<button class="text-on-surface-variant hover:text-primary transition-colors">
+<button class="text-on-surface-variant hover:text-primary transition-colors w-full sm:w-auto">
 <span class="material-symbols-outlined" data-icon="visibility">visibility</span>
 </button>
 </td>
@@ -374,7 +374,7 @@
 </td>
 <td class="px-8 py-4 text-sm font-medium">System (Auto)</td>
 <td class="px-8 py-4 text-right">
-<button class="text-on-surface-variant hover:text-primary transition-colors">
+<button class="text-on-surface-variant hover:text-primary transition-colors w-full sm:w-auto">
 <span class="material-symbols-outlined" data-icon="visibility">visibility</span>
 </button>
 </td>
@@ -392,7 +392,7 @@
 </td>
 <td class="px-8 py-4 text-sm font-medium">System (Auto)</td>
 <td class="px-8 py-4 text-right">
-<button class="text-on-surface-variant hover:text-primary transition-colors">
+<button class="text-on-surface-variant hover:text-primary transition-colors w-full sm:w-auto">
 <span class="material-symbols-outlined" data-icon="visibility">visibility</span>
 </button>
 </td>
@@ -403,11 +403,11 @@
 <div class="px-8 py-4 bg-surface-container-low/50 flex items-center justify-between">
 <span class="text-xs text-on-surface-variant font-medium">Showing 4 of 480 reports</span>
 <div class="flex items-center gap-1">
-<button class="px-3 py-1 text-xs font-bold text-on-surface bg-surface-container-lowest border border-outline-variant/20 rounded">Prev</button>
-<button class="px-3 py-1 text-xs font-bold text-on-primary bg-primary rounded">1</button>
-<button class="px-3 py-1 text-xs font-bold text-on-surface hover:bg-surface-container-highest rounded transition-colors">2</button>
-<button class="px-3 py-1 text-xs font-bold text-on-surface hover:bg-surface-container-highest rounded transition-colors">3</button>
-<button class="px-3 py-1 text-xs font-bold text-on-surface bg-surface-container-lowest border border-outline-variant/20 rounded">Next</button>
+<button class="px-3 py-1 text-xs font-bold text-on-surface bg-surface-container-lowest border border-outline-variant/20 rounded w-full sm:w-auto">Prev</button>
+<button class="px-3 py-1 text-xs font-bold text-on-primary bg-primary rounded w-full sm:w-auto">1</button>
+<button class="px-3 py-1 text-xs font-bold text-on-surface hover:bg-surface-container-highest rounded transition-colors w-full sm:w-auto">2</button>
+<button class="px-3 py-1 text-xs font-bold text-on-surface hover:bg-surface-container-highest rounded transition-colors w-full sm:w-auto">3</button>
+<button class="px-3 py-1 text-xs font-bold text-on-surface bg-surface-container-lowest border border-outline-variant/20 rounded w-full sm:w-auto">Next</button>
 </div>
 </div>
 </div>

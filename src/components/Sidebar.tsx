@@ -1,6 +1,11 @@
 import { NavLink } from 'react-router-dom';
 
-const Sidebar = () => {
+interface SidebarProps {
+  isOpen: boolean;
+  setIsOpen: (val: boolean) => void;
+}
+
+const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
   const getNavLinkClass = ({ isActive }: { isActive: boolean }) => {
     return isActive
       ? "flex items-center gap-3 px-3 py-2.5 text-blue-700 font-semibold border-r-4 border-blue-700 bg-blue-50/50 transition-colors duration-200"
@@ -8,16 +13,30 @@ const Sidebar = () => {
   };
 
   return (
-    <aside className="h-screen w-64 fixed left-0 top-0 border-r-0 bg-slate-50 flex flex-col py-6 px-4 z-50 overflow-y-auto no-scrollbar">
-      <div className="mb-10 px-2 flex items-center gap-3">
-        <div className="w-8 h-8 rounded bg-gradient-to-br from-primary to-primary-container flex items-center justify-center text-white">
-          <span className="material-symbols-outlined text-[20px]" data-icon="security" style={{ fontVariationSettings: "'FILL' 1" }}>security</span>
+    <>
+      {/* Mobile Overlay */}
+      {isOpen && (
+        <div 
+          className="fixed inset-0 bg-slate-900/50 z-40 md:hidden"
+          onClick={() => setIsOpen(false)}
+        />
+      )}
+      
+      <aside className={`h-screen w-64 fixed left-0 top-0 border-r-0 bg-slate-50 flex flex-col py-6 px-4 z-50 overflow-y-auto no-scrollbar transition-transform duration-300 ${isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}>
+        <div className="mb-10 px-2 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded bg-gradient-to-br from-primary to-primary-container flex items-center justify-center text-white">
+              <span className="material-symbols-outlined text-[20px]" data-icon="security" style={{ fontVariationSettings: "'FILL' 1" }}>security</span>
+            </div>
+            <div>
+              <h1 className="text-lg font-bold tracking-tight text-slate-900 leading-none">Quantum-Proof</h1>
+              <p className="text-[10px] text-slate-500 font-bold tracking-widest uppercase mt-1">Systems Scanner</p>
+            </div>
+          </div>
+          <button onClick={() => setIsOpen(false)} className="md:hidden text-slate-500 hover:text-slate-800">
+            <span className="material-symbols-outlined">close</span>
+          </button>
         </div>
-        <div>
-          <h1 className="text-lg font-bold tracking-tight text-slate-900 leading-none">Quantum-Proof</h1>
-          <p className="text-[10px] text-slate-500 font-bold tracking-widest uppercase mt-1">Systems Scanner</p>
-        </div>
-      </div>
 
       <nav className="flex-1 space-y-1">
         <NavLink to="/dashboard" className={getNavLinkClass}>
@@ -80,6 +99,7 @@ const Sidebar = () => {
         </div>
       </div>
     </aside>
+    </>
   );
 };
 

@@ -97,7 +97,7 @@
 </head>
 <body class="bg-background text-on-surface selection:bg-primary-fixed">
 <!-- SideNavBar Component -->
-<aside class="h-screen w-64 fixed left-0 top-0 border-r-0 bg-slate-50 flex flex-col py-6 px-4 z-50">
+<aside class="hidden md:flex h-screen w-64 fixed left-0 top-0 border-r-0 bg-slate-50 flex-col py-6 px-4 z-50">
 <div class="mb-10 px-2">
 <div class="flex items-center gap-3">
 <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-primary-container flex items-center justify-center text-white">
@@ -163,8 +163,8 @@
 </div>
 </aside>
 <!-- TopNavBar Component -->
-<header class="fixed top-0 right-0 left-64 h-16 z-40 bg-white/80 backdrop-blur-md flex items-center justify-between px-8 w-full shadow-sm">
-<div class="flex items-center gap-4">
+<header class="fixed top-0 right-0 left-0 md:left-64 h-16 z-40 bg-white/80 backdrop-blur-md flex items-center justify-between px-8 w-full shadow-sm">
+<div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
 <span class="text-slate-400 font-medium text-xs bg-slate-100 px-3 py-1 rounded-full border border-slate-200">
                 PQC Readiness: <span class="text-tertiary font-bold">98%</span>
 </span>
@@ -185,9 +185,9 @@
 </div>
 </header>
 <!-- Main Content Canvas -->
-<main class="ml-64 mt-16 p-8 bg-background min-h-screen">
+<main class="ml-0 md:ml-64 mt-16 p-4 sm:p-6 md:p-8 bg-background min-h-screen">
 <!-- Page Header -->
-<div class="mb-8 flex justify-between items-end">
+<div class="mb-8 flex flex-col md:flex-row justify-between items-start md:items-end gap-4 md:gap-0">
 <div>
 <nav class="flex text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 gap-2">
 <span>Inventory</span>
@@ -197,17 +197,17 @@
 <h2 class="text-3xl font-extrabold tracking-tight text-on-surface">CBOM Explorer</h2>
 <p class="text-on-surface-variant mt-1 text-sm max-w-2xl">Detailed inventory of cryptographic assets, quantum-safe readiness, and certificate hierarchies across the enterprise network.</p>
 </div>
-<div class="flex gap-3">
-<button class="px-4 py-2 bg-surface-container-highest text-on-surface text-sm font-semibold rounded-lg hover:bg-slate-200 transition-colors flex items-center gap-2">
+<div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+<button class="px-4 py-2 bg-surface-container-highest text-on-surface text-sm font-semibold rounded-lg hover:bg-slate-200 transition-colors flex items-center gap-2 w-full sm:w-auto">
 <span class="material-symbols-outlined text-[18px]">download</span> Export CBOM
                 </button>
-<button class="px-4 py-2 bg-gradient-to-br from-primary to-primary-container text-on-primary text-sm font-semibold rounded-lg shadow-sm flex items-center gap-2">
+<button class="px-4 py-2 bg-gradient-to-br from-primary to-primary-container text-on-primary text-sm font-semibold rounded-lg shadow-sm flex items-center gap-2 w-full sm:w-auto">
 <span class="material-symbols-outlined text-[18px]">add</span> Register Asset
                 </button>
 </div>
 </div>
 <!-- Bento Grid: Top Charts & Metrics -->
-<div class="grid grid-cols-12 gap-6 mb-8">
+<div class="grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-6 mb-8">
 <!-- Metric 1: Key Length Distribution -->
 <div class="col-span-12 md:col-span-4 bg-surface-container-lowest rounded-xl p-6 shadow-sm">
 <div class="flex justify-between items-start mb-6">
@@ -314,11 +314,11 @@
 <!-- Main Data Table Section -->
 <section class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden flex flex-col">
 <div class="px-6 py-4 border-b border-surface-container flex items-center justify-between">
-<div class="flex items-center gap-4">
+<div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
 <h3 class="font-bold text-on-surface text-sm">Algorithm Inventory</h3>
 <div class="flex items-center bg-surface-container-low rounded px-2 py-1 gap-2 border border-outline-variant/20">
 <span class="material-symbols-outlined text-slate-400 text-[18px]">search</span>
-<input class="bg-transparent border-none text-xs focus:ring-0 p-0 w-48 text-on-surface-variant placeholder:text-slate-400" placeholder="Filter OID or Name..." type="text"/>
+<input class="bg-transparent border-none text-xs focus:ring-0 p-0 w-48 text-on-surface-variant placeholder:text-slate-400 w-full sm:w-48" placeholder="Filter OID or Name..." type="text"/>
 </div>
 </div>
 <div class="flex gap-2">
@@ -330,7 +330,7 @@
 </button>
 </div>
 </div>
-<div class="overflow-x-auto custom-scrollbar">
+<div class="overflow-x-auto custom-scrollbar w-full">
 <table class="w-full text-left border-collapse">
 <thead>
 <tr class="bg-surface-container-low">
@@ -493,7 +493,7 @@
 </div>
 <div class="px-6 py-4 border-t border-surface-container flex items-center justify-between text-xs text-on-surface-variant font-medium">
 <p>Showing 5 of 142 detected cryptographic assets</p>
-<div class="flex items-center gap-4">
+<div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
 <div class="flex items-center gap-1">
 <button class="w-8 h-8 flex items-center justify-center rounded hover:bg-surface-container-high disabled:opacity-30" disabled="">
 <span class="material-symbols-outlined text-[20px]">chevron_left</span>
@@ -509,7 +509,7 @@
 </div>
 </section>
 <!-- Technical Metadata Sidebar / Detail View Placeholder -->
-<div class="mt-8 grid grid-cols-12 gap-6">
+<div class="mt-8 grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-6">
 <div class="col-span-12 lg:col-span-8 bg-surface-container-lowest rounded-xl p-6 shadow-sm border border-outline-variant/5">
 <div class="flex items-center justify-between mb-4">
 <h3 class="font-bold text-on-surface text-sm">Certificate Dependency Chain</h3>

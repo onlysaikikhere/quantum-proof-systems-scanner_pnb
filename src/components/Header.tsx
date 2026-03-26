@@ -1,12 +1,17 @@
+interface HeaderProps {
+  setSidebarOpen: (val: boolean) => void;
+}
 
-
-const Header = () => {
+const Header = ({ setSidebarOpen }: HeaderProps) => {
   return (
-    <header className="fixed top-0 right-0 left-64 h-16 bg-white/80 backdrop-blur-md flex items-center justify-between px-8 z-40 border-b border-slate-100/50">
-      <div className="flex items-center gap-4">
-        <div className="relative group">
+    <header className="fixed top-0 right-0 left-0 md:left-64 h-16 bg-white/80 backdrop-blur-md flex items-center justify-between px-4 md:px-8 z-40 border-b border-slate-100/50">
+      <div className="flex items-center gap-2 md:gap-4">
+        <button onClick={() => setSidebarOpen(true)} className="md:hidden flex items-center justify-center p-2 text-slate-500 hover:text-primary transition-colors">
+          <span className="material-symbols-outlined">menu</span>
+        </button>
+        <div className="relative group hidden sm:block">
           <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-hover:text-primary transition-colors" data-icon="search">search</span>
-          <input className="bg-slate-50 border-none rounded-full pl-10 pr-4 py-2 text-sm w-64 focus:ring-2 focus:ring-primary/20 transition-all" placeholder="Quantum search..." type="text"/>
+          <input className="bg-slate-50 border-none rounded-full pl-10 pr-4 py-2 text-sm w-64 focus:ring-2 focus:ring-primary/20 transition-all w-full sm:w-64" placeholder="Quantum search..." type="text"/>
         </div>
         <div className="h-6 w-px bg-slate-200 mx-2"></div>
         <span className="text-blue-700 font-bold text-sm">PQC Readiness: 98%</span>
@@ -14,11 +19,11 @@ const Header = () => {
 
       <div className="flex items-center gap-6">
         <div className="flex items-center gap-4 text-slate-500">
-          <button className="hover:text-primary transition-colors relative">
+          <button className="hover:text-primary transition-colors relative w-full sm:w-auto">
             <span className="material-symbols-outlined" data-icon="notifications">notifications</span>
             <span className="absolute top-0 right-0 w-2 h-2 bg-error rounded-full border-2 border-white"></span>
           </button>
-          <button className="hover:text-primary transition-colors">
+          <button className="hover:text-primary transition-colors w-full sm:w-auto">
             <span className="material-symbols-outlined" data-icon="history_edu">history_edu</span>
           </button>
         </div>

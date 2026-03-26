@@ -155,13 +155,13 @@
 </div>
 </aside>
 <!-- TopNavBar Component -->
-<header class="fixed top-0 right-0 left-64 h-16 z-40 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md shadow-sm flex items-center justify-between px-8">
-<div class="flex items-center gap-4">
+<header class="fixed top-0 right-0 left-0 md:left-64 h-16 z-40 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md shadow-sm flex items-center justify-between px-8">
+<div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
 <div class="relative group">
 <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
 <span class="material-symbols-outlined text-lg">search</span>
 </span>
-<input class="bg-surface-container-low border-none rounded-full py-1.5 pl-10 pr-4 text-sm w-64 focus:ring-2 focus:ring-primary/20 transition-all outline-none" placeholder="Search systems..." type="text"/>
+<input class="bg-surface-container-low border-none rounded-full py-1.5 pl-10 pr-4 text-sm w-64 focus:ring-2 focus:ring-primary/20 transition-all outline-none w-full sm:w-64" placeholder="Search systems..." type="text"/>
 </div>
 </div>
 <div class="flex items-center gap-6">
@@ -170,8 +170,8 @@
 <span class="text-xs font-bold text-tertiary tracking-tight">PQC Readiness: 98%</span>
 </div>
 <div class="flex items-center gap-4 text-slate-500">
-<button class="hover:text-primary transition-colors"><span class="material-symbols-outlined" data-icon="notifications">notifications</span></button>
-<button class="hover:text-primary transition-colors"><span class="material-symbols-outlined" data-icon="history_edu">history_edu</span></button>
+<button class="hover:text-primary transition-colors w-full sm:w-auto"><span class="material-symbols-outlined" data-icon="notifications">notifications</span></button>
+<button class="hover:text-primary transition-colors w-full sm:w-auto"><span class="material-symbols-outlined" data-icon="history_edu">history_edu</span></button>
 <div class="h-8 w-8 rounded-full overflow-hidden bg-slate-200">
 <img class="w-full h-full object-cover" data-alt="close-up portrait of professional cyber security analyst in modern office setting with neutral lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBWgDs1CNcCzqzYYGoS9Jj9KkFxYQOh8n3BShilIFTc0bdFxzYGm7WL7RJANUblPzeJgEc7TzVrC5TC74rrdYRbt8SzHE9FTPw4wMvQY4dpqR6mfDYihHMQfkvyDwj50flO1ciwP86C8WVcgiONFQSd779zM3A-Toofl_zAfH8OeqSXNBDlIJGQQb6mDJdilJI9AMEwJPEqWclURYyRAt3bn9xHdMTxOVoWvhjtEjgYF9z88xQYDskwgZA_dkkEb_WkUb2XaHPapD9t"/>
 </div>
@@ -188,10 +188,10 @@
 <p class="text-on-surface-variant mt-2 max-w-xl">Initiate comprehensive cryptographic audits to identify legacy algorithms vulnerable to Shor's algorithm and ensure PQC compliance.</p>
 </div>
 <div class="flex items-center gap-3">
-<button class="px-5 py-2.5 bg-surface-container-highest text-on-surface rounded font-semibold text-sm transition-all hover:bg-surface-dim">
+<button class="px-5 py-2.5 bg-surface-container-highest text-on-surface rounded font-semibold text-sm transition-all hover:bg-surface-dim w-full sm:w-auto">
                         Export Report
                     </button>
-<button class="px-5 py-2.5 soul-gradient text-white rounded font-bold text-sm shadow-sm flex items-center gap-2 transition-all active:scale-95">
+<button class="px-5 py-2.5 soul-gradient text-white rounded font-bold text-sm shadow-sm flex items-center gap-2 transition-all active:scale-95 w-full sm:w-auto">
 <span class="material-symbols-outlined text-sm">play_arrow</span>
                         Start Scan
                     </button>
@@ -203,14 +203,14 @@
 <!-- Search/Input Area -->
 <div class="bg-surface-container-lowest rounded-xl p-6 shadow-sm">
 <label class="block text-[0.6875rem] font-bold uppercase tracking-wider text-on-surface-variant mb-4">Target Specification</label>
-<div class="flex gap-4">
+<div class="flex flex-col sm:flex-row gap-4">
 <div class="relative flex-1">
 <span class="absolute inset-y-0 left-4 flex items-center text-primary">
 <span class="material-symbols-outlined">language</span>
 </span>
 <input class="w-full bg-surface-container-low border-none rounded-lg py-4 pl-12 pr-4 text-on-surface font-medium focus:ring-2 focus:ring-primary/20 transition-all outline-none" placeholder="Enter Domain or IP Address" type="text" value="api.quantum-cloud-secure.v4"/>
 </div>
-<select class="bg-surface-container-low border-none rounded-lg py-4 px-6 text-sm font-bold text-on-surface-variant focus:ring-2 focus:ring-primary/20 outline-none">
+<select class="bg-surface-container-low border-none rounded-lg py-4 px-6 text-sm font-bold text-on-surface-variant focus:ring-2 focus:ring-primary/20 outline-none w-full sm:w-auto">
 <option>Full Deep Scan</option>
 <option>Quick Audit</option>
 <option>SSL/TLS Only</option>
@@ -316,14 +316,14 @@
 <div class="mt-8 pt-6 border-t border-surface-container">
 <p class="text-[0.6875rem] font-bold text-on-surface-variant uppercase tracking-widest mb-4">Upcoming Scans</p>
 <div class="space-y-3">
-<div class="flex items-center gap-4">
+<div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
 <div class="text-[0.65rem] font-bold bg-surface-container-high px-2 py-1 rounded w-16 text-center">TOMORROW</div>
 <div class="flex-1">
 <p class="text-xs font-bold leading-none">Internal API Hub</p>
 <p class="text-[0.65rem] text-on-surface-variant mt-1">02:00 AM UTC</p>
 </div>
 </div>
-<div class="flex items-center gap-4">
+<div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
 <div class="text-[0.65rem] font-bold bg-surface-container-high px-2 py-1 rounded w-16 text-center">OCT 24</div>
 <div class="flex-1">
 <p class="text-xs font-bold leading-none">Legacy Mainframe</p>

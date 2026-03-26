@@ -1,6 +1,6 @@
 const Reports = () => {
   return (
-    <main className="ml-64 pt-16 min-h-screen">
+    <main className="md:ml-64 pt-16 min-h-screen">
       <div className="max-w-[1200px] mx-auto p-12">
         {/* Page Header */}
         <header className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
@@ -9,11 +9,11 @@ const Reports = () => {
             <p className="text-on-surface-variant max-w-xl">Comprehensive analytical oversight of your organization's transition to post-quantum cryptographic standards.</p>
           </div>
           <div className="flex items-center gap-3">
-            <button className="flex items-center gap-2 px-4 py-2.5 bg-surface-container-lowest text-on-surface border border-outline-variant/20 rounded-lg hover:bg-surface-container-low transition-colors shadow-sm font-medium text-sm">
+            <button onClick={() => alert("Redirecting to AI Scheduler...")} className="flex items-center gap-2 px-4 py-2.5 bg-surface-container-lowest text-on-surface border border-outline-variant/20 rounded-lg hover:bg-surface-container-low transition-colors shadow-sm font-medium text-sm w-full sm:w-auto">
               <span className="material-symbols-outlined text-lg" data-icon="calendar_month">calendar_month</span>
               Schedule
             </button>
-            <button className="flex items-center gap-2 px-6 py-2.5 bg-gradient-to-br from-primary to-primary-container text-white rounded-lg font-bold shadow-md hover:shadow-lg active:scale-95 transition-all text-sm">
+            <button onClick={() => window.open('http://localhost:8000/api/reports/download')} className="flex items-center gap-2 px-6 py-2.5 bg-gradient-to-br from-primary to-primary-container text-white rounded-lg font-bold shadow-md hover:shadow-lg active:scale-95 transition-all text-sm w-full sm:w-auto">
               <span className="material-symbols-outlined text-lg" data-icon="download">download</span>
               Export Report
             </button>
@@ -67,21 +67,21 @@ const Reports = () => {
             <div className="bg-surface-container-lowest p-6 rounded-xl shadow-[0_4px_24px_rgba(0,0,0,0.04)] border border-outline-variant/10">
               <h3 className="text-sm font-bold text-on-surface mb-6 uppercase tracking-wider">Export Document</h3>
               <div className="space-y-3">
-                <button className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-surface-container-low border border-transparent hover:border-outline-variant/20 transition-all group">
+                <button onClick={() => window.open('http://localhost:8000/api/reports/download')} className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-surface-container-low border border-transparent hover:border-outline-variant/20 transition-all group">
                   <div className="flex items-center gap-3">
                     <span className="material-symbols-outlined text-error" data-icon="picture_as_pdf">picture_as_pdf</span>
                     <span className="text-sm font-medium">Standard PDF Report</span>
                   </div>
                   <span className="material-symbols-outlined text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity" data-icon="chevron_right">chevron_right</span>
                 </button>
-                <button className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-surface-container-low border border-transparent hover:border-outline-variant/20 transition-all group">
+                <button onClick={() => window.open('http://localhost:8000/api/reports/download')} className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-surface-container-low border border-transparent hover:border-outline-variant/20 transition-all group">
                   <div className="flex items-center gap-3">
                     <span className="material-symbols-outlined text-primary" data-icon="javascript">javascript</span>
                     <span className="text-sm font-medium">Data Export (JSON)</span>
                   </div>
                   <span className="material-symbols-outlined text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity" data-icon="chevron_right">chevron_right</span>
                 </button>
-                <button className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-surface-container-low border border-transparent hover:border-outline-variant/20 transition-all group">
+                <button onClick={() => alert("Email Sent!")} className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-surface-container-low border border-transparent hover:border-outline-variant/20 transition-all group">
                   <div className="flex items-center gap-3">
                     <span className="material-symbols-outlined text-tertiary" data-icon="mail">mail</span>
                     <span className="text-sm font-medium">Email Report</span>
@@ -144,7 +144,7 @@ const Reports = () => {
               <div className="px-8 py-6 border-b border-surface-container-low flex items-center justify-between">
                 <h3 className="text-sm font-bold text-on-surface uppercase tracking-wider">Historical Audit Logs</h3>
                 <div className="flex items-center gap-2">
-                  <input className="px-4 py-1.5 text-xs bg-surface-container-low border-none rounded-lg focus:ring-1 focus:ring-primary w-64 outline-none" placeholder="Filter by date or ID..." type="text" />
+                  <input className="px-4 py-1.5 text-xs bg-surface-container-low border-none rounded-lg focus:ring-1 focus:ring-primary w-64 outline-none w-full sm:w-64" placeholder="Filter by date or ID..." type="text" />
                   <button className="p-1.5 hover:bg-surface-container-low rounded transition-colors">
                     <span className="material-symbols-outlined text-on-surface-variant" data-icon="filter_list">filter_list</span>
                   </button>
@@ -175,7 +175,7 @@ const Reports = () => {
                       </td>
                       <td className="px-8 py-4 text-sm font-medium">System (Auto)</td>
                       <td className="px-8 py-4 text-right">
-                        <button className="text-on-surface-variant hover:text-primary transition-colors">
+                        <button className="text-on-surface-variant hover:text-primary transition-colors w-full sm:w-auto">
                           <span className="material-symbols-outlined" data-icon="visibility">visibility</span>
                         </button>
                       </td>
@@ -193,7 +193,7 @@ const Reports = () => {
                       </td>
                       <td className="px-8 py-4 text-sm font-medium">Admin (j.doe)</td>
                       <td className="px-8 py-4 text-right">
-                        <button className="text-on-surface-variant hover:text-primary transition-colors">
+                        <button className="text-on-surface-variant hover:text-primary transition-colors w-full sm:w-auto">
                           <span className="material-symbols-outlined" data-icon="visibility">visibility</span>
                         </button>
                       </td>
@@ -211,7 +211,7 @@ const Reports = () => {
                       </td>
                       <td className="px-8 py-4 text-sm font-medium">System (Auto)</td>
                       <td className="px-8 py-4 text-right">
-                        <button className="text-on-surface-variant hover:text-primary transition-colors">
+                        <button className="text-on-surface-variant hover:text-primary transition-colors w-full sm:w-auto">
                           <span className="material-symbols-outlined" data-icon="visibility">visibility</span>
                         </button>
                       </td>
@@ -229,7 +229,7 @@ const Reports = () => {
                       </td>
                       <td className="px-8 py-4 text-sm font-medium">System (Auto)</td>
                       <td className="px-8 py-4 text-right">
-                        <button className="text-on-surface-variant hover:text-primary transition-colors">
+                        <button className="text-on-surface-variant hover:text-primary transition-colors w-full sm:w-auto">
                           <span className="material-symbols-outlined" data-icon="visibility">visibility</span>
                         </button>
                       </td>
@@ -240,11 +240,11 @@ const Reports = () => {
               <div className="px-8 py-4 bg-surface-container-low/30 flex items-center justify-between">
                 <span className="text-xs text-on-surface-variant font-medium">Showing 4 of 480 reports</span>
                 <div className="flex items-center gap-1">
-                  <button className="px-3 py-1 text-xs font-bold text-on-surface bg-surface-container-lowest border border-outline-variant/20 rounded">Prev</button>
-                  <button className="px-3 py-1 text-xs font-bold text-white bg-primary rounded">1</button>
-                  <button className="px-3 py-1 text-xs font-bold text-on-surface hover:bg-surface-container-highest rounded transition-colors">2</button>
-                  <button className="px-3 py-1 text-xs font-bold text-on-surface hover:bg-surface-container-highest rounded transition-colors">3</button>
-                  <button className="px-3 py-1 text-xs font-bold text-on-surface bg-surface-container-lowest border border-outline-variant/20 rounded">Next</button>
+                  <button className="px-3 py-1 text-xs font-bold text-on-surface bg-surface-container-lowest border border-outline-variant/20 rounded w-full sm:w-auto">Prev</button>
+                  <button className="px-3 py-1 text-xs font-bold text-white bg-primary rounded w-full sm:w-auto">1</button>
+                  <button className="px-3 py-1 text-xs font-bold text-on-surface hover:bg-surface-container-highest rounded transition-colors w-full sm:w-auto">2</button>
+                  <button className="px-3 py-1 text-xs font-bold text-on-surface hover:bg-surface-container-highest rounded transition-colors w-full sm:w-auto">3</button>
+                  <button className="px-3 py-1 text-xs font-bold text-on-surface bg-surface-container-lowest border border-outline-variant/20 rounded w-full sm:w-auto">Next</button>
                 </div>
               </div>
             </div>

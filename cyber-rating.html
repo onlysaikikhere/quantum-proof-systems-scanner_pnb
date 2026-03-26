@@ -87,7 +87,7 @@
 </head>
 <body class="bg-background font-body text-on-surface">
 <!-- SideNavBar -->
-<aside class="h-screen w-64 fixed left-0 top-0 border-r-0 bg-slate-50 flex flex-col py-6 px-4 z-50">
+<aside class="hidden md:flex h-screen w-64 fixed left-0 top-0 border-r-0 bg-slate-50 flex-col py-6 px-4 z-50">
 <div class="mb-10 px-2">
 <h1 class="text-lg font-bold tracking-tight text-slate-900">Quantum-Proof</h1>
 <p class="text-[0.6875rem] uppercase tracking-widest text-slate-500 font-bold">Systems Scanner</p>
@@ -134,8 +134,8 @@
 </div>
 </aside>
 <!-- TopNavBar -->
-<header class="fixed top-0 right-0 left-64 h-16 bg-white/80 backdrop-blur-md flex items-center justify-between px-8 z-40 shadow-sm">
-<div class="flex items-center gap-4">
+<header class="fixed top-0 right-0 left-0 md:left-64 h-16 bg-white/80 backdrop-blur-md flex items-center justify-between px-8 z-40 shadow-sm">
+<div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
 <span class="text-blue-700 font-bold text-sm">PQC Readiness: 98%</span>
 <div class="h-1 w-24 bg-surface-container rounded-full overflow-hidden">
 <div class="h-full bg-primary w-[98%]"></div>
@@ -159,17 +159,17 @@
 <!-- Main Content -->
 <main class="ml-64 pt-24 pb-12 px-10">
 <!-- Executive Overview Header -->
-<div class="flex justify-between items-end mb-10">
+<div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 md:gap-0 mb-10">
 <div>
 <h2 class="text-display-lg font-bold tracking-tight text-on-surface mb-2">Cyber Rating</h2>
 <p class="text-on-surface-variant text-body-md max-w-xl">Comprehensive cryptographic health assessment based on post-quantum resilience benchmarks and NIST entropy standards.</p>
 </div>
-<div class="flex gap-4">
+<div class="flex flex-col sm:flex-row gap-4">
 <div class="px-4 py-2 bg-tertiary/10 border border-tertiary/20 rounded-lg flex items-center gap-2">
 <span class="material-symbols-outlined text-tertiary text-lg" style="font-variation-settings: 'FILL' 1;">verified</span>
 <span class="text-tertiary font-bold text-sm uppercase tracking-wider">Elite-PQC</span>
 </div>
-<button class="bg-surface-container-highest text-on-surface px-6 py-2 rounded-lg text-sm font-semibold hover:bg-surface-variant transition-colors">
+<button class="bg-surface-container-highest text-on-surface px-6 py-2 rounded-lg text-sm font-semibold hover:bg-surface-variant transition-colors w-full sm:w-auto">
                     Export Executive Summary
                 </button>
 </div>
@@ -375,7 +375,7 @@
 </tbody>
 </table>
 <div class="p-4 bg-surface-container-low/30 border-t border-surface-container-low flex justify-center">
-<button class="text-primary text-xs font-bold uppercase tracking-widest hover:underline">View All 412 Assets</button>
+<button class="text-primary text-xs font-bold uppercase tracking-widest hover:underline w-full sm:w-auto">View All 412 Assets</button>
 </div>
 </div>
 </main>

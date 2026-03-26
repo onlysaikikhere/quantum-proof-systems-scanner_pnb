@@ -1,22 +1,81 @@
+import { useState, useEffect } from 'react';
+
 const CyberRating = () => {
+  const [vulnerableAssets, setVulnerableAssets] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch('http://localhost:8000/api/vulnerable-assets')
+      .then(res => res.json())
+      .then(data => setVulnerableAssets(data))
+      .catch(err => console.error("Failed to fetch vulnerable assets:", err));
+  }, []);
+
   return (
-    <main className="ml-64 pt-24 pb-12 px-10 min-h-screen">
+    <main className="md:ml-64 pt-24 pb-12 px-10 min-h-screen">
       {/* Executive Overview Header */}
-      <div className="flex justify-between items-end mb-10">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 md:gap-0 mb-10">
         <div>
           <h2 className="text-[1.75rem] font-bold text-on-surface tracking-tight leading-none mb-2">Cyber Rating</h2>
           <p className="text-on-surface-variant text-sm max-w-xl">Comprehensive cryptographic health assessment based on post-quantum resilience benchmarks and NIST entropy standards.</p>
         </div>
-        <div className="flex gap-4">
+        <div className="flex flex-col sm:flex-row gap-4">
           <div className="px-4 py-2 bg-tertiary/10 border border-tertiary/20 rounded-lg flex items-center gap-2">
             <span className="material-symbols-outlined text-tertiary text-lg" style={{ fontVariationSettings: "'FILL' 1" }}>verified</span>
             <span className="text-tertiary font-bold text-sm uppercase tracking-wider">Elite-PQC</span>
           </div>
-          <button className="bg-surface-container-highest text-on-surface px-6 py-2 rounded-lg text-sm font-semibold hover:bg-surface-variant transition-colors shadow-sm">
+          <button 
+            onClick={() => window.open('http://localhost:8000/api/reports/download', '_blank')}
+            className="bg-surface-container-highest text-on-surface px-6 py-2 rounded-lg text-sm font-semibold hover:bg-surface-variant transition-colors shadow-sm w-full sm:w-auto"
+          >
             Export Executive Summary
           </button>
         </div>
       </div>
+
+      {/* Vulnerable Assets Section (Dynamic) */}
+      {vulnerableAssets.length > 0 && (
+        <div className="mb-8 bg-error/10 border border-error/30 rounded-xl overflow-hidden shadow-sm relative group">
+          <div className="p-6 border-b border-error/20 flex justify-between items-center bg-error/5 relative z-10">
+             <div className="flex items-center gap-3">
+               <span className="material-symbols-outlined text-error animate-pulse">warning</span>
+               <h3 className="text-sm font-bold text-error uppercase tracking-wider">Critical Vulnerabilities Detected ({vulnerableAssets.length})</h3>
+             </div>
+          </div>
+          <div className="overflow-x-auto relative z-10 custom-scrollbar w-full">
+            <table className="w-full text-left">
+              <thead>
+                <tr className="bg-error/5">
+                  <th className="px-6 py-3 text-[10px] text-error font-bold uppercase tracking-widest border-b border-error/20">Target / Asset</th>
+                  <th className="px-6 py-3 text-[10px] text-error font-bold uppercase tracking-widest border-b border-error/20">Algorithm</th>
+                  <th className="px-6 py-3 text-[10px] text-error font-bold uppercase tracking-widest border-b border-error/20">TLS Version</th>
+                  <th className="px-6 py-3 text-[10px] text-error font-bold uppercase tracking-widest border-b border-error/20 text-right">Risk</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-error/10">
+                {vulnerableAssets.map((asset, i) => (
+                   <tr key={i} className="hover:bg-error/10 transition-colors">
+                     <td className="px-6 py-4">
+                       <p className="text-xs font-bold text-on-surface">{asset.name}</p>
+                       <p className="text-[10px] text-on-surface-variant font-mono mt-0.5">{asset.ip_address || '---'}</p>
+                     </td>
+                     <td className="px-6 py-4">
+                       <span className="text-xs px-2 py-1 bg-surface-container-lowest border border-error/20 rounded text-error font-mono">{asset.scan_result?.algorithm || 'Unknown'}</span>
+                     </td>
+                     <td className="px-6 py-4">
+                       <span className="text-[11px] font-medium text-error">{asset.scan_result?.tls_version || 'Unknown'}</span>
+                     </td>
+                     <td className="px-6 py-4 text-right">
+                       <span className="text-[10px] font-bold py-1 px-2 bg-error text-white rounded">
+                         {asset.risk?.risk_level || 'High'}
+                       </span>
+                     </td>
+                   </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
 
       {/* Bento Grid Layout */}
       <div className="grid grid-cols-12 gap-8 mb-8">
@@ -124,7 +183,7 @@ const CyberRating = () => {
 
       {/* Asset Rating Table */}
       <div className="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden border border-outline-variant/10">
-        <div className="p-6 border-b border-surface-container-low flex justify-between items-center">
+        <div className="p-6 border-b border-surface-container-low flex justify-between items-center flex-col sm:flex-row gap-4 items-start sm:items-center">
           <h3 className="text-sm font-bold text-on-surface uppercase tracking-wider">Asset Vulnerability Matrix</h3>
           <div className="flex items-center gap-2 cursor-pointer hover:text-primary transition-colors">
             <span className="material-symbols-outlined text-slate-400">filter_list</span>
@@ -132,105 +191,107 @@ const CyberRating = () => {
           </div>
         </div>
         
-        <table className="w-full text-left">
-          <thead>
-            <tr className="bg-surface-container-low/50">
-              <th className="px-6 py-4 text-[11px] text-on-surface-variant font-bold uppercase tracking-widest">Target URL / Asset</th>
-              <th className="px-6 py-4 text-[11px] text-on-surface-variant font-bold uppercase tracking-widest">Algorithm</th>
-              <th className="px-6 py-4 text-[11px] text-on-surface-variant font-bold uppercase tracking-widest">Status</th>
-              <th className="px-6 py-4 text-[11px] text-on-surface-variant font-bold uppercase tracking-widest">PQC Score</th>
-              <th className="px-6 py-4 text-[11px] text-on-surface-variant font-bold uppercase tracking-widest text-right">Trend</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-surface-container-low">
-            <tr className="hover:bg-surface-container-low transition-colors group">
-              <td className="px-6 py-4">
-                <p className="text-sm font-semibold text-on-surface">api.nexus-core.internal</p>
-                <p className="text-[10px] text-on-surface-variant font-mono">10.0.4.122</p>
-              </td>
-              <td className="px-6 py-4">
-                <span className="text-xs px-2 py-1 bg-surface-container-high rounded text-on-surface font-mono">Kyber-768</span>
-              </td>
-              <td className="px-6 py-4">
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-tertiary"></div>
-                  <span className="text-xs font-bold uppercase tracking-tight text-tertiary">Elite-PQC</span>
-                </div>
-              </td>
-              <td className="px-6 py-4">
-                <span className="text-sm font-bold text-on-surface">942</span>
-              </td>
-              <td className="px-6 py-4 text-right">
-                <span className="material-symbols-outlined text-tertiary text-lg">trending_up</span>
-              </td>
-            </tr>
-            <tr className="hover:bg-surface-container-low transition-colors group">
-              <td className="px-6 py-4">
-                <p className="text-sm font-semibold text-on-surface">db-cluster-prod-01</p>
-                <p className="text-[10px] text-on-surface-variant font-mono">10.0.12.44</p>
-              </td>
-              <td className="px-6 py-4">
-                <span className="text-xs px-2 py-1 bg-surface-container-high rounded text-on-surface font-mono">AES-256-GCM</span>
-              </td>
-              <td className="px-6 py-4">
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-secondary-container"></div>
-                  <span className="text-xs font-bold uppercase tracking-tight text-secondary-container">Standard</span>
-                </div>
-              </td>
-              <td className="px-6 py-4">
-                <span className="text-sm font-bold text-on-surface">618</span>
-              </td>
-              <td className="px-6 py-4 text-right">
-                <span className="material-symbols-outlined text-slate-400 text-lg">trending_flat</span>
-              </td>
-            </tr>
-            <tr className="hover:bg-surface-container-low transition-colors group">
-              <td className="px-6 py-4">
-                <p className="text-sm font-semibold text-on-surface">legacy-gateway-auth</p>
-                <p className="text-[10px] text-on-surface-variant font-mono">172.16.8.9</p>
-              </td>
-              <td className="px-6 py-4">
-                <span className="text-xs px-2 py-1 bg-surface-container-high rounded text-on-surface font-mono">RSA-2048</span>
-              </td>
-              <td className="px-6 py-4">
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-error"></div>
-                  <span className="text-xs font-bold uppercase tracking-tight text-error">Legacy</span>
-                </div>
-              </td>
-              <td className="px-6 py-4">
-                <span className="text-sm font-bold text-on-surface">144</span>
-              </td>
-              <td className="px-6 py-4 text-right">
-                <span className="material-symbols-outlined text-error text-lg">trending_down</span>
-              </td>
-            </tr>
-            <tr className="hover:bg-surface-container-low transition-colors group">
-              <td className="px-6 py-4">
-                <p className="text-sm font-semibold text-on-surface">cdn-edge-global-02</p>
-                <p className="text-[10px] text-on-surface-variant font-mono">92.44.121.2</p>
-              </td>
-              <td className="px-6 py-4">
-                <span className="text-xs px-2 py-1 bg-surface-container-high rounded text-on-surface font-mono">Dilithium-3</span>
-              </td>
-              <td className="px-6 py-4">
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-tertiary"></div>
-                  <span className="text-xs font-bold uppercase tracking-tight text-tertiary">Elite-PQC</span>
-                </div>
-              </td>
-              <td className="px-6 py-4">
-                <span className="text-sm font-bold text-on-surface">885</span>
-              </td>
-              <td className="px-6 py-4 text-right">
-                <span className="material-symbols-outlined text-tertiary text-lg">trending_up</span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <div className="overflow-x-auto custom-scrollbar w-full">
+          <table className="w-full text-left">
+            <thead>
+              <tr className="bg-surface-container-low/50">
+                <th className="px-6 py-4 text-[11px] text-on-surface-variant font-bold uppercase tracking-widest">Target URL / Asset</th>
+                <th className="px-6 py-4 text-[11px] text-on-surface-variant font-bold uppercase tracking-widest">Algorithm</th>
+                <th className="px-6 py-4 text-[11px] text-on-surface-variant font-bold uppercase tracking-widest">Status</th>
+                <th className="px-6 py-4 text-[11px] text-on-surface-variant font-bold uppercase tracking-widest">PQC Score</th>
+                <th className="px-6 py-4 text-[11px] text-on-surface-variant font-bold uppercase tracking-widest text-right">Trend</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-surface-container-low">
+              <tr className="hover:bg-surface-container-low transition-colors group">
+                <td className="px-6 py-4">
+                  <p className="text-sm font-semibold text-on-surface">api.nexus-core.internal</p>
+                  <p className="text-[10px] text-on-surface-variant font-mono">10.0.4.122</p>
+                </td>
+                <td className="px-6 py-4">
+                  <span className="text-xs px-2 py-1 bg-surface-container-high rounded text-on-surface font-mono">Kyber-768</span>
+                </td>
+                <td className="px-6 py-4">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-tertiary"></div>
+                    <span className="text-xs font-bold uppercase tracking-tight text-tertiary">Elite-PQC</span>
+                  </div>
+                </td>
+                <td className="px-6 py-4">
+                  <span className="text-sm font-bold text-on-surface">942</span>
+                </td>
+                <td className="px-6 py-4 text-right">
+                  <span className="material-symbols-outlined text-tertiary text-lg">trending_up</span>
+                </td>
+              </tr>
+              <tr className="hover:bg-surface-container-low transition-colors group">
+                <td className="px-6 py-4">
+                  <p className="text-sm font-semibold text-on-surface">db-cluster-prod-01</p>
+                  <p className="text-[10px] text-on-surface-variant font-mono">10.0.12.44</p>
+                </td>
+                <td className="px-6 py-4">
+                  <span className="text-xs px-2 py-1 bg-surface-container-high rounded text-on-surface font-mono">AES-256-GCM</span>
+                </td>
+                <td className="px-6 py-4">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-secondary-container"></div>
+                    <span className="text-xs font-bold uppercase tracking-tight text-secondary-container">Standard</span>
+                  </div>
+                </td>
+                <td className="px-6 py-4">
+                  <span className="text-sm font-bold text-on-surface">618</span>
+                </td>
+                <td className="px-6 py-4 text-right">
+                  <span className="material-symbols-outlined text-slate-400 text-lg">trending_flat</span>
+                </td>
+              </tr>
+              <tr className="hover:bg-surface-container-low transition-colors group">
+                <td className="px-6 py-4">
+                  <p className="text-sm font-semibold text-on-surface">legacy-gateway-auth</p>
+                  <p className="text-[10px] text-on-surface-variant font-mono">172.16.8.9</p>
+                </td>
+                <td className="px-6 py-4">
+                  <span className="text-xs px-2 py-1 bg-surface-container-high rounded text-on-surface font-mono">RSA-2048</span>
+                </td>
+                <td className="px-6 py-4">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-error"></div>
+                    <span className="text-xs font-bold uppercase tracking-tight text-error">Legacy</span>
+                  </div>
+                </td>
+                <td className="px-6 py-4">
+                  <span className="text-sm font-bold text-on-surface">144</span>
+                </td>
+                <td className="px-6 py-4 text-right">
+                  <span className="material-symbols-outlined text-error text-lg">trending_down</span>
+                </td>
+              </tr>
+              <tr className="hover:bg-surface-container-low transition-colors group">
+                <td className="px-6 py-4">
+                  <p className="text-sm font-semibold text-on-surface">cdn-edge-global-02</p>
+                  <p className="text-[10px] text-on-surface-variant font-mono">92.44.121.2</p>
+                </td>
+                <td className="px-6 py-4">
+                  <span className="text-xs px-2 py-1 bg-surface-container-high rounded text-on-surface font-mono">Dilithium-3</span>
+                </td>
+                <td className="px-6 py-4">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-tertiary"></div>
+                    <span className="text-xs font-bold uppercase tracking-tight text-tertiary">Elite-PQC</span>
+                  </div>
+                </td>
+                <td className="px-6 py-4">
+                  <span className="text-sm font-bold text-on-surface">885</span>
+                </td>
+                <td className="px-6 py-4 text-right">
+                  <span className="material-symbols-outlined text-tertiary text-lg">trending_up</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
         <div className="p-4 bg-surface-container-low/30 border-t border-surface-container-low flex justify-center">
-          <button className="text-primary text-xs font-bold uppercase tracking-widest hover:underline transition-colors">View All 412 Assets</button>
+          <button className="text-primary text-xs font-bold uppercase tracking-widest hover:underline transition-colors w-full sm:w-auto">View All 412 Assets</button>
         </div>
       </div>
     </main>
@@ -238,3 +299,4 @@ const CyberRating = () => {
 };
 
 export default CyberRating;
+

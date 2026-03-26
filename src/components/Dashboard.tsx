@@ -1,22 +1,50 @@
-
+import { useState, useEffect } from 'react';
 
 const Dashboard = () => {
+  const [metrics, setMetrics] = useState({
+    total_assets: 0,
+    apis: 0,
+    servers: 0,
+    expiring_certs: 0,
+    high_risk: 0,
+    medium_risk: 0,
+    low_risk: 0,
+    pqc_readiness_pct: 0,
+    heatmap: [] as any[]
+  });
+
+  useEffect(() => {
+    fetch('http://localhost:8000/api/risk')
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.summary) {
+          setMetrics({
+              ...data.summary,
+              heatmap: data.heatmap || []
+          });
+        }
+      })
+      .catch(err => console.error("Failed to fetch risk metrics", err));
+  }, []);
+
   return (
-    <main className="ml-64 pt-24 pb-12 px-8">
+    <main className="md:ml-64 pt-24 pb-12 px-8">
       {/* Dashboard Header */}
       <div className="flex items-end justify-between mb-8">
         <div>
           <h2 className="text-2xl font-bold tracking-tight text-on-surface">Security Overview</h2>
           <p className="text-on-surface-variant text-sm mt-1">Real-time cryptographic asset monitoring and risk assessment.</p>
         </div>
-        <div className="flex gap-3">
-          <button className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-white text-on-surface border border-outline-variant rounded hover:bg-surface-container-low transition-colors">
+        <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+          <button className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-white text-on-surface border border-outline-variant rounded hover:bg-surface-container-low transition-colors w-full sm:w-auto">
             <span className="material-symbols-outlined text-[18px]" data-icon="calendar_today">calendar_today</span>
             Last 24 Hours
           </button>
-          <button className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-primary text-white rounded hover:opacity-90 transition-opacity">
-            <span className="material-symbols-outlined text-[18px]" data-icon="file_download">file_download</span>
-            Export PDF
+          <button 
+            onClick={() => window.open('http://localhost:8000/api/reports/download', '_blank')}
+            className="flex items-center justify-center gap-2 px-6 py-2.5 bg-gradient-to-br from-primary to-primary-container text-white rounded-lg text-sm font-bold shadow-md shadow-primary/20 hover:scale-105 active:scale-95 transition-all"
+          >
+            Export Complete Report
           </button>
         </div>
       </div>
@@ -26,8 +54,8 @@ const Dashboard = () => {
         <div className="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant/10 shadow-sm">
           <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-3">Total Assets</p>
           <div className="flex items-baseline gap-2">
-            <span className="text-2xl font-bold text-on-surface tracking-tight">12,482</span>
-            <span className="text-[10px] text-tertiary font-bold">+2.4%</span>
+            <span className="text-2xl font-bold text-on-surface tracking-tight">{metrics.total_assets}</span>
+            <span className="text-[10px] text-tertiary font-bold">+Live</span>
           </div>
         </div>
 
@@ -42,38 +70,38 @@ const Dashboard = () => {
         <div className="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant/10 shadow-sm">
           <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-3">Active APIs</p>
           <div className="flex items-baseline gap-2">
-            <span className="text-2xl font-bold text-on-surface tracking-tight">892</span>
-            <span className="text-[10px] text-tertiary font-bold">+12</span>
+            <span className="text-2xl font-bold text-on-surface tracking-tight">{metrics.apis}</span>
+            <span className="text-[10px] text-tertiary font-bold">Live</span>
           </div>
         </div>
 
         <div className="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant/10 shadow-sm">
           <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-3">Servers</p>
           <div className="flex items-baseline gap-2">
-            <span className="text-2xl font-bold text-on-surface tracking-tight">410</span>
-            <span className="text-[10px] text-slate-400 font-bold">Safe</span>
+            <span className="text-2xl font-bold text-on-surface tracking-tight">{metrics.servers}</span>
+            <span className="text-[10px] text-slate-400 font-bold">Running</span>
           </div>
         </div>
 
         <div className="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant/10 shadow-sm">
           <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-3">Expiring Certs</p>
           <div className="flex items-baseline gap-2">
-            <span className="text-2xl font-bold text-secondary-container tracking-tight">28</span>
-            <span className="text-[10px] text-error font-bold">Action</span>
+            <span className="text-2xl font-bold text-secondary-container tracking-tight">{metrics.expiring_certs}</span>
+            <span className="text-[10px] text-error font-bold">&lt; 30 Days</span>
           </div>
         </div>
 
         <div className="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant/10 shadow-sm ring-2 ring-error/5">
           <p className="text-[10px] font-bold text-error uppercase tracking-wider mb-3">High Risk Assets</p>
           <div className="flex items-baseline gap-2">
-            <span className="text-2xl font-bold text-error tracking-tight">3</span>
-            <span className="text-[10px] text-error font-bold">-1</span>
+            <span className="text-2xl font-bold text-error tracking-tight">{metrics.high_risk}</span>
+            <span className="text-[10px] text-error font-bold">Action Required</span>
           </div>
         </div>
       </div>
 
       {/* Analytical Bento Grid */}
-      <div className="grid grid-cols-12 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-6 mb-8">
         
         {/* Risk Heatmap (Large) */}
         <div className="col-span-12 lg:col-span-8 bg-surface-container-lowest p-6 rounded-xl shadow-sm">
@@ -97,28 +125,35 @@ const Dashboard = () => {
             </div>
 
             {/* Heatmap Grid */}
-            <div className="flex-1 grid grid-cols-10 grid-rows-5 gap-1.5">
-              {/* Row 1 */}
-              <div className="bg-tertiary/10 rounded-sm"></div><div className="bg-tertiary/10 rounded-sm"></div><div className="bg-tertiary/20 rounded-sm"></div><div className="bg-tertiary/10 rounded-sm"></div><div className="bg-tertiary/10 rounded-sm"></div><div className="bg-tertiary/10 rounded-sm"></div><div className="bg-tertiary/10 rounded-sm"></div><div className="bg-tertiary/10 rounded-sm"></div><div className="bg-tertiary/10 rounded-sm"></div><div className="bg-tertiary/10 rounded-sm"></div>
-              {/* Row 2 */}
-              <div className="bg-tertiary/10 rounded-sm"></div><div className="bg-secondary-container/20 rounded-sm"></div><div className="bg-secondary-container/40 rounded-sm"></div><div className="bg-tertiary/10 rounded-sm"></div><div className="bg-tertiary/10 rounded-sm"></div><div className="bg-tertiary/10 rounded-sm"></div><div className="bg-tertiary/10 rounded-sm"></div><div className="bg-tertiary/10 rounded-sm"></div><div className="bg-tertiary/10 rounded-sm"></div><div className="bg-tertiary/10 rounded-sm"></div>
-              {/* Row 3 */}
-              <div className="bg-error/30 rounded-sm"></div><div className="bg-error/50 rounded-sm"></div><div className="bg-error/20 rounded-sm"></div><div className="bg-secondary-container/40 rounded-sm"></div><div className="bg-tertiary/10 rounded-sm"></div><div className="bg-tertiary/10 rounded-sm"></div><div className="bg-secondary-container/30 rounded-sm"></div><div className="bg-tertiary/10 rounded-sm"></div><div className="bg-tertiary/10 rounded-sm"></div><div className="bg-tertiary/10 rounded-sm"></div>
-              {/* Row 4 */}
-              <div className="bg-secondary-container/20 rounded-sm"></div><div className="bg-tertiary/10 rounded-sm"></div><div className="bg-tertiary/10 rounded-sm"></div><div className="bg-tertiary/10 rounded-sm"></div><div className="bg-secondary-container/30 rounded-sm"></div><div className="bg-tertiary/10 rounded-sm"></div><div className="bg-tertiary/10 rounded-sm"></div><div className="bg-tertiary/10 rounded-sm"></div><div className="bg-tertiary/10 rounded-sm"></div><div className="bg-tertiary/10 rounded-sm"></div>
-              {/* Row 5 */}
-              <div className="bg-error/80 rounded-sm border border-error/50 relative overflow-hidden group">
-                <div className="absolute inset-0 bg-white/20 animate-pulse"></div>
-              </div>
-              <div className="bg-error/40 rounded-sm"></div>
-              <div className="bg-tertiary/10 rounded-sm"></div>
-              <div className="bg-tertiary/10 rounded-sm"></div>
-              <div className="bg-tertiary/10 rounded-sm"></div>
-              <div className="bg-secondary-container/20 rounded-sm"></div>
-              <div className="bg-tertiary/10 rounded-sm"></div>
-              <div className="bg-tertiary/10 rounded-sm"></div>
-              <div className="bg-tertiary/10 rounded-sm"></div>
-              <div className="bg-tertiary/10 rounded-sm"></div>
+            <div className="flex-1 grid grid-cols-10 grid-rows-[repeat(auto-fill,minmax(24px,1fr))] gap-1.5 content-start">
+              {metrics.heatmap.map((item, i) => {
+                 let colorClass = "bg-tertiary/10";
+                 let ringClass = ""; // For pulse or highlights
+                 
+                 if (item.risk === "High") {
+                     colorClass = "bg-error/80";
+                     ringClass = "border border-error/50 relative overflow-hidden group";
+                 } else if (item.risk === "Medium") {
+                     colorClass = "bg-secondary-container/80";
+                 } else {
+                     if (item.algorithm.includes("AES") || item.algorithm.includes("ECC")) {
+                         colorClass = "bg-tertiary/60"; // PQC Ready / Strong
+                     } else {
+                         colorClass = "bg-tertiary/20"; // Unknown or low score
+                     }
+                 }
+                 
+                 return (
+                     <div key={i} className={`${colorClass} ${ringClass} rounded-sm w-full h-[32px] cursor-help`} title={`${item.asset_name}: ${item.algorithm} / ${item.tls_version} (${item.key_size}-bit)`}>
+                         {item.risk === "High" && <div className="absolute inset-0 bg-white/20 animate-pulse"></div>}
+                     </div>
+                 );
+              })}
+              
+              {/* Fill remaining with empty boxes */}
+              {[...Array(Math.max(0, 50 - metrics.heatmap.length))].map((_, i) => (
+                  <div key={`empty-${i}`} className="bg-surface-container-high/30 rounded-sm w-full h-[32px]"></div>
+              ))}
             </div>
           </div>
           
@@ -132,35 +167,39 @@ const Dashboard = () => {
         <div className="col-span-12 lg:col-span-4 bg-surface-container-lowest p-6 rounded-xl shadow-sm flex flex-col">
           <h3 className="text-sm font-bold text-on-surface tracking-tight uppercase mb-6">Asset Distribution</h3>
           <div className="flex-1 flex items-center justify-center relative">
-            {/* Fake Pie Chart */}
-            <div className="w-48 h-48 rounded-full border-[16px] border-slate-100 relative flex items-center justify-center">
-              <div className="absolute inset-[-16px] rounded-full border-[16px] border-primary border-r-transparent border-b-transparent rotate-12"></div>
-              <div className="absolute inset-[-16px] rounded-full border-[16px] border-secondary-container border-l-transparent border-t-transparent -rotate-45"></div>
-              <div className="text-center">
-                <p className="text-3xl font-extrabold text-on-surface">12k</p>
-                <p className="text-[10px] font-bold text-on-surface-variant uppercase">Total</p>
+            {/* Real PQC Readiness Pie Chart (Approximated) */}
+            <div className="w-full sm:w-48 h-48 rounded-full border-[16px] border-surface-container-high relative flex items-center justify-center">
+              {metrics.pqc_readiness_pct > 0 && (
+                 <div className="absolute inset-[-16px] rounded-full border-[16px] border-tertiary opacity-90" style={{ clipPath: `conic-gradient(from 0deg, black 0%, black ${metrics.pqc_readiness_pct}%, transparent ${metrics.pqc_readiness_pct}%, transparent 100%)`, transform: 'rotate(-90deg)' }}></div>
+              )}
+              {metrics.high_risk > 0 && (
+                 <div className="absolute inset-[-16px] rounded-full border-[16px] border-error opacity-90" style={{ clipPath: `conic-gradient(from ${metrics.pqc_readiness_pct * 3.6}deg, black 0%, black ${(metrics.high_risk / metrics.total_assets) * 100}%, transparent ${(metrics.high_risk / metrics.total_assets) * 100}%, transparent 100%)`, transform: 'rotate(-90deg)' }}></div>
+              )}
+              <div className="text-center absolute z-10">
+                <p className="text-3xl font-extrabold text-on-surface">{metrics.pqc_readiness_pct}%</p>
+                <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">PQC Ready</p>
               </div>
             </div>
           </div>
           <div className="mt-6 space-y-2">
             <div className="flex justify-between items-center text-[11px]">
-              <span className="flex items-center gap-2"><span className="w-2 h-2 bg-primary rounded-full"></span> Web Apps</span>
-              <span className="font-bold">45%</span>
+              <span className="flex items-center gap-2"><span className="w-2 h-2 bg-tertiary rounded-full"></span> Secure (PQC Ready)</span>
+              <span className="font-bold">{metrics.pqc_readiness_pct}%</span>
             </div>
             <div className="flex justify-between items-center text-[11px]">
-              <span className="flex items-center gap-2"><span className="w-2 h-2 bg-secondary-container rounded-full"></span> APIs</span>
-              <span className="font-bold">30%</span>
+              <span className="flex items-center gap-2"><span className="w-2 h-2 bg-secondary-container rounded-full"></span> Moderate Risk</span>
+              <span className="font-bold">{Math.max(0, 100 - metrics.pqc_readiness_pct - ((metrics.high_risk / Math.max(1, metrics.total_assets)) * 100)).toFixed(0)}%</span>
             </div>
             <div className="flex justify-between items-center text-[11px]">
-              <span className="flex items-center gap-2"><span className="w-2 h-2 bg-slate-300 rounded-full"></span> Infrastructure</span>
-              <span className="font-bold">25%</span>
+              <span className="flex items-center gap-2"><span className="w-2 h-2 bg-error rounded-full animate-pulse"></span> Critical Risk</span>
+              <span className="font-bold">{((metrics.high_risk / Math.max(1, metrics.total_assets)) * 100).toFixed(0)}%</span>
             </div>
           </div>
         </div>
       </div>
 
       {/* Secondary Charts Row */}
-      <div className="grid grid-cols-12 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-6 mb-8">
         
         <div className="col-span-12 lg:col-span-4 bg-surface-container-lowest p-6 rounded-xl shadow-sm">
           <h3 className="text-sm font-bold text-on-surface tracking-tight uppercase mb-6">Risk Profile Trend</h3>
@@ -182,7 +221,7 @@ const Dashboard = () => {
         <div className="col-span-12 lg:col-span-8 bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden">
           <div className="p-6 flex justify-between items-center border-b border-outline-variant/5">
             <h3 className="text-sm font-bold text-on-surface tracking-tight uppercase">Recent Asset Inventory</h3>
-            <button className="text-primary text-[10px] font-bold uppercase tracking-widest hover:underline">View All Assets</button>
+            <button className="text-primary text-[10px] font-bold uppercase tracking-widest hover:underline w-full sm:w-auto">View All Assets</button>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-left">
@@ -247,7 +286,7 @@ const Dashboard = () => {
       </div>
 
       {/* System Alerts / Activity Asymmetric Section */}
-      <div className="grid grid-cols-12 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-6">
         <div className="col-span-12 lg:col-span-3">
           <div className="bg-primary-container/10 p-6 rounded-xl border border-primary/10">
             <div className="flex items-center gap-3 mb-4">
@@ -255,7 +294,7 @@ const Dashboard = () => {
               <h3 className="text-xs font-bold text-primary uppercase">AI Insights</h3>
             </div>
             <p className="text-xs leading-relaxed text-on-surface mb-4">3 assets in <span className="font-bold">Zone B</span> are using legacy RSA-1024 encryption. Recommended upgrade to PQC-ready Kyber-768.</p>
-            <button className="text-[10px] font-bold text-primary uppercase flex items-center gap-2 hover:gap-3 transition-all">
+            <button className="text-[10px] font-bold text-primary uppercase flex items-center gap-2 hover:gap-3 transition-all w-full sm:w-auto">
               Apply Remediation Plan <span className="material-symbols-outlined text-[14px]" data-icon="arrow_forward">arrow_forward</span>
             </button>
           </div>
@@ -290,11 +329,11 @@ const Dashboard = () => {
           <span className="material-symbols-outlined text-[28px]" data-icon="add">add</span>
         </button>
         <div className="absolute bottom-16 right-0 space-y-2 pointer-events-none group-hover:pointer-events-auto opacity-0 group-hover:opacity-100 transition-opacity">
-          <button className="w-auto px-4 py-2 bg-white text-on-surface text-xs font-bold rounded-lg shadow-lg flex items-center gap-2 whitespace-nowrap border border-slate-100">
+          <button className="w-auto px-4 py-2 bg-white text-on-surface text-xs font-bold rounded-lg shadow-lg flex items-center gap-2 whitespace-nowrap border border-slate-100 w-full sm:w-auto">
             <span className="material-symbols-outlined text-[18px]" data-icon="dns">dns</span>
             New Asset
           </button>
-          <button className="w-auto px-4 py-2 bg-white text-on-surface text-xs font-bold rounded-lg shadow-lg flex items-center gap-2 whitespace-nowrap border border-slate-100">
+          <button className="w-auto px-4 py-2 bg-white text-on-surface text-xs font-bold rounded-lg shadow-lg flex items-center gap-2 whitespace-nowrap border border-slate-100 w-full sm:w-auto">
             <span className="material-symbols-outlined text-[18px]" data-icon="cloud_sync">cloud_sync</span>
             Cloud Sync
           </button>

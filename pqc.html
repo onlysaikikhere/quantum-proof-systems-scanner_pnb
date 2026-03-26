@@ -81,7 +81,7 @@
 </head>
 <body class="bg-background text-on-surface">
 <!-- SideNavBar Component -->
-<aside class="h-screen w-64 fixed left-0 top-0 border-r-0 bg-slate-50 flex flex-col py-6 px-4 z-50">
+<aside class="hidden md:flex h-screen w-64 fixed left-0 top-0 border-r-0 bg-slate-50 flex-col py-6 px-4 z-50">
 <div class="mb-10 px-2">
 <h1 class="text-lg font-bold tracking-tight text-slate-900">Quantum-Proof</h1>
 <p class="text-[0.7rem] uppercase tracking-widest text-slate-500 font-bold">Systems Scanner</p>
@@ -139,20 +139,20 @@
 </div>
 </aside>
 <!-- TopNavBar Component -->
-<header class="fixed top-0 right-0 left-64 h-16 z-40 bg-white/80 backdrop-blur-md flex items-center justify-between px-8 shadow-sm">
-<div class="flex items-center gap-4">
+<header class="fixed top-0 right-0 left-0 md:left-64 h-16 z-40 bg-white/80 backdrop-blur-md flex items-center justify-between px-8 shadow-sm">
+<div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
 <div class="relative">
 <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg" data-icon="search">search</span>
-<input class="bg-surface-container-low border-0 rounded-full py-1.5 pl-10 pr-4 text-sm w-64 focus:ring-2 focus:ring-primary/20" placeholder="Search assets, clusters..." type="text"/>
+<input class="bg-surface-container-low border-0 rounded-full py-1.5 pl-10 pr-4 text-sm w-64 focus:ring-2 focus:ring-primary/20 w-full sm:w-64" placeholder="Search assets, clusters..." type="text"/>
 </div>
 <div class="h-4 w-[1px] bg-outline-variant/30 mx-2"></div>
 <span class="text-blue-700 font-bold font-sans text-sm">PQC Readiness: 98%</span>
 </div>
 <div class="flex items-center gap-6">
-<button class="text-slate-500 hover:text-blue-600 transition-all opacity-90 hover:opacity-100">
+<button class="text-slate-500 hover:text-blue-600 transition-all opacity-90 hover:opacity-100 w-full sm:w-auto">
 <span class="material-symbols-outlined" data-icon="notifications">notifications</span>
 </button>
-<button class="text-slate-500 hover:text-blue-600 transition-all opacity-90 hover:opacity-100">
+<button class="text-slate-500 hover:text-blue-600 transition-all opacity-90 hover:opacity-100 w-full sm:w-auto">
 <span class="material-symbols-outlined" data-icon="history_edu">history_edu</span>
 </button>
 <div class="flex items-center gap-3 cursor-pointer group">
@@ -170,7 +170,7 @@
 <p class="text-on-surface-variant text-sm">Real-time cryptographic readiness and algorithm transition status.</p>
 </header>
 <!-- Summary Metrics & Bento Grid -->
-<div class="grid grid-cols-12 gap-6 mb-8">
+<div class="grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-6 mb-8">
 <!-- Hero Metric -->
 <div class="col-span-12 lg:col-span-4 bg-surface-container-lowest p-8 rounded-xl shadow-sm border border-outline-variant/10 flex flex-col justify-between">
 <div>
@@ -248,34 +248,34 @@
 <div class="bg-surface-container-lowest rounded-xl shadow-sm p-6 border border-outline-variant/10">
 <h3 class="text-sm font-bold uppercase tracking-tight text-on-surface mb-6">Strategic Recommendations</h3>
 <div class="space-y-6">
-<div class="flex gap-4">
+<div class="flex flex-col sm:flex-row gap-4">
 <div class="w-10 h-10 rounded bg-primary/5 flex items-center justify-center shrink-0">
 <span class="material-symbols-outlined text-primary" data-icon="terminal">terminal</span>
 </div>
 <div>
 <h4 class="text-xs font-bold text-on-surface">Upgrade TLS Protocols</h4>
 <p class="text-[0.7rem] text-on-surface-variant mt-1 leading-relaxed">Mandate TLS 1.3 with hybrid PQC key exchange for all internal gateways.</p>
-<button class="mt-2 text-primary text-[0.625rem] font-extrabold uppercase hover:underline">Apply Config</button>
+<button class="mt-2 text-primary text-[0.625rem] font-extrabold uppercase hover:underline w-full sm:w-auto">Apply Config</button>
 </div>
 </div>
-<div class="flex gap-4">
+<div class="flex flex-col sm:flex-row gap-4">
 <div class="w-10 h-10 rounded bg-secondary-container/5 flex items-center justify-center shrink-0">
 <span class="material-symbols-outlined text-secondary-container" data-icon="swap_horiz">swap_horiz</span>
 </div>
 <div>
 <h4 class="text-xs font-bold text-on-surface">Replace RSA with CRYSTALS-Kyber</h4>
 <p class="text-[0.7rem] text-on-surface-variant mt-1 leading-relaxed">Decommission RSA-2048 in critical load balancers. Replace with NIST Level 3 PQC.</p>
-<button class="mt-2 text-primary text-[0.625rem] font-extrabold uppercase hover:underline">View Assets</button>
+<button class="mt-2 text-primary text-[0.625rem] font-extrabold uppercase hover:underline w-full sm:w-auto">View Assets</button>
 </div>
 </div>
-<div class="flex gap-4">
+<div class="flex flex-col sm:flex-row gap-4">
 <div class="w-10 h-10 rounded bg-tertiary/5 flex items-center justify-center shrink-0">
 <span class="material-symbols-outlined text-tertiary" data-icon="update">update</span>
 </div>
 <div>
 <h4 class="text-xs font-bold text-on-surface">Update Crypto Libraries</h4>
 <p class="text-[0.7rem] text-on-surface-variant mt-1 leading-relaxed">Version 4.2.0 of OpenSSL contains PQC patches. 48 nodes require updates.</p>
-<button class="mt-2 text-primary text-[0.625rem] font-extrabold uppercase hover:underline">Deploy Update</button>
+<button class="mt-2 text-primary text-[0.625rem] font-extrabold uppercase hover:underline w-full sm:w-auto">Deploy Update</button>
 </div>
 </div>
 </div>
@@ -287,8 +287,8 @@
 <div class="px-6 py-5 flex items-center justify-between">
 <h3 class="text-sm font-bold uppercase tracking-tight text-on-surface">Asset Posture Details</h3>
 <div class="flex gap-2">
-<button class="px-3 py-1.5 text-[0.7rem] font-bold border border-outline-variant/30 rounded hover:bg-surface-container-low transition-colors">Export CSV</button>
-<button class="px-3 py-1.5 text-[0.7rem] font-bold bg-primary text-white rounded hover:bg-primary-container transition-colors">Detailed Audit</button>
+<button class="px-3 py-1.5 text-[0.7rem] font-bold border border-outline-variant/30 rounded hover:bg-surface-container-low transition-colors w-full sm:w-auto">Export CSV</button>
+<button class="px-3 py-1.5 text-[0.7rem] font-bold bg-primary text-white rounded hover:bg-primary-container transition-colors w-full sm:w-auto">Detailed Audit</button>
 </div>
 </div>
 <div class="overflow-x-auto">
@@ -383,7 +383,7 @@
 </table>
 </div>
 <div class="px-6 py-4 bg-surface-container-low/30 border-t border-outline-variant/10 text-center">
-<button class="text-[0.7rem] font-bold text-primary hover:text-primary-container">View All 1,402 Assets</button>
+<button class="text-[0.7rem] font-bold text-primary hover:text-primary-container w-full sm:w-auto">View All 1,402 Assets</button>
 </div>
 </section>
 </main>

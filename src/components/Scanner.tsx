@@ -1,8 +1,39 @@
-
+import { useState } from 'react';
 
 const Scanner = () => {
+  const [target, setTarget] = useState("");
+  const [isScanning, setIsScanning] = useState(false);
+  const [scanResult, setScanResult] = useState<any>(null);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMsg, setToastMsg] = useState("");
+
+  const handleScan = async () => {
+    if (!target) return;
+    setIsScanning(true);
+    try {
+      const res = await fetch('http://localhost:8000/api/scan', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ domain: target })
+      });
+      const data = await res.json();
+      setScanResult(data);
+      setToastMsg(`Scan Completed: ${target}`);
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 4000);
+    } catch (err) {
+      console.error("Scan failed", err);
+      setToastMsg(`Scan Failed: ${target}`);
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 4000);
+    } finally {
+      setIsScanning(false);
+    }
+  };
   return (
-    <main className="ml-64 pt-24 pb-12 px-8 min-h-screen">
+    <main className="md:ml-64 pt-24 pb-12 px-8 min-h-screen">
       <div className="max-w-6xl mx-auto">
         {/* Page Header */}
         <div className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
@@ -11,12 +42,16 @@ const Scanner = () => {
             <p className="text-on-surface-variant mt-2 max-w-xl">Initiate comprehensive cryptographic audits to identify legacy algorithms vulnerable to Shor's algorithm and ensure PQC compliance.</p>
           </div>
           <div className="flex items-center gap-3">
-            <button className="px-5 py-2.5 bg-surface-container-highest text-on-surface rounded font-semibold text-sm transition-all hover:bg-surface-dim">
+            <button className="px-5 py-2.5 bg-surface-container-highest text-on-surface rounded font-semibold text-sm transition-all hover:bg-surface-dim w-full sm:w-auto">
               Export Report
             </button>
-            <button className="px-5 py-2.5 bg-gradient-to-br from-primary to-primary-container text-white rounded font-bold text-sm shadow-sm flex items-center gap-2 transition-all active:scale-95">
-              <span className="material-symbols-outlined text-sm flex items-center">play_arrow</span>
-              Start Scan
+            <button 
+              onClick={handleScan}
+              disabled={isScanning}
+              className={`px-5 py-2.5 bg-gradient-to-br from-primary to-primary-container text-white rounded font-bold text-sm shadow-sm flex items-center gap-2 transition-all ${isScanning ? 'opacity-50 cursor-not-allowed' : 'active:scale-95'}`}
+            >
+              <span className="material-symbols-outlined text-sm flex items-center">{isScanning ? 'sync' : 'play_arrow'}</span>
+              {isScanning ? 'Scanning...' : 'Start Scan'}
             </button>
           </div>
         </div>
@@ -27,14 +62,20 @@ const Scanner = () => {
             {/* Search/Input Area */}
             <div className="bg-surface-container-lowest rounded-xl p-6 shadow-sm">
               <label className="block text-[0.6875rem] font-bold uppercase tracking-wider text-on-surface-variant mb-4">Target Specification</label>
-              <div className="flex gap-4">
+              <div className="flex flex-col sm:flex-row gap-4">
                 <div className="relative flex-1">
                   <span className="absolute inset-y-0 left-4 flex items-center text-primary">
                     <span className="material-symbols-outlined flex items-center">language</span>
                   </span>
-                  <input className="w-full bg-surface-container-low border-none rounded-lg py-4 pl-12 pr-4 text-on-surface font-medium focus:ring-2 focus:ring-primary/20 transition-all outline-none" placeholder="Enter Domain or IP Address" type="text" defaultValue="api.quantum-cloud-secure.v4" />
+                  <input 
+                    value={target}
+                    onChange={(e) => setTarget(e.target.value)}
+                    className="w-full bg-surface-container-low border-none rounded-lg py-4 pl-12 pr-4 text-on-surface font-medium focus:ring-2 focus:ring-primary/20 transition-all outline-none" 
+                    placeholder="Enter Domain or IP Address" 
+                    type="text" 
+                  />
                 </div>
-                <select className="bg-surface-container-low border-none rounded-lg py-4 px-6 text-sm font-bold text-on-surface-variant focus:ring-2 focus:ring-primary/20 outline-none cursor-pointer">
+                <select className="bg-surface-container-low border-none rounded-lg py-4 px-6 text-sm font-bold text-on-surface-variant focus:ring-2 focus:ring-primary/20 outline-none cursor-pointer w-full sm:w-auto">
                   <option>Full Deep Scan</option>
                   <option>Quick Audit</option>
                   <option>SSL/TLS Only</option>
@@ -43,12 +84,12 @@ const Scanner = () => {
             </div>
 
             {/* Results Panel */}
-            <div className="bg-surface-container-lowest rounded-xl p-8 shadow-sm">
+            <div className={`bg-surface-container-lowest rounded-xl p-8 shadow-sm ${!scanResult && !isScanning ? 'opacity-50 pointer-events-none' : ''}`}>
               <div className="flex items-center justify-between mb-8">
                 <h3 className="text-sm font-bold uppercase tracking-wider text-on-surface-variant">Live Analysis Results</h3>
                 <div className="flex items-center gap-2 text-[0.6875rem] font-bold py-1 px-3 bg-tertiary/10 text-tertiary rounded-full uppercase">
-                  <span className="w-1.5 h-1.5 bg-tertiary rounded-full animate-pulse"></span>
-                  Analysis Complete
+                  <span className={`w-1.5 h-1.5 bg-tertiary rounded-full ${isScanning ? 'animate-pulse' : ''}`}></span>
+                  {isScanning ? 'Scanning...' : scanResult ? 'Analysis Complete' : 'Waiting for Input'}
                 </div>
               </div>
 
@@ -58,7 +99,7 @@ const Scanner = () => {
                 <div className="bg-surface-container-low rounded-lg p-5">
                   <p className="text-[0.6875rem] font-bold text-on-surface-variant uppercase tracking-widest mb-2">Protocol</p>
                   <div className="flex items-baseline justify-between">
-                    <span className="text-xl font-bold text-on-surface">TLS 1.3</span>
+                    <span className="text-xl font-bold text-on-surface">{scanResult?.scan_result?.tls_version || '---'}</span>
                     <span className="text-[0.625rem] font-bold py-0.5 px-2 bg-tertiary text-white rounded">SECURE</span>
                   </div>
                   <div className="mt-4 h-1 w-full bg-surface-variant rounded-full overflow-hidden">
@@ -70,17 +111,17 @@ const Scanner = () => {
                 <div className="bg-surface-container-low rounded-lg p-5">
                   <p className="text-[0.6875rem] font-bold text-on-surface-variant uppercase tracking-widest mb-2">Cipher Suite</p>
                   <div className="flex items-baseline justify-between">
-                    <span className="text-xl font-bold text-on-surface">AES-GCM-256</span>
+                    <span className="text-xl font-bold text-on-surface">{scanResult?.scan_result?.algorithm || '---'}</span>
                     <span className="text-[0.625rem] font-bold py-0.5 px-2 bg-tertiary text-white rounded">OPTIMAL</span>
                   </div>
-                  <p className="text-[0.65rem] text-on-surface-variant mt-3 font-medium truncate">ECDHE_RSA_WITH_AES_256_GCM_SHA384</p>
+                  <p className="text-[0.65rem] text-on-surface-variant mt-3 font-medium truncate">{scanResult?.scan_result?.cipher_suite || 'Waiting for scan...'}</p>
                 </div>
 
                 {/* Key Length */}
                 <div className="bg-surface-container-low rounded-lg p-5">
                   <p className="text-[0.6875rem] font-bold text-on-surface-variant uppercase tracking-widest mb-2">Key Strength</p>
                   <div className="flex items-baseline justify-between">
-                    <span className="text-xl font-bold text-on-surface">4096 Bits</span>
+                    <span className="text-xl font-bold text-on-surface">{scanResult?.scan_result?.key_size ? `${scanResult.scan_result.key_size} Bits` : '---'}</span>
                     <span className="text-[0.625rem] font-bold py-0.5 px-2 bg-secondary text-white rounded">ROBUST</span>
                   </div>
                   <div className="mt-4 h-1 w-full bg-surface-variant rounded-full overflow-hidden">
@@ -93,32 +134,80 @@ const Scanner = () => {
                   <p className="text-[0.6875rem] font-bold text-on-surface-variant uppercase tracking-widest mb-2">Certificate Authority</p>
                   <div className="flex items-center gap-3">
                     <span className="material-symbols-outlined text-primary flex items-center">verified_user</span>
-                    <span className="text-sm font-bold text-on-surface truncate">GlobalSign Root CA</span>
+                    <span className="text-sm font-bold text-on-surface truncate">{scanResult?.scan_result?.certificate_issuer || '---'}</span>
                   </div>
-                  <p className="text-[0.65rem] text-on-surface-variant mt-2">Expires: Oct 2026</p>
+                  <p className="text-[0.65rem] text-on-surface-variant mt-2">Expires: {scanResult?.scan_result?.expiry_date || '---'}</p>
                 </div>
 
                 {/* Risk Level */}
                 <div className="bg-surface-container-low rounded-lg p-5">
                   <p className="text-[0.6875rem] font-bold text-on-surface-variant uppercase tracking-widest mb-2">Quantum Risk Index</p>
                   <div className="flex items-baseline justify-between">
-                    <span className="text-xl font-bold text-error">Low Risk</span>
-                    <span className="text-[0.625rem] font-bold py-0.5 px-2 bg-error text-white rounded">VULN-L1</span>
+                    <span className={`text-xl font-bold ${scanResult?.risk?.risk_level === 'High' ? 'text-error' : scanResult?.risk?.risk_level === 'Medium' ? 'text-secondary' : 'text-tertiary'}`}>
+                      {scanResult?.risk?.risk_level ? `${scanResult.risk.risk_level} Risk` : '---'}
+                    </span>
+                    <span className={`text-[0.625rem] font-bold py-0.5 px-2 ${scanResult?.risk?.risk_level === 'High' ? 'bg-error' : scanResult?.risk?.risk_level === 'Medium' ? 'bg-secondary' : 'bg-tertiary'} text-white rounded`}>
+                      {scanResult?.risk?.score || 0}%
+                    </span>
                   </div>
-                  <div className="mt-4 h-1 w-full bg-surface-variant rounded-full overflow-hidden">
-                    <div className="h-full bg-error w-[12%]"></div>
+                  <div className="mt-4 text-xs font-medium text-on-surface-variant flex items-center justify-between">
+                    <span>Algorithm: {scanResult?.scan_result?.algorithm || '---'}</span>
+                    <span>Days left: {scanResult?.scan_result?.days_to_expiry !== undefined ? scanResult.scan_result.days_to_expiry : '---'}</span>
                   </div>
                 </div>
-
+                
+                {/* Network Architecture */}
+                <div className="bg-surface-container-low rounded-lg p-5">
+                  <p className="text-[0.6875rem] font-bold text-on-surface-variant uppercase tracking-widest mb-2">Network Layer</p>
+                  <div className="flex flex-col gap-2 mt-3">
+                    <div className="flex items-center justify-between bg-surface-container-highest px-3 py-2 rounded">
+                       <span className="text-[10px] uppercase font-bold text-on-surface-variant w-8">IPv4</span>
+                       <span className="text-xs font-mono font-bold text-on-surface truncate ml-2">
+                           {scanResult?.scan_result?.ipv4 || '---'}
+                       </span>
+                    </div>
+                    <div className="flex items-center justify-between bg-surface-container-highest px-3 py-2 rounded">
+                       <span className="text-[10px] uppercase font-bold text-on-surface-variant w-8">IPv6</span>
+                       <span className="text-xs font-mono font-bold text-on-surface truncate ml-2">
+                           {scanResult?.scan_result?.ipv6 || '---'}
+                       </span>
+                    </div>
+                  </div>
+                </div>
+                
                 {/* PQC Readiness */}
                 <div className="bg-surface-container-low rounded-lg p-5">
                   <p className="text-[0.6875rem] font-bold text-on-surface-variant uppercase tracking-widest mb-2">PQC Readiness</p>
                   <div className="flex items-baseline justify-between">
-                    <span className="text-xl font-bold text-tertiary">KYBER-768</span>
-                    <span className="text-[0.625rem] font-bold py-0.5 px-2 bg-tertiary text-white rounded">READY</span>
+                    <span className="text-xl font-bold text-tertiary">{scanResult?.risk?.label || '---'}</span>
+                    <span className={`text-[0.625rem] font-bold py-0.5 px-2 ${scanResult?.risk?.status === 'Secure' ? 'bg-tertiary' : 'bg-error'} text-white rounded`}>{scanResult?.risk?.status?.toUpperCase() || '---'}</span>
                   </div>
-                  <p className="text-[0.65rem] text-on-surface-variant mt-2 truncate">Crystal-Kyber implementation</p>
+                  <p className="text-[0.65rem] text-on-surface-variant mt-2 truncate">Analysis of algorithm {scanResult?.scan_result?.algorithm || ''}</p>
                 </div>
+                
+                {/* Smart Risk Explanation (Full Width) */}
+                {(scanResult?.risk?.reason || scanResult?.risk?.recommendation) && (
+                  <div className="col-span-1 md:col-span-2 lg:col-span-3 bg-surface-container-low rounded-lg p-5 border-l-4 border-primary">
+                    <p className="text-[0.6875rem] font-bold text-on-surface-variant uppercase tracking-widest mb-3 flex items-center gap-2">
+                       <span className="material-symbols-outlined text-sm text-primary">psychology</span>
+                       Smart Risk Explanation
+                    </p>
+                    <div className="space-y-3">
+                       {scanResult.risk.reason && (
+                           <div>
+                              <span className="text-xs font-bold text-on-surface">Insight: </span>
+                              <span className="text-xs text-on-surface-variant leading-relaxed">{scanResult.risk.reason}</span>
+                           </div>
+                       )}
+                       {scanResult.risk.recommendation && (
+                           <div>
+                              <span className="text-xs font-bold text-on-surface">Action Required: </span>
+                              <span className="text-xs text-on-surface-variant leading-relaxed font-medium">{scanResult.risk.recommendation}</span>
+                           </div>
+                       )}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </section>
@@ -150,15 +239,15 @@ const Scanner = () => {
               <div className="mt-8 pt-6 border-t border-surface-container-highest/50">
                 <p className="text-[0.6875rem] font-bold text-on-surface-variant uppercase tracking-widest mb-4">Upcoming Scans</p>
                 <div className="space-y-3">
-                  <div className="flex items-center gap-4">
-                    <div className="text-[0.65rem] font-bold bg-surface-container-high px-2 py-1 rounded w-16 text-center">TOMORROW</div>
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
+                    <div className="text-[0.65rem] font-bold bg-surface-container-high px-2 py-1 rounded w-20 flex-shrink-0 text-center">TOMORROW</div>
                     <div className="flex-1">
                       <p className="text-xs font-bold leading-none">Internal API Hub</p>
                       <p className="text-[0.65rem] text-on-surface-variant mt-1">02:00 AM UTC</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-4">
-                    <div className="text-[0.65rem] font-bold bg-surface-container-high px-2 py-1 rounded w-16 text-center">OCT 24</div>
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
+                    <div className="text-[0.65rem] font-bold bg-surface-container-high px-2 py-1 rounded w-20 flex-shrink-0 text-center">OCT 24</div>
                     <div className="flex-1">
                       <p className="text-xs font-bold leading-none">Legacy Mainframe</p>
                       <p className="text-[0.65rem] text-on-surface-variant mt-1">04:30 AM UTC</p>
@@ -218,6 +307,13 @@ const Scanner = () => {
           </aside>
         </div>
       </div>
+      {/* Toast Notification */}
+      {showToast && (
+        <div className="fixed bottom-8 right-8 bg-surface-container-highest text-on-surface px-6 py-4 rounded-xl shadow-2xl flex items-center gap-4 z-50 animate-in fade-in slide-in-from-bottom-8">
+          <span className="material-symbols-outlined text-primary">check_circle</span>
+          <p className="text-sm font-bold">{toastMsg}</p>
+        </div>
+      )}
     </main>
   );
 };

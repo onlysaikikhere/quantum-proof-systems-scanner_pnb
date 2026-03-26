@@ -10,13 +10,22 @@ import Cbom from './components/Cbom';
 import PqcPosture from './components/PqcPosture';
 import CyberRating from './components/CyberRating';
 import Reports from './components/Reports';
+import Login from './components/Login';
+import { useState } from 'react';
 
 function App() {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  if (!isAuthenticated) {
+    return <Login onLogin={() => setIsAuthenticated(true)} />;
+  }
+  
   return (
     <Router>
       <div className="min-h-screen">
-        <Sidebar />
-        <Header />
+        <Sidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
+        <Header setSidebarOpen={setSidebarOpen} />
         <Routes>
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="/dashboard" element={<Dashboard />} />

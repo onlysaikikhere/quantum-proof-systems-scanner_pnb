@@ -2,19 +2,19 @@
 
 const AssetDiscovery = () => {
   return (
-    <main className="ml-64 pt-16 min-h-screen p-8 space-y-8">
+    <main className="md:ml-64 pt-16 min-h-screen p-8 space-y-8">
       {/* Header Section */}
-      <section className="flex justify-between items-end">
+      <section className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 md:gap-0">
         <div>
           <h2 className="text-3xl font-extrabold tracking-tight text-on-surface headline-md">Asset Discovery</h2>
           <p className="text-on-surface-variant body-md mt-1">Real-time mapping of your organizational attack surface and cryptographic inventory.</p>
         </div>
-        <div className="flex gap-3">
-          <button className="px-4 py-2 bg-surface-container-highest text-on-surface rounded-lg text-sm font-semibold flex items-center gap-2 hover:bg-slate-300 transition-colors">
+        <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+          <button className="px-4 py-2 bg-surface-container-highest text-on-surface rounded-lg text-sm font-semibold flex items-center gap-2 hover:bg-slate-300 transition-colors w-full sm:w-auto">
             <span className="material-symbols-outlined text-sm flex items-center">filter_list</span>
             Refine Filters
           </button>
-          <button className="px-4 py-2 bg-gradient-to-br from-primary to-primary-container text-on-primary rounded-lg text-sm font-semibold flex items-center gap-2">
+          <button className="px-4 py-2 bg-gradient-to-br from-primary to-primary-container text-on-primary rounded-lg text-sm font-semibold flex items-center gap-2 w-full sm:w-auto">
             <span className="material-symbols-outlined text-sm flex items-center">download</span>
             Export Inventory
           </button>
@@ -23,19 +23,19 @@ const AssetDiscovery = () => {
 
       {/* Discovery Tabs */}
       <nav className="flex gap-8 border-b border-outline-variant/20">
-        <button className="pb-4 text-sm font-bold border-b-2 border-primary text-primary transition-all">Domains</button>
-        <button className="pb-4 text-sm font-medium text-on-surface-variant hover:text-on-surface transition-all">SSL Certificates</button>
-        <button className="pb-4 text-sm font-medium text-on-surface-variant hover:text-on-surface transition-all">IP Addresses/Subnets</button>
-        <button className="pb-4 text-sm font-medium text-on-surface-variant hover:text-on-surface transition-all">Software</button>
+        <button className="pb-4 text-sm font-bold border-b-2 border-primary text-primary transition-all w-full sm:w-auto">Domains</button>
+        <button className="pb-4 text-sm font-medium text-on-surface-variant hover:text-on-surface transition-all w-full sm:w-auto">SSL Certificates</button>
+        <button className="pb-4 text-sm font-medium text-on-surface-variant hover:text-on-surface transition-all w-full sm:w-auto">IP Addresses/Subnets</button>
+        <button className="pb-4 text-sm font-medium text-on-surface-variant hover:text-on-surface transition-all w-full sm:w-auto">Software</button>
       </nav>
 
       {/* Top Grid: Network Graph & Buckets */}
-      <div className="grid grid-cols-12 gap-8">
+      <div className="grid grid-cols-12 gap-8 flex-col-reverse lg:flex-row">
         {/* Interactive Network Graph */}
-        <div className="col-span-8 bg-surface-container-lowest rounded-xl p-6 shadow-sm relative overflow-hidden h-[450px] flex flex-col border border-outline-variant/10">
+        <div className="col-span-12 lg:col-span-8 bg-surface-container-lowest rounded-xl p-6 shadow-sm relative overflow-hidden h-[450px] flex flex-col border border-outline-variant/10">
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-sm font-bold uppercase tracking-widest text-on-surface-variant">Entity Relationship Graph</h3>
-            <div className="flex gap-4">
+            <div className="flex flex-col sm:flex-row gap-4">
               <div className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-tertiary"></span><span className="text-[10px] font-bold text-on-surface-variant">SAFE</span></div>
               <div className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-secondary-container"></span><span className="text-[10px] font-bold text-on-surface-variant">PARTIAL</span></div>
               <div className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-error"></span><span className="text-[10px] font-bold text-on-surface-variant">VULNERABLE</span></div>
@@ -73,11 +73,11 @@ const AssetDiscovery = () => {
         </div>
 
         {/* Asset Bucketing */}
-        <div className="col-span-4 space-y-4">
+        <div className="col-span-12 lg:col-span-4 space-y-4 overflow-hidden">
           <h3 className="text-sm font-bold uppercase tracking-widest text-on-surface-variant mb-2 px-1">Asset Distribution</h3>
           
-          <div className="bg-surface-container-lowest p-4 rounded-xl shadow-sm border border-outline-variant/10 flex items-center justify-between group hover:border-primary/20 transition-all">
-            <div className="flex items-center gap-4">
+          <div className="bg-surface-container-lowest p-3 sm:p-4 rounded-xl shadow-sm border border-outline-variant/10 flex items-center justify-between group hover:border-primary/20 transition-all gap-2 truncate">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
               <div className="w-10 h-10 rounded-lg bg-primary/5 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-on-primary transition-colors">
                 <span className="material-symbols-outlined">web</span>
               </div>
@@ -86,11 +86,11 @@ const AssetDiscovery = () => {
                 <p className="text-[10px] text-on-surface-variant">14 Active Instances</p>
               </div>
             </div>
-            <span className="text-sm font-extrabold text-tertiary">92% SAFE</span>
+            <span className="text-xs sm:text-sm font-extrabold text-tertiary truncate">92% SAFE</span>
           </div>
 
-          <div className="bg-surface-container-lowest p-4 rounded-xl shadow-sm border border-outline-variant/10 flex items-center justify-between group hover:border-primary/20 transition-all">
-            <div className="flex items-center gap-4">
+          <div className="bg-surface-container-lowest p-3 sm:p-4 rounded-xl shadow-sm border border-outline-variant/10 flex items-center justify-between group hover:border-primary/20 transition-all gap-2 truncate">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
               <div className="w-10 h-10 rounded-lg bg-primary/5 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-on-primary transition-colors">
                 <span className="material-symbols-outlined">api</span>
               </div>
@@ -99,11 +99,11 @@ const AssetDiscovery = () => {
                 <p className="text-[10px] text-on-surface-variant">88 Endpoints Discovered</p>
               </div>
             </div>
-            <span className="text-sm font-extrabold text-secondary-container">64% PARTIAL</span>
+            <span className="text-xs sm:text-sm font-extrabold text-secondary-container truncate min-w-[max-content]">64% PARTIAL</span>
           </div>
 
-          <div className="bg-surface-container-lowest p-4 rounded-xl shadow-sm border border-outline-variant/10 flex items-center justify-between group hover:border-primary/20 transition-all">
-            <div className="flex items-center gap-4">
+          <div className="bg-surface-container-lowest p-3 sm:p-4 rounded-xl shadow-sm border border-outline-variant/10 flex items-center justify-between group hover:border-primary/20 transition-all gap-2 truncate">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
               <div className="w-10 h-10 rounded-lg bg-primary/5 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-on-primary transition-colors">
                 <span className="material-symbols-outlined">smartphone</span>
               </div>
@@ -112,11 +112,11 @@ const AssetDiscovery = () => {
                 <p className="text-[10px] text-on-surface-variant">4 Production Clusters</p>
               </div>
             </div>
-            <span className="text-sm font-extrabold text-tertiary">100% SAFE</span>
+            <span className="text-xs sm:text-sm font-extrabold text-tertiary truncate">100% SAFE</span>
           </div>
 
-          <div className="bg-surface-container-lowest p-4 rounded-xl shadow-sm border border-outline-variant/10 flex items-center justify-between group hover:border-primary/20 transition-all">
-            <div className="flex items-center gap-4">
+          <div className="bg-surface-container-lowest p-3 sm:p-4 rounded-xl shadow-sm border border-outline-variant/10 flex items-center justify-between group hover:border-primary/20 transition-all gap-2 truncate">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
               <div className="w-10 h-10 rounded-lg bg-primary/5 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-on-primary transition-colors">
                 <span className="material-symbols-outlined">storage</span>
               </div>
@@ -125,11 +125,11 @@ const AssetDiscovery = () => {
                 <p className="text-[10px] text-on-surface-variant">212 Cloud Assets</p>
               </div>
             </div>
-            <span className="text-sm font-extrabold text-error">12% RISK</span>
+            <span className="text-xs sm:text-sm font-extrabold text-error truncate">12% RISK</span>
           </div>
 
-          <div className="bg-surface-container-lowest p-4 rounded-xl shadow-sm border border-outline-variant/10 flex items-center justify-between group hover:border-primary/20 transition-all">
-            <div className="flex items-center gap-4">
+          <div className="bg-surface-container-lowest p-3 sm:p-4 rounded-xl shadow-sm border border-outline-variant/10 flex items-center justify-between group hover:border-primary/20 transition-all gap-2 truncate">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
               <div className="w-10 h-10 rounded-lg bg-primary/5 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-on-primary transition-colors">
                 <span className="material-symbols-outlined">vpn_lock</span>
               </div>
@@ -138,7 +138,7 @@ const AssetDiscovery = () => {
                 <p className="text-[10px] text-on-surface-variant">3 Global Access Points</p>
               </div>
             </div>
-            <span className="text-sm font-extrabold text-secondary-container">MODERATE</span>
+            <span className="text-xs sm:text-sm font-extrabold text-secondary-container truncate min-w-[max-content]">MODERATE</span>
           </div>
         </div>
       </div>
@@ -149,14 +149,16 @@ const AssetDiscovery = () => {
           <h3 className="text-sm font-bold text-on-surface">Discovered Domain Assets</h3>
           <div className="flex items-center gap-2">
             <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Sort by:</span>
-            <select className="text-xs border-none bg-transparent focus:ring-0 font-bold text-primary cursor-pointer">
+            <select className="text-xs border-none bg-transparent focus:ring-0 font-bold text-primary cursor-pointer w-full sm:w-auto">
               <option>Risk Level</option>
               <option>Discovery Date</option>
               <option>Alpha</option>
             </select>
           </div>
         </div>
-        <table className="w-full text-left">
+        {/* Make Table Scrollable on Mobile */}
+        <div className="overflow-x-auto">
+          <table className="w-full text-left min-w-[800px]">
           <thead>
             <tr className="bg-surface-container-low/50">
               <th className="px-6 py-3 text-[0.6875rem] font-bold uppercase tracking-widest text-on-surface-variant">Asset Name / Domain</th>
@@ -274,6 +276,7 @@ const AssetDiscovery = () => {
             </tr>
           </tbody>
         </table>
+        </div>
         
         <div className="px-6 py-4 bg-surface-container-low/30 border-t border-outline-variant/10 flex justify-between items-center">
           <p className="text-[10px] font-bold text-on-surface-variant">SHOWING 4 OF 1,244 DISCOVERED ASSETS</p>

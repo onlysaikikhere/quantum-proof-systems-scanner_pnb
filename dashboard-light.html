@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "background": "#f7f9fb",
+                        "on-tertiary-fixed": "#002113",
+                        "primary": "#0050cb",
+                        "on-primary-fixed": "#001849",
+                        "primary-container": "#0066ff",
+                        "outline-variant": "#c2c6d8",
+                        "surface-variant": "#e0e3e5",
+                        "on-secondary": "#ffffff",
+                        "inverse-on-surface": "#eff1f3",
+                        "tertiary-container": "#008259",
+                        "error-container": "#ffdad6",
+                        "tertiary-fixed-dim": "#4edea3",
+                        "outline": "#727687",
+                        "on-secondary-fixed": "#001a42",
+                        "secondary": "#0058be",
+                        "secondary-fixed-dim": "#adc6ff",
+                        "error": "#ba1a1a",
+                        "surface-container-highest": "#e0e3e5",
+                        "secondary-container": "#2170e4",
+                        "on-tertiary-fixed-variant": "#005236",
+                        "on-surface-variant": "#424656",
+                        "primary-fixed-dim": "#b3c5ff",
+                        "on-surface": "#191c1e",
+                        "on-primary": "#ffffff",
+                        "surface-bright": "#f7f9fb",
+                        "on-tertiary": "#ffffff",
+                        "on-tertiary-container": "#e1ffec",
+                        "on-error": "#ffffff",
+                        "inverse-primary": "#b3c5ff",
+                        "on-secondary-container": "#fefcff",
+                        "on-error-container": "#93000a",
+                        "surface-tint": "#0054d6",
+                        "surface-container-low": "#f2f4f6",
+                        "on-secondary-fixed-variant": "#004395",
+                        "secondary-fixed": "#d8e2ff",
+                        "on-primary-container": "#f8f7ff",
+                        "on-primary-fixed-variant": "#003fa4",
+                        "primary-fixed": "#dae1ff",
+                        "tertiary": "#006645",
+                        "surface-container": "#eceef0",
+                        "surface": "#f7f9fb",
+                        "surface-dim": "#d8dadc",
+                        "on-background": "#191c1e",
+                        "surface-container-lowest": "#ffffff",
+                        "inverse-surface": "#2d3133",
+                        "tertiary-fixed": "#6ffbbe",
+                        "surface-container-high": "#e6e8ea"
+                    },
+                    fontFamily: {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface selection:bg-primary/20">
+<!-- SIDE NAV BAR -->
+<aside class="h-screen w-64 fixed left-0 top-0 border-r-0 bg-slate-50 flex flex-col py-6 px-4 z-50 overflow-y-auto no-scrollbar">
+<div class="mb-10 px-2 flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-gradient-to-br from-primary to-primary-container flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-[20px]" data-icon="security">security</span>
+</div>
+<div>
+<h1 class="text-lg font-bold tracking-tight text-slate-900 leading-none">Quantum-Proof</h1>
+<p class="text-[10px] text-slate-500 font-medium tracking-widest uppercase mt-0.5">Systems Scanner</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<div class="text-blue-700 font-semibold border-r-4 border-blue-700 bg-blue-50/50 flex items-center gap-3 px-3 py-2.5 rounded-l transition-colors duration-200">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-sans text-[0.875rem] tracking-tight">Dashboard</span>
+</div>
+<div class="text-slate-600 hover:text-slate-900 hover:bg-slate-200/50 flex items-center gap-3 px-3 py-2.5 transition-colors duration-200 scale-95 active:scale-100 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+<span class="font-sans text-[0.875rem] tracking-tight">Asset Inventory</span>
+</div>
+<div class="text-slate-600 hover:text-slate-900 hover:bg-slate-200/50 flex items-center gap-3 px-3 py-2.5 transition-colors duration-200 scale-95 active:scale-100 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="search_check">search_check</span>
+<span class="font-sans text-[0.875rem] tracking-tight">Asset Discovery</span>
+</div>
+<div class="text-slate-600 hover:text-slate-900 hover:bg-slate-200/50 flex items-center gap-3 px-3 py-2.5 transition-colors duration-200 scale-95 active:scale-100 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="biotech">biotech</span>
+<span class="font-sans text-[0.875rem] tracking-tight">Scanner</span>
+</div>
+<div class="text-slate-600 hover:text-slate-900 hover:bg-slate-200/50 flex items-center gap-3 px-3 py-2.5 transition-colors duration-200 scale-95 active:scale-100 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="account_tree">account_tree</span>
+<span class="font-sans text-[0.875rem] tracking-tight">CBOM</span>
+</div>
+<div class="text-slate-600 hover:text-slate-900 hover:bg-slate-200/50 flex items-center gap-3 px-3 py-2.5 transition-colors duration-200 scale-95 active:scale-100 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="security">security</span>
+<span class="font-sans text-[0.875rem] tracking-tight">PQC Posture</span>
+</div>
+<div class="text-slate-600 hover:text-slate-900 hover:bg-slate-200/50 flex items-center gap-3 px-3 py-2.5 transition-colors duration-200 scale-95 active:scale-100 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="speed">speed</span>
+<span class="font-sans text-[0.875rem] tracking-tight">Cyber Rating</span>
+</div>
+<div class="text-slate-600 hover:text-slate-900 hover:bg-slate-200/50 flex items-center gap-3 px-3 py-2.5 transition-colors duration-200 scale-95 active:scale-100 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="assessment">assessment</span>
+<span class="font-sans text-[0.875rem] tracking-tight">Reports</span>
+</div>
+<div class="text-slate-600 hover:text-slate-900 hover:bg-slate-200/50 flex items-center gap-3 px-3 py-2.5 transition-colors duration-200 scale-95 active:scale-100 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="smart_toy">smart_toy</span>
+<span class="font-sans text-[0.875rem] tracking-tight">AI Assistant</span>
+</div>
+</nav>
+<div class="mt-auto space-y-1">
+<button class="w-full bg-gradient-to-r from-primary to-primary-container text-white py-2.5 rounded-lg text-sm font-semibold mb-6 shadow-md shadow-primary/20 hover:opacity-90 transition-opacity">
+                Start Scan
+            </button>
+<div class="text-slate-600 hover:text-slate-900 hover:bg-slate-200/50 flex items-center gap-3 px-3 py-2 transition-colors duration-200 scale-95 active:scale-100 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-sans text-[0.875rem] tracking-tight">Settings</span>
+</div>
+<div class="text-slate-600 hover:text-slate-900 hover:bg-slate-200/50 flex items-center gap-3 px-3 py-2 transition-colors duration-200 scale-95 active:scale-100 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span class="font-sans text-[0.875rem] tracking-tight">Support</span>
+</div>
+</div>
+</aside>
+<!-- TOP NAV BAR -->
+<header class="fixed top-0 right-0 left-64 h-16 bg-white/80 backdrop-blur-md flex items-center justify-between px-8 z-40 border-b border-slate-100/50">
+<div class="flex items-center gap-4">
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-hover:text-primary transition-colors" data-icon="search">search</span>
+<input class="bg-slate-50 border-none rounded-full pl-10 pr-4 py-2 text-sm w-64 focus:ring-2 focus:ring-primary/20 transition-all" placeholder="Quantum search..." type="text"/>
+</div>
+<div class="h-6 w-px bg-slate-200 mx-2"></div>
+<span class="text-blue-700 font-bold text-sm">PQC Readiness: 98%</span>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-4 text-slate-500">
+<button class="hover:text-primary transition-colors relative">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-0 right-0 w-2 h-2 bg-error rounded-full border-2 border-white"></span>
+</button>
+<button class="hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="history_edu">history_edu</span>
+</button>
+</div>
+<div class="flex items-center gap-3 pl-4 border-l border-slate-200">
+<div class="text-right">
+<p class="text-xs font-bold text-on-surface">Dr. Elena Vance</p>
+<p class="text-[10px] text-slate-500 uppercase font-semibold">Security Lead</p>
+</div>
+<img alt="User Profile" class="w-8 h-8 rounded-full bg-slate-200 ring-2 ring-primary/10" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD4m4uQj26XYNGbRfWBWujIwu9Jbnk-BcynptYihITRejMLaKK9qDRkH8o2337gU4LWijGOvF5fP075QGs6vehIinXA9jikwqEUJe5wKq5b-z6OplJaLJTfS3gGr7KwIJ7Lkc19oWIAsmmVKD5KsxjLoRBClJDXoS8ekoO9gDLDE0W2OK_OLS5_1ovnBtspxA1Xm5DhyBPzSiUZZawqmIY31645DtCA6PNNLRCx4xPzS7wwdrt_TK4uNr5ayz9blsD0coP1d4xLp97S"/>
+</div>
+</div>
+</header>
+<!-- MAIN CONTENT -->
+<main class="ml-64 pt-24 pb-12 px-8">
+<!-- Dashboard Header -->
+<div class="flex items-end justify-between mb-8">
+<div>
+<h2 class="text-2xl font-bold tracking-tight text-on-surface">Security Overview</h2>
+<p class="text-on-surface-variant text-sm mt-1">Real-time cryptographic asset monitoring and risk assessment.</p>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-white text-on-surface border border-outline-variant rounded hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-[18px]" data-icon="calendar_today">calendar_today</span>
+                    Last 24 Hours
+                </button>
+<button class="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-primary text-white rounded hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined text-[18px]" data-icon="file_download">file_download</span>
+                    Export PDF
+                </button>
+</div>
+</div>
+<!-- Summary Cards Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-6 mb-8">
+<div class="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant/10 shadow-sm">
+<p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-3">Total Assets</p>
+<div class="flex items-baseline gap-2">
+<span class="text-2xl font-bold text-on-surface tracking-tight">12,482</span>
+<span class="text-[10px] text-tertiary font-bold">+2.4%</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant/10 shadow-sm">
+<p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-3">Public Web Apps</p>
+<div class="flex items-baseline gap-2">
+<span class="text-2xl font-bold text-on-surface tracking-tight">154</span>
+<span class="text-[10px] text-slate-400 font-bold">Stable</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant/10 shadow-sm">
+<p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-3">Active APIs</p>
+<div class="flex items-baseline gap-2">
+<span class="text-2xl font-bold text-on-surface tracking-tight">892</span>
+<span class="text-[10px] text-tertiary font-bold">+12</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant/10 shadow-sm">
+<p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-3">Servers</p>
+<div class="flex items-baseline gap-2">
+<span class="text-2xl font-bold text-on-surface tracking-tight">410</span>
+<span class="text-[10px] text-slate-400 font-bold">Safe</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant/10 shadow-sm">
+<p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-3">Expiring Certs</p>
+<div class="flex items-baseline gap-2">
+<span class="text-2xl font-bold text-secondary-container tracking-tight">28</span>
+<span class="text-[10px] text-error font-bold">Action</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant/10 shadow-sm ring-2 ring-error/5">
+<p class="text-[10px] font-bold text-error uppercase tracking-wider mb-3">High Risk Assets</p>
+<div class="flex items-baseline gap-2">
+<span class="text-2xl font-bold text-error tracking-tight">3</span>
+<span class="text-[10px] text-error font-bold">-1</span>
+</div>
+</div>
+</div>
+<!-- Analytical Bento Grid -->
+<div class="grid grid-cols-12 gap-6 mb-8">
+<!-- Risk Heatmap (Large) -->
+<div class="col-span-12 lg:col-span-8 bg-surface-container-lowest p-6 rounded-xl shadow-sm">
+<div class="flex justify-between items-start mb-6">
+<h3 class="text-sm font-bold text-on-surface tracking-tight uppercase">Quantum Vulnerability Heatmap</h3>
+<div class="flex items-center gap-4 text-[10px] font-bold uppercase tracking-widest">
+<span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-tertiary"></span> Safe</span>
+<span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-secondary-container"></span> Moderate</span>
+<span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-error"></span> Critical</span>
+</div>
+</div>
+<div class="relative h-[300px] flex gap-2">
+<!-- Y Axis Labels -->
+<div class="flex flex-col justify-between text-[10px] font-bold text-on-surface-variant uppercase py-2">
+<span>Broken Crypto</span>
+<span>Weak Keys</span>
+<span>Old TLS</span>
+<span>Misconfigured</span>
+<span>Quantum Ready</span>
+</div>
+<!-- Heatmap Grid -->
+<div class="flex-1 grid grid-cols-10 grid-rows-5 gap-1.5">
+<!-- Heatmap generated pattern -->
+<div class="bg-tertiary/10 rounded-sm"></div><div class="bg-tertiary/10 rounded-sm"></div><div class="bg-tertiary/20 rounded-sm"></div><div class="bg-tertiary/10 rounded-sm"></div><div class="bg-tertiary/10 rounded-sm"></div><div class="bg-tertiary/10 rounded-sm"></div><div class="bg-tertiary/10 rounded-sm"></div><div class="bg-tertiary/10 rounded-sm"></div><div class="bg-tertiary/10 rounded-sm"></div><div class="bg-tertiary/10 rounded-sm"></div>
+<div class="bg-tertiary/10 rounded-sm"></div><div class="bg-secondary-container/20 rounded-sm"></div><div class="bg-secondary-container/40 rounded-sm"></div><div class="bg-tertiary/10 rounded-sm"></div><div class="bg-tertiary/10 rounded-sm"></div><div class="bg-tertiary/10 rounded-sm"></div><div class="bg-tertiary/10 rounded-sm"></div><div class="bg-tertiary/10 rounded-sm"></div><div class="bg-tertiary/10 rounded-sm"></div><div class="bg-tertiary/10 rounded-sm"></div>
+<div class="bg-error/30 rounded-sm"></div><div class="bg-error/50 rounded-sm"></div><div class="bg-error/20 rounded-sm"></div><div class="bg-secondary-container/40 rounded-sm"></div><div class="bg-tertiary/10 rounded-sm"></div><div class="bg-tertiary/10 rounded-sm"></div><div class="bg-secondary-container/30 rounded-sm"></div><div class="bg-tertiary/10 rounded-sm"></div><div class="bg-tertiary/10 rounded-sm"></div><div class="bg-tertiary/10 rounded-sm"></div>
+<div class="bg-secondary-container/20 rounded-sm"></div><div class="bg-tertiary/10 rounded-sm"></div><div class="bg-tertiary/10 rounded-sm"></div><div class="bg-tertiary/10 rounded-sm"></div><div class="bg-secondary-container/30 rounded-sm"></div><div class="bg-tertiary/10 rounded-sm"></div><div class="bg-tertiary/10 rounded-sm"></div><div class="bg-tertiary/10 rounded-sm"></div><div class="bg-tertiary/10 rounded-sm"></div><div class="bg-tertiary/10 rounded-sm"></div>
+<div class="bg-error/80 rounded-sm border border-error/50 relative overflow-hidden group">
+<div class="absolute inset-0 bg-white/20 animate-pulse"></div>
+</div><div class="bg-error/40 rounded-sm"></div><div class="bg-tertiary/10 rounded-sm"></div><div class="bg-tertiary/10 rounded-sm"></div><div class="bg-tertiary/10 rounded-sm"></div><div class="bg-secondary-container/20 rounded-sm"></div><div class="bg-tertiary/10 rounded-sm"></div><div class="bg-tertiary/10 rounded-sm"></div><div class="bg-tertiary/10 rounded-sm"></div><div class="bg-tertiary/10 rounded-sm"></div>
+</div>
+</div>
+<!-- X Axis Labels -->
+<div class="flex justify-between pl-20 mt-4 text-[10px] font-bold text-on-surface-variant uppercase">
+<span>Cluster A</span><span>Cluster B</span><span>Cluster C</span><span>Cluster D</span><span>Cluster E</span><span>Cluster F</span><span>Cluster G</span><span>Cluster H</span><span>Cluster I</span><span>Cluster J</span>
+</div>
+</div>
+<!-- Asset Distribution (Small) -->
+<div class="col-span-12 lg:col-span-4 bg-surface-container-lowest p-6 rounded-xl shadow-sm flex flex-col">
+<h3 class="text-sm font-bold text-on-surface tracking-tight uppercase mb-6">Asset Distribution</h3>
+<div class="flex-1 flex items-center justify-center relative">
+<!-- Fake Pie Chart -->
+<div class="w-48 h-48 rounded-full border-[16px] border-slate-100 relative flex items-center justify-center">
+<div class="absolute inset-[-16px] rounded-full border-[16px] border-primary border-r-transparent border-b-transparent rotate-12"></div>
+<div class="absolute inset-[-16px] rounded-full border-[16px] border-secondary-container border-l-transparent border-t-transparent -rotate-45"></div>
+<div class="text-center">
+<p class="text-3xl font-extrabold text-on-surface">12k</p>
+<p class="text-[10px] font-bold text-on-surface-variant uppercase">Total</p>
+</div>
+</div>
+</div>
+<div class="mt-6 space-y-2">
+<div class="flex justify-between items-center text-[11px]">
+<span class="flex items-center gap-2"><span class="w-2 h-2 bg-primary rounded-full"></span> Web Apps</span>
+<span class="font-bold">45%</span>
+</div>
+<div class="flex justify-between items-center text-[11px]">
+<span class="flex items-center gap-2"><span class="w-2 h-2 bg-secondary-container rounded-full"></span> APIs</span>
+<span class="font-bold">30%</span>
+</div>
+<div class="flex justify-between items-center text-[11px]">
+<span class="flex items-center gap-2"><span class="w-2 h-2 bg-slate-300 rounded-full"></span> Infrastructure</span>
+<span class="font-bold">25%</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Secondary Charts Row -->
+<div class="grid grid-cols-12 gap-6 mb-8">
+<div class="col-span-12 lg:col-span-4 bg-surface-container-lowest p-6 rounded-xl shadow-sm">
+<h3 class="text-sm font-bold text-on-surface tracking-tight uppercase mb-6">Risk Profile Trend</h3>
+<div class="h-40 flex items-end gap-2">
+<div class="flex-1 bg-surface-container-high rounded-t-sm h-[30%]"></div>
+<div class="flex-1 bg-surface-container-high rounded-t-sm h-[45%]"></div>
+<div class="flex-1 bg-primary rounded-t-sm h-[60%]"></div>
+<div class="flex-1 bg-surface-container-high rounded-t-sm h-[50%]"></div>
+<div class="flex-1 bg-primary rounded-t-sm h-[85%]"></div>
+<div class="flex-1 bg-primary rounded-t-sm h-[95%]"></div>
+<div class="flex-1 bg-surface-container-high rounded-t-sm h-[70%]"></div>
+</div>
+<div class="flex justify-between mt-4 text-[10px] font-bold text-on-surface-variant">
+<span>MON</span><span>TUE</span><span>WED</span><span>THU</span><span>FRI</span><span>SAT</span><span>SUN</span>
+</div>
+</div>
+<!-- Asset Inventory Table -->
+<div class="col-span-12 lg:col-span-8 bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden">
+<div class="p-6 flex justify-between items-center border-b border-outline-variant/5">
+<h3 class="text-sm font-bold text-on-surface tracking-tight uppercase">Recent Asset Inventory</h3>
+<button class="text-primary text-[10px] font-bold uppercase tracking-widest hover:underline">View All Assets</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead class="bg-surface-container-low">
+<tr>
+<th class="px-6 py-3 text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Domain / IP</th>
+<th class="px-6 py-3 text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Type</th>
+<th class="px-6 py-3 text-[10px] font-bold text-on-surface-variant uppercase tracking-wider text-center">Risk</th>
+<th class="px-6 py-3 text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">TLS</th>
+<th class="px-6 py-3 text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Key Length</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/5">
+<tr class="hover:bg-surface-container-low transition-colors cursor-pointer group">
+<td class="px-6 py-4">
+<p class="text-xs font-bold text-on-surface">api.nexus-core.com</p>
+<p class="text-[10px] text-slate-400">192.168.1.104</p>
+</td>
+<td class="px-6 py-4">
+<span class="px-2 py-0.5 rounded bg-blue-50 text-blue-700 text-[10px] font-bold">REST API</span>
+</td>
+<td class="px-6 py-4 text-center">
+<span class="w-2 h-2 rounded-full bg-tertiary inline-block"></span>
+</td>
+<td class="px-6 py-4 text-[11px] font-medium">v1.3 (TLS_AES_256)</td>
+<td class="px-6 py-4 text-[11px] font-mono text-slate-500">ECC 384</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors cursor-pointer group">
+<td class="px-6 py-4">
+<p class="text-xs font-bold text-on-surface">payment-gateway.internal</p>
+<p class="text-[10px] text-slate-400">10.0.42.12</p>
+</td>
+<td class="px-6 py-4">
+<span class="px-2 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px] font-bold">SERVER</span>
+</td>
+<td class="px-6 py-4 text-center">
+<span class="w-2 h-2 rounded-full bg-error inline-block animate-pulse"></span>
+</td>
+<td class="px-6 py-4 text-[11px] font-medium text-error">v1.1 (DEPRECATED)</td>
+<td class="px-6 py-4 text-[11px] font-mono text-slate-500">RSA 1024</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors cursor-pointer group">
+<td class="px-6 py-4">
+<p class="text-xs font-bold text-on-surface">dashboard.quantum.io</p>
+<p class="text-[10px] text-slate-400">34.212.11.8</p>
+</td>
+<td class="px-6 py-4">
+<span class="px-2 py-0.5 rounded bg-purple-50 text-purple-700 text-[10px] font-bold">WEB APP</span>
+</td>
+<td class="px-6 py-4 text-center">
+<span class="w-2 h-2 rounded-full bg-secondary-container inline-block"></span>
+</td>
+<td class="px-6 py-4 text-[11px] font-medium">v1.2 (TLS_RSA_WITH)</td>
+<td class="px-6 py-4 text-[11px] font-mono text-slate-500">RSA 2048</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<!-- System Alerts / Activity Asymmetric Section -->
+<div class="grid grid-cols-12 gap-6">
+<div class="col-span-12 lg:col-span-3">
+<div class="bg-primary-container/10 p-6 rounded-xl border border-primary/10">
+<div class="flex items-center gap-3 mb-4">
+<span class="material-symbols-outlined text-primary" data-icon="auto_awesome">auto_awesome</span>
+<h3 class="text-xs font-bold text-primary uppercase">AI Insights</h3>
+</div>
+<p class="text-xs leading-relaxed text-on-surface mb-4">3 assets in <span class="font-bold">Zone B</span> are using legacy RSA-1024 encryption. Recommended upgrade to PQC-ready Kyber-768.</p>
+<button class="text-[10px] font-bold text-primary uppercase flex items-center gap-2 hover:gap-3 transition-all">
+                        Apply Remediation Plan <span class="material-symbols-outlined text-[14px]" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</div>
+<div class="col-span-12 lg:col-span-9 bg-surface-container-lowest p-6 rounded-xl shadow-sm">
+<h3 class="text-sm font-bold text-on-surface tracking-tight uppercase mb-4">Real-time Entropy Scan</h3>
+<div class="flex items-center gap-6 overflow-hidden">
+<div class="flex-1 space-y-3">
+<div class="h-2 bg-surface-container-low rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[75%]" style="box-shadow: 0 0 10px rgba(0, 80, 203, 0.3)"></div>
+</div>
+<div class="h-2 bg-surface-container-low rounded-full overflow-hidden">
+<div class="h-full bg-tertiary w-[92%]"></div>
+</div>
+<div class="h-2 bg-surface-container-low rounded-full overflow-hidden">
+<div class="h-full bg-error w-[15%]"></div>
+</div>
+</div>
+<div class="flex flex-col gap-1">
+<span class="text-[10px] font-mono text-slate-400">SCANNING NODE_084...</span>
+<span class="text-[10px] font-mono text-slate-400">ENTROPY STABLE: 0.9982 bits/bit</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- FLOATING ACTION BUTTON (Suppressed on Dashboard as per rules if context requires, but here we include it for primary dashboard action) -->
+<div class="fixed bottom-8 right-8 group">
+<button class="w-14 h-14 bg-primary text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[28px]" data-icon="add">add</span>
+</button>
+<div class="absolute bottom-16 right-0 space-y-2 pointer-events-none group-hover:pointer-events-auto opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="w-auto px-4 py-2 bg-white text-on-surface text-xs font-bold rounded-lg shadow-lg flex items-center gap-2 whitespace-nowrap border border-slate-100">
+<span class="material-symbols-outlined text-[18px]" data-icon="dns">dns</span>
+                New Asset
+            </button>
+<button class="w-auto px-4 py-2 bg-white text-on-surface text-xs font-bold rounded-lg shadow-lg flex items-center gap-2 whitespace-nowrap border border-slate-100">
+<span class="material-symbols-outlined text-[18px]" data-icon="cloud_sync">cloud_sync</span>
+                Cloud Sync
+            </button>
+</div>
+</div>
+</body></html>

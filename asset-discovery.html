@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Asset Discovery - Quantum-Proof Systems Scanner</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "background": "#f7f9fb",
+                        "on-tertiary-fixed": "#002113",
+                        "primary": "#0050cb",
+                        "on-primary-fixed": "#001849",
+                        "primary-container": "#0066ff",
+                        "outline-variant": "#c2c6d8",
+                        "surface-variant": "#e0e3e5",
+                        "on-secondary": "#ffffff",
+                        "inverse-on-surface": "#eff1f3",
+                        "tertiary-container": "#008259",
+                        "error-container": "#ffdad6",
+                        "tertiary-fixed-dim": "#4edea3",
+                        "outline": "#727687",
+                        "on-secondary-fixed": "#001a42",
+                        "secondary": "#0058be",
+                        "secondary-fixed-dim": "#adc6ff",
+                        "error": "#ba1a1a",
+                        "surface-container-highest": "#e0e3e5",
+                        "secondary-container": "#2170e4",
+                        "on-tertiary-fixed-variant": "#005236",
+                        "on-surface-variant": "#424656",
+                        "primary-fixed-dim": "#b3c5ff",
+                        "on-surface": "#191c1e",
+                        "on-primary": "#ffffff",
+                        "surface-bright": "#f7f9fb",
+                        "on-tertiary": "#ffffff",
+                        "on-tertiary-container": "#e1ffec",
+                        "on-error": "#ffffff",
+                        "inverse-primary": "#b3c5ff",
+                        "on-secondary-container": "#fefcff",
+                        "on-error-container": "#93000a",
+                        "surface-tint": "#0054d6",
+                        "surface-container-low": "#f2f4f6",
+                        "on-secondary-fixed-variant": "#004395",
+                        "secondary-fixed": "#d8e2ff",
+                        "on-primary-container": "#f8f7ff",
+                        "on-primary-fixed-variant": "#003fa4",
+                        "primary-fixed": "#dae1ff",
+                        "tertiary": "#006645",
+                        "surface-container": "#eceef0",
+                        "surface": "#f7f9fb",
+                        "surface-dim": "#d8dadc",
+                        "on-background": "#191c1e",
+                        "surface-container-lowest": "#ffffff",
+                        "inverse-surface": "#2d3133",
+                        "tertiary-fixed": "#6ffbbe",
+                        "surface-container-high": "#e6e8ea"
+                    },
+                    fontFamily: {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" },
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="bg-background text-on-surface">
+<!-- SideNavBar -->
+<aside class="h-screen w-64 fixed left-0 top-0 border-r-0 bg-slate-50 dark:bg-slate-900 flex flex-col h-full py-6 px-4 z-50">
+<div class="mb-10 px-2">
+<h1 class="text-lg font-bold tracking-tight text-slate-900 dark:text-slate-100">Quantum-Proof</h1>
+<p class="text-[0.6875rem] uppercase tracking-[0.1em] text-on-surface-variant font-semibold">Systems Scanner</p>
+</div>
+<nav class="flex-1 space-y-1 overflow-y-auto no-scrollbar">
+<!-- Asset Discovery is Active -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-slate-800 transition-colors duration-200 font-sans text-[0.875rem] font-medium tracking-tight" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+                Dashboard
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-slate-800 transition-colors duration-200 font-sans text-[0.875rem] font-medium tracking-tight" href="#">
+<span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+                Asset Inventory
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded text-blue-700 dark:text-blue-400 font-semibold border-r-4 border-blue-700 dark:border-blue-400 bg-blue-50/50 dark:bg-blue-900/20 font-sans text-[0.875rem] tracking-tight" href="#">
+<span class="material-symbols-outlined" data-icon="search_check">search_check</span>
+                Asset Discovery
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-slate-800 transition-colors duration-200 font-sans text-[0.875rem] font-medium tracking-tight" href="#">
+<span class="material-symbols-outlined" data-icon="biotech">biotech</span>
+                Scanner
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-slate-800 transition-colors duration-200 font-sans text-[0.875rem] font-medium tracking-tight" href="#">
+<span class="material-symbols-outlined" data-icon="account_tree">account_tree</span>
+                CBOM
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-slate-800 transition-colors duration-200 font-sans text-[0.875rem] font-medium tracking-tight" href="#">
+<span class="material-symbols-outlined" data-icon="security">security</span>
+                PQC Posture
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-slate-800 transition-colors duration-200 font-sans text-[0.875rem] font-medium tracking-tight" href="#">
+<span class="material-symbols-outlined" data-icon="speed">speed</span>
+                Cyber Rating
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-slate-800 transition-colors duration-200 font-sans text-[0.875rem] font-medium tracking-tight" href="#">
+<span class="material-symbols-outlined" data-icon="assessment">assessment</span>
+                Reports
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-slate-800 transition-colors duration-200 font-sans text-[0.875rem] font-medium tracking-tight" href="#">
+<span class="material-symbols-outlined" data-icon="smart_toy">smart_toy</span>
+                AI Assistant
+            </a>
+</nav>
+<div class="mt-auto space-y-4">
+<button class="w-full bg-gradient-to-br from-primary to-primary-container text-on-primary py-2.5 rounded-lg font-semibold text-sm scale-95 active:scale-100 transition-transform">
+                Start Scan
+            </button>
+<div class="pt-4 border-t border-slate-200/50 dark:border-slate-800 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-colors font-sans text-[0.875rem]" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+                    Settings
+                </a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-colors font-sans text-[0.875rem]" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+                    Support
+                </a>
+</div>
+</div>
+</aside>
+<!-- TopNavBar -->
+<header class="fixed top-0 right-0 left-64 h-16 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md shadow-sm dark:shadow-none z-40 flex items-center justify-between px-8 w-full">
+<div class="flex items-center gap-4 flex-1">
+<div class="relative w-full max-w-md">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 text-lg">search</span>
+<input class="w-full pl-10 pr-4 py-1.5 bg-surface-container-low border-none rounded-full text-sm focus:ring-2 focus:ring-primary/20" placeholder="Search discovered assets..." type="text"/>
+</div>
+<div class="flex gap-4 ml-4">
+<span class="px-3 py-1 bg-tertiary/10 text-tertiary rounded-full text-xs font-bold tracking-tight border border-tertiary/20">PQC Readiness: 98%</span>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<button class="relative text-slate-500 hover:text-blue-700 transition-all opacity-90 hover:opacity-100">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute -top-1 -right-1 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="text-slate-500 hover:text-blue-700 transition-all opacity-90 hover:opacity-100">
+<span class="material-symbols-outlined" data-icon="history_edu">history_edu</span>
+</button>
+<div class="flex items-center gap-3 pl-4 border-l border-slate-200">
+<div class="text-right">
+<p class="text-xs font-bold text-on-surface">Admin User</p>
+<p class="text-[10px] text-on-surface-variant">Security Architect</p>
+</div>
+<div class="w-8 h-8 rounded-full bg-slate-200 overflow-hidden ring-2 ring-white ring-offset-1">
+<img alt="User Profile" data-alt="professional male portrait avatar with glasses and minimal clean aesthetic" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAiCuSk8VNPIm6ix4_E1pZ7tOZ2V4c9ARiWT38q6x7mxrJlwnYRrvefIweEUZgDSgqxMczmuuM8f53-qg40OJaiSdInD3fsitdCb9Z878uZ9TQYruniKC6fzx7Movh34o-JH98uwWGe2dN9Q8n7ZCwQpMf4FDfbkLcOkA-3tXauWAdi7J3DfyvCGm_CtGJH1GC7Xlo1BAHlYymc9YfOzRuL0lRzt4_WxVEKOe_P4Fmy4d6YRMenQPr69lTgKfRSpgRpS6fkD0K7iV6F"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-64 pt-16 min-h-screen p-8 space-y-8">
+<!-- Header Section -->
+<section class="flex justify-between items-end">
+<div>
+<h2 class="text-3xl font-extrabold tracking-tight text-on-surface headline-md">Asset Discovery</h2>
+<p class="text-on-surface-variant body-md mt-1">Real-time mapping of your organizational attack surface and cryptographic inventory.</p>
+</div>
+<div class="flex gap-3">
+<button class="px-4 py-2 bg-surface-container-highest text-on-surface rounded-lg text-sm font-semibold flex items-center gap-2 hover:bg-slate-300 transition-colors">
+<span class="material-symbols-outlined text-sm">filter_list</span>
+                    Refine Filters
+                </button>
+<button class="px-4 py-2 bg-gradient-to-br from-primary to-primary-container text-on-primary rounded-lg text-sm font-semibold flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">download</span>
+                    Export Inventory
+                </button>
+</div>
+</section>
+<!-- Discovery Tabs -->
+<nav class="flex gap-8 border-b border-outline-variant/20">
+<button class="pb-4 text-sm font-bold border-b-2 border-primary text-primary transition-all">Domains</button>
+<button class="pb-4 text-sm font-medium text-on-surface-variant hover:text-on-surface transition-all">SSL Certificates</button>
+<button class="pb-4 text-sm font-medium text-on-surface-variant hover:text-on-surface transition-all">IP Addresses/Subnets</button>
+<button class="pb-4 text-sm font-medium text-on-surface-variant hover:text-on-surface transition-all">Software</button>
+</nav>
+<!-- Top Grid: Network Graph & Buckets -->
+<div class="grid grid-cols-12 gap-8">
+<!-- Interactive Network Graph (Visualizing Relationships) -->
+<div class="col-span-8 bg-surface-container-lowest rounded-xl p-6 shadow-sm relative overflow-hidden h-[450px] flex flex-col border border-outline-variant/10">
+<div class="flex justify-between items-center mb-6">
+<h3 class="text-sm font-bold uppercase tracking-widest text-on-surface-variant">Entity Relationship Graph</h3>
+<div class="flex gap-4">
+<div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-tertiary"></span><span class="text-[10px] font-bold text-on-surface-variant">SAFE</span></div>
+<div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-secondary-container"></span><span class="text-[10px] font-bold text-on-surface-variant">PARTIAL</span></div>
+<div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-error"></span><span class="text-[10px] font-bold text-on-surface-variant">VULNERABLE</span></div>
+</div>
+</div>
+<!-- Mock Network Graph -->
+<div class="flex-1 relative bg-slate-50/50 rounded-lg border border-slate-100 overflow-hidden flex items-center justify-center">
+<div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: radial-gradient(#0050cb 1px, transparent 0); background-size: 24px 24px;"></div>
+<!-- Nodes & Edges Visual Simulation -->
+<div class="relative w-full h-full">
+<!-- Lines/Edges -->
+<svg class="absolute inset-0 w-full h-full pointer-events-none">
+<line stroke="#0054d6" stroke-dasharray="4" stroke-width="0.5" x1="50%" x2="30%" y1="50%" y2="30%"></line>
+<line stroke="#0054d6" stroke-width="0.5" x1="50%" x2="70%" y1="50%" y2="40%"></line>
+<line stroke="#0054d6" stroke-dasharray="4" stroke-width="0.5" x1="50%" x2="40%" y1="50%" y2="70%"></line>
+<line stroke="#ba1a1a" stroke-width="0.5" x1="30%" x2="20%" y1="30%" y2="40%"></line>
+<line stroke="#006645" stroke-width="0.5" x1="70%" x2="85%" y1="40%" y2="35%"></line>
+</svg>
+<!-- Central Node -->
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 rounded-full glass-panel border border-primary/20 flex flex-col items-center justify-center text-center shadow-lg group cursor-pointer hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-primary text-xl">hub</span>
+<span class="text-[8px] font-bold mt-1">MAIN_CORE</span>
+</div>
+<!-- Satellite Nodes -->
+<div class="absolute top-[30%] left-[30%] -translate-x-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-error/10 border border-error/30 flex items-center justify-center cursor-pointer hover:bg-error/20 transition-colors">
+<span class="material-symbols-outlined text-error text-lg" style="font-variation-settings: 'FILL' 1;">cloud</span>
+</div>
+<div class="absolute top-[40%] left-[70%] -translate-x-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-tertiary/10 border border-tertiary/30 flex items-center justify-center cursor-pointer hover:bg-tertiary/20 transition-colors">
+<span class="material-symbols-outlined text-tertiary text-lg" style="font-variation-settings: 'FILL' 1;">api</span>
+</div>
+<div class="absolute top-[70%] left-[40%] -translate-x-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-secondary-container/10 border border-secondary-container/30 flex items-center justify-center cursor-pointer hover:bg-secondary-container/20 transition-colors">
+<span class="material-symbols-outlined text-secondary-container text-lg" style="font-variation-settings: 'FILL' 1;">dns</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Asset Bucketing -->
+<div class="col-span-4 space-y-4">
+<h3 class="text-sm font-bold uppercase tracking-widest text-on-surface-variant mb-2 px-1">Asset Distribution</h3>
+<div class="bg-surface-container-lowest p-4 rounded-xl shadow-sm border border-outline-variant/10 flex items-center justify-between group hover:border-primary/20 transition-all">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-lg bg-primary/5 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined">web</span>
+</div>
+<div>
+<p class="text-xs font-bold text-on-surface">Web Applications</p>
+<p class="text-[10px] text-on-surface-variant">14 Active Instances</p>
+</div>
+</div>
+<span class="text-sm font-extrabold text-tertiary">92% SAFE</span>
+</div>
+<div class="bg-surface-container-lowest p-4 rounded-xl shadow-sm border border-outline-variant/10 flex items-center justify-between group hover:border-primary/20 transition-all">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-lg bg-primary/5 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined">api</span>
+</div>
+<div>
+<p class="text-xs font-bold text-on-surface">APIs &amp; Microservices</p>
+<p class="text-[10px] text-on-surface-variant">88 Endpoints Discovered</p>
+</div>
+</div>
+<span class="text-sm font-extrabold text-secondary-container">64% PARTIAL</span>
+</div>
+<div class="bg-surface-container-lowest p-4 rounded-xl shadow-sm border border-outline-variant/10 flex items-center justify-between group hover:border-primary/20 transition-all">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-lg bg-primary/5 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined">smartphone</span>
+</div>
+<div>
+<p class="text-xs font-bold text-on-surface">Mobile App Backend</p>
+<p class="text-[10px] text-on-surface-variant">4 Production Clusters</p>
+</div>
+</div>
+<span class="text-sm font-extrabold text-tertiary">100% SAFE</span>
+</div>
+<div class="bg-surface-container-lowest p-4 rounded-xl shadow-sm border border-outline-variant/10 flex items-center justify-between group hover:border-primary/20 transition-all">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-lg bg-primary/5 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined">storage</span>
+</div>
+<div>
+<p class="text-xs font-bold text-on-surface">Servers &amp; DBs</p>
+<p class="text-[10px] text-on-surface-variant">212 Cloud Assets</p>
+</div>
+</div>
+<span class="text-sm font-extrabold text-error">12% RISK</span>
+</div>
+<div class="bg-surface-container-lowest p-4 rounded-xl shadow-sm border border-outline-variant/10 flex items-center justify-between group hover:border-primary/20 transition-all">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-lg bg-primary/5 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined">vpn_lock</span>
+</div>
+<div>
+<p class="text-xs font-bold text-on-surface">VPN Gateways</p>
+<p class="text-[10px] text-on-surface-variant">3 Global Access Points</p>
+</div>
+</div>
+<span class="text-sm font-extrabold text-secondary-container">MODERATE</span>
+</div>
+</div>
+</div>
+<!-- Asset Data Table -->
+<section class="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/10 overflow-hidden">
+<div class="px-6 py-4 border-b border-outline-variant/10 flex justify-between items-center bg-surface-container-low/30">
+<h3 class="text-sm font-bold text-on-surface">Discovered Domain Assets</h3>
+<div class="flex items-center gap-2">
+<span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Sort by:</span>
+<select class="text-xs border-none bg-transparent focus:ring-0 font-bold text-primary cursor-pointer">
+<option>Risk Level</option>
+<option>Discovery Date</option>
+<option>Alpha</option>
+</select>
+</div>
+</div>
+<table class="w-full text-left">
+<thead>
+<tr class="bg-surface-container-low/50">
+<th class="px-6 py-3 text-[0.6875rem] font-bold uppercase tracking-widest text-on-surface-variant">Asset Name / Domain</th>
+<th class="px-6 py-3 text-[0.6875rem] font-bold uppercase tracking-widest text-on-surface-variant">IP Address</th>
+<th class="px-6 py-3 text-[0.6875rem] font-bold uppercase tracking-widest text-on-surface-variant">SSL Status</th>
+<th class="px-6 py-3 text-[0.6875rem] font-bold uppercase tracking-widest text-on-surface-variant">Discovery Type</th>
+<th class="px-6 py-3 text-[0.6875rem] font-bold uppercase tracking-widest text-on-surface-variant">Risk Score</th>
+<th class="px-6 py-3 text-[0.6875rem] font-bold uppercase tracking-widest text-on-surface-variant">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/5">
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-sm">language</span>
+<div>
+<p class="text-sm font-bold text-on-surface">core-api.quantum-proof.io</p>
+<p class="text-[10px] text-on-surface-variant">Subdomain • Production</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-xs font-mono text-on-surface-variant">192.168.102.44</td>
+<td class="px-6 py-4">
+<span class="px-2 py-0.5 rounded-full bg-tertiary/10 text-tertiary text-[10px] font-bold border border-tertiary/20">VALID (Kyber-768)</span>
+</td>
+<td class="px-6 py-4 text-xs font-medium text-on-surface">Passive Scan</td>
+<td class="px-6 py-4">
+<div class="w-24 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+<div class="h-full bg-tertiary w-[12%]"></div>
+</div>
+</td>
+<td class="px-6 py-4">
+<button class="text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-sm">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-error text-sm">warning</span>
+<div>
+<p class="text-sm font-bold text-on-surface">dev-stage.quantum-proof.io</p>
+<p class="text-[10px] text-on-surface-variant">Subdomain • Staging</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-xs font-mono text-on-surface-variant">10.0.42.11</td>
+<td class="px-6 py-4">
+<span class="px-2 py-0.5 rounded-full bg-error/10 text-error text-[10px] font-bold border border-error/20">EXPIRED</span>
+</td>
+<td class="px-6 py-4 text-xs font-medium text-on-surface">Active Probe</td>
+<td class="px-6 py-4">
+<div class="w-24 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+<div class="h-full bg-error w-[88%]"></div>
+</div>
+</td>
+<td class="px-6 py-4">
+<button class="text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-sm">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary-container text-sm">cloud_sync</span>
+<div>
+<p class="text-sm font-bold text-on-surface">s3-bucket-storage-01</p>
+<p class="text-[10px] text-on-surface-variant">Cloud Asset • AWS</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-xs font-mono text-on-surface-variant">Dynamic IP</td>
+<td class="px-6 py-4">
+<span class="px-2 py-0.5 rounded-full bg-slate-100 text-slate-500 text-[10px] font-bold">N/A</span>
+</td>
+<td class="px-6 py-4 text-xs font-medium text-on-surface">Cloud Connector</td>
+<td class="px-6 py-4">
+<div class="w-24 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+<div class="h-full bg-secondary-container w-[45%]"></div>
+</div>
+</td>
+<td class="px-6 py-4">
+<button class="text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-sm">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-sm">language</span>
+<div>
+<p class="text-sm font-bold text-on-surface">vpn.london-office.io</p>
+<p class="text-[10px] text-on-surface-variant">Subdomain • Gateway</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-xs font-mono text-on-surface-variant">212.4.99.122</td>
+<td class="px-6 py-4">
+<span class="px-2 py-0.5 rounded-full bg-tertiary/10 text-tertiary text-[10px] font-bold border border-tertiary/20">VALID (RSA-4096)</span>
+</td>
+<td class="px-6 py-4 text-xs font-medium text-on-surface">Certificate Transparency</td>
+<td class="px-6 py-4">
+<div class="w-24 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+<div class="h-full bg-secondary-container w-[32%]"></div>
+</div>
+</td>
+<td class="px-6 py-4">
+<button class="text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-sm">more_vert</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="px-6 py-4 bg-surface-container-low/30 border-t border-outline-variant/10 flex justify-between items-center">
+<p class="text-[10px] font-bold text-on-surface-variant">SHOWING 4 OF 1,244 DISCOVERED ASSETS</p>
+<div class="flex gap-2">
+<button class="p-1 rounded bg-white shadow-sm border border-outline-variant/10 text-slate-400 hover:text-primary"><span class="material-symbols-outlined text-sm">chevron_left</span></button>
+<button class="p-1 rounded bg-white shadow-sm border border-outline-variant/10 text-slate-400 hover:text-primary"><span class="material-symbols-outlined text-sm">chevron_right</span></button>
+</div>
+</div>
+</section>
+</main>
+</body></html>

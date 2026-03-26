@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Scanner - Quantum-Proof Systems</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "background": "#f7f9fb",
+                        "on-tertiary-fixed": "#002113",
+                        "primary": "#0050cb",
+                        "on-primary-fixed": "#001849",
+                        "primary-container": "#0066ff",
+                        "outline-variant": "#c2c6d8",
+                        "surface-variant": "#e0e3e5",
+                        "on-secondary": "#ffffff",
+                        "inverse-on-surface": "#eff1f3",
+                        "tertiary-container": "#008259",
+                        "error-container": "#ffdad6",
+                        "tertiary-fixed-dim": "#4edea3",
+                        "outline": "#727687",
+                        "on-secondary-fixed": "#001a42",
+                        "secondary": "#0058be",
+                        "secondary-fixed-dim": "#adc6ff",
+                        "error": "#ba1a1a",
+                        "surface-container-highest": "#e0e3e5",
+                        "secondary-container": "#2170e4",
+                        "on-tertiary-fixed-variant": "#005236",
+                        "on-surface-variant": "#424656",
+                        "primary-fixed-dim": "#b3c5ff",
+                        "on-surface": "#191c1e",
+                        "on-primary": "#ffffff",
+                        "surface-bright": "#f7f9fb",
+                        "on-tertiary": "#ffffff",
+                        "on-tertiary-container": "#e1ffec",
+                        "on-error": "#ffffff",
+                        "inverse-primary": "#b3c5ff",
+                        "on-secondary-container": "#fefcff",
+                        "on-error-container": "#93000a",
+                        "surface-tint": "#0054d6",
+                        "surface-container-low": "#f2f4f6",
+                        "on-secondary-fixed-variant": "#004395",
+                        "secondary-fixed": "#d8e2ff",
+                        "on-primary-container": "#f8f7ff",
+                        "on-primary-fixed-variant": "#003fa4",
+                        "primary-fixed": "#dae1ff",
+                        "tertiary": "#006645",
+                        "surface-container": "#eceef0",
+                        "surface": "#f7f9fb",
+                        "surface-dim": "#d8dadc",
+                        "on-background": "#191c1e",
+                        "surface-container-lowest": "#ffffff",
+                        "inverse-surface": "#2d3133",
+                        "tertiary-fixed": "#6ffbbe",
+                        "surface-container-high": "#e6e8ea"
+                    },
+                    fontFamily: {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+        }
+        .soul-gradient {
+            background: linear-gradient(135deg, #0050cb 0%, #0066ff 100%);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface">
+<!-- SideNavBar Component -->
+<aside class="h-screen w-64 fixed left-0 top-0 border-r-0 bg-slate-50 dark:bg-slate-900 flex flex-col py-6 px-4 z-50">
+<div class="mb-10 px-2">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 soul-gradient rounded flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-sm">security</span>
+</div>
+<div>
+<h1 class="text-lg font-bold tracking-tight text-slate-900 dark:text-slate-100 leading-none">Quantum-Proof</h1>
+<p class="text-[0.65rem] uppercase tracking-widest text-slate-500 font-bold mt-1">Systems Scanner</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded transition-colors duration-200 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-sans text-[0.875rem] font-medium tracking-tight">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded transition-colors duration-200 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800" href="#">
+<span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+<span class="font-sans text-[0.875rem] font-medium tracking-tight">Asset Inventory</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded transition-colors duration-200 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800" href="#">
+<span class="material-symbols-outlined" data-icon="search_check">search_check</span>
+<span class="font-sans text-[0.875rem] font-medium tracking-tight">Asset Discovery</span>
+</a>
+<!-- Active State: Scanner -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded transition-colors duration-200 text-blue-700 dark:text-blue-400 font-semibold border-r-4 border-blue-700 dark:border-blue-400 bg-blue-50/50 dark:bg-blue-900/20" href="#">
+<span class="material-symbols-outlined" data-icon="biotech">biotech</span>
+<span class="font-sans text-[0.875rem] font-medium tracking-tight">Scanner</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded transition-colors duration-200 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800" href="#">
+<span class="material-symbols-outlined" data-icon="account_tree">account_tree</span>
+<span class="font-sans text-[0.875rem] font-medium tracking-tight">CBOM</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded transition-colors duration-200 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800" href="#">
+<span class="material-symbols-outlined" data-icon="security">security</span>
+<span class="font-sans text-[0.875rem] font-medium tracking-tight">PQC Posture</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded transition-colors duration-200 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800" href="#">
+<span class="material-symbols-outlined" data-icon="speed">speed</span>
+<span class="font-sans text-[0.875rem] font-medium tracking-tight">Cyber Rating</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded transition-colors duration-200 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800" href="#">
+<span class="material-symbols-outlined" data-icon="assessment">assessment</span>
+<span class="font-sans text-[0.875rem] font-medium tracking-tight">Reports</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded transition-colors duration-200 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800" href="#">
+<span class="material-symbols-outlined" data-icon="smart_toy">smart_toy</span>
+<span class="font-sans text-[0.875rem] font-medium tracking-tight">AI Assistant</span>
+</a>
+</nav>
+<div class="mt-auto space-y-1 pt-6 border-t border-slate-200 dark:border-slate-800">
+<button class="w-full soul-gradient text-white rounded py-2.5 px-4 font-bold text-sm mb-4 transition-transform active:scale-95">
+                Start Scan
+            </button>
+<a class="flex items-center gap-3 px-3 py-2 rounded transition-colors duration-200 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-sans text-[0.875rem] font-medium tracking-tight">Settings</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded transition-colors duration-200 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span class="font-sans text-[0.875rem] font-medium tracking-tight">Support</span>
+</a>
+</div>
+</aside>
+<!-- TopNavBar Component -->
+<header class="fixed top-0 right-0 left-64 h-16 z-40 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md shadow-sm flex items-center justify-between px-8">
+<div class="flex items-center gap-4">
+<div class="relative group">
+<span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+<span class="material-symbols-outlined text-lg">search</span>
+</span>
+<input class="bg-surface-container-low border-none rounded-full py-1.5 pl-10 pr-4 text-sm w-64 focus:ring-2 focus:ring-primary/20 transition-all outline-none" placeholder="Search systems..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2 px-3 py-1 bg-tertiary/10 rounded-full">
+<span class="w-2 h-2 rounded-full bg-tertiary"></span>
+<span class="text-xs font-bold text-tertiary tracking-tight">PQC Readiness: 98%</span>
+</div>
+<div class="flex items-center gap-4 text-slate-500">
+<button class="hover:text-primary transition-colors"><span class="material-symbols-outlined" data-icon="notifications">notifications</span></button>
+<button class="hover:text-primary transition-colors"><span class="material-symbols-outlined" data-icon="history_edu">history_edu</span></button>
+<div class="h-8 w-8 rounded-full overflow-hidden bg-slate-200">
+<img class="w-full h-full object-cover" data-alt="close-up portrait of professional cyber security analyst in modern office setting with neutral lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBWgDs1CNcCzqzYYGoS9Jj9KkFxYQOh8n3BShilIFTc0bdFxzYGm7WL7RJANUblPzeJgEc7TzVrC5TC74rrdYRbt8SzHE9FTPw4wMvQY4dpqR6mfDYihHMQfkvyDwj50flO1ciwP86C8WVcgiONFQSd779zM3A-Toofl_zAfH8OeqSXNBDlIJGQQb6mDJdilJI9AMEwJPEqWclURYyRAt3bn9xHdMTxOVoWvhjtEjgYF9z88xQYDskwgZA_dkkEb_WkUb2XaHPapD9t"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="ml-64 pt-24 pb-12 px-8 min-h-screen">
+<div class="max-w-6xl mx-auto">
+<!-- Page Header -->
+<div class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div>
+<h2 class="text-3xl font-extrabold tracking-tight text-on-surface leading-tight">Quantum Vulnerability Scanner</h2>
+<p class="text-on-surface-variant mt-2 max-w-xl">Initiate comprehensive cryptographic audits to identify legacy algorithms vulnerable to Shor's algorithm and ensure PQC compliance.</p>
+</div>
+<div class="flex items-center gap-3">
+<button class="px-5 py-2.5 bg-surface-container-highest text-on-surface rounded font-semibold text-sm transition-all hover:bg-surface-dim">
+                        Export Report
+                    </button>
+<button class="px-5 py-2.5 soul-gradient text-white rounded font-bold text-sm shadow-sm flex items-center gap-2 transition-all active:scale-95">
+<span class="material-symbols-outlined text-sm">play_arrow</span>
+                        Start Scan
+                    </button>
+</div>
+</div>
+<div class="grid grid-cols-12 gap-8">
+<!-- Input & Scanning Section -->
+<section class="col-span-12 lg:col-span-8 space-y-8">
+<!-- Search/Input Area -->
+<div class="bg-surface-container-lowest rounded-xl p-6 shadow-sm">
+<label class="block text-[0.6875rem] font-bold uppercase tracking-wider text-on-surface-variant mb-4">Target Specification</label>
+<div class="flex gap-4">
+<div class="relative flex-1">
+<span class="absolute inset-y-0 left-4 flex items-center text-primary">
+<span class="material-symbols-outlined">language</span>
+</span>
+<input class="w-full bg-surface-container-low border-none rounded-lg py-4 pl-12 pr-4 text-on-surface font-medium focus:ring-2 focus:ring-primary/20 transition-all outline-none" placeholder="Enter Domain or IP Address" type="text" value="api.quantum-cloud-secure.v4"/>
+</div>
+<select class="bg-surface-container-low border-none rounded-lg py-4 px-6 text-sm font-bold text-on-surface-variant focus:ring-2 focus:ring-primary/20 outline-none">
+<option>Full Deep Scan</option>
+<option>Quick Audit</option>
+<option>SSL/TLS Only</option>
+</select>
+</div>
+</div>
+<!-- Results Panel -->
+<div class="bg-surface-container-lowest rounded-xl p-8 shadow-sm">
+<div class="flex items-center justify-between mb-8">
+<h3 class="text-sm font-bold uppercase tracking-wider text-on-surface-variant">Live Analysis Results</h3>
+<div class="flex items-center gap-2 text-[0.6875rem] font-bold py-1 px-3 bg-tertiary/10 text-tertiary rounded-full uppercase">
+<span class="w-1.5 h-1.5 bg-tertiary rounded-full animate-pulse"></span>
+                                Analysis Complete
+                            </div>
+</div>
+<!-- Scan Metrics Bento Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<!-- TLS Version -->
+<div class="bg-surface-container-low rounded-lg p-5">
+<p class="text-[0.6875rem] font-bold text-on-surface-variant uppercase tracking-widest mb-2">Protocol</p>
+<div class="flex items-baseline justify-between">
+<span class="text-xl font-bold text-on-surface">TLS 1.3</span>
+<span class="text-[0.625rem] font-bold py-0.5 px-2 bg-tertiary text-white rounded">SECURE</span>
+</div>
+<div class="mt-4 h-1 w-full bg-surface-variant rounded-full overflow-hidden">
+<div class="h-full bg-tertiary w-full"></div>
+</div>
+</div>
+<!-- Cipher Suite -->
+<div class="bg-surface-container-low rounded-lg p-5">
+<p class="text-[0.6875rem] font-bold text-on-surface-variant uppercase tracking-widest mb-2">Cipher Suite</p>
+<div class="flex items-baseline justify-between">
+<span class="text-xl font-bold text-on-surface">AES-GCM-256</span>
+<span class="text-[0.625rem] font-bold py-0.5 px-2 bg-tertiary text-white rounded">OPTIMAL</span>
+</div>
+<p class="text-[0.65rem] text-on-surface-variant mt-3 font-medium">ECDHE_RSA_WITH_AES_256_GCM_SHA384</p>
+</div>
+<!-- Key Length -->
+<div class="bg-surface-container-low rounded-lg p-5">
+<p class="text-[0.6875rem] font-bold text-on-surface-variant uppercase tracking-widest mb-2">Key Strength</p>
+<div class="flex items-baseline justify-between">
+<span class="text-xl font-bold text-on-surface">4096 Bits</span>
+<span class="text-[0.625rem] font-bold py-0.5 px-2 bg-secondary text-white rounded">ROBUST</span>
+</div>
+<div class="mt-4 h-1 w-full bg-surface-variant rounded-full overflow-hidden">
+<div class="h-full bg-secondary w-full"></div>
+</div>
+</div>
+<!-- Certificate Authority -->
+<div class="bg-surface-container-low rounded-lg p-5">
+<p class="text-[0.6875rem] font-bold text-on-surface-variant uppercase tracking-widest mb-2">Certificate Authority</p>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary">verified_user</span>
+<span class="text-sm font-bold text-on-surface">GlobalSign Root CA</span>
+</div>
+<p class="text-[0.65rem] text-on-surface-variant mt-2">Expires: Oct 2026</p>
+</div>
+<!-- Risk Level -->
+<div class="bg-surface-container-low rounded-lg p-5">
+<p class="text-[0.6875rem] font-bold text-on-surface-variant uppercase tracking-widest mb-2">Quantum Risk Index</p>
+<div class="flex items-baseline justify-between">
+<span class="text-xl font-bold text-error">Low Risk</span>
+<span class="text-[0.625rem] font-bold py-0.5 px-2 bg-error text-white rounded">VULN-L1</span>
+</div>
+<div class="mt-4 h-1 w-full bg-surface-variant rounded-full overflow-hidden">
+<div class="h-full bg-error w-[12%]"></div>
+</div>
+</div>
+<!-- PQC Readiness -->
+<div class="bg-surface-container-low rounded-lg p-5">
+<p class="text-[0.6875rem] font-bold text-on-surface-variant uppercase tracking-widest mb-2">PQC Readiness</p>
+<div class="flex items-baseline justify-between">
+<span class="text-xl font-bold text-tertiary">KYBER-768</span>
+<span class="text-[0.625rem] font-bold py-0.5 px-2 bg-tertiary text-white rounded">READY</span>
+</div>
+<p class="text-[0.65rem] text-on-surface-variant mt-2">Crystal-Kyber implementation detected</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Sidebar Content: Scheduling & History -->
+<aside class="col-span-12 lg:col-span-4 space-y-8">
+<!-- Auto Scheduling Section -->
+<div class="bg-surface-container-lowest rounded-xl p-6 shadow-sm border border-transparent">
+<div class="flex items-center gap-3 mb-6">
+<span class="material-symbols-outlined text-primary">calendar_month</span>
+<h3 class="text-sm font-bold uppercase tracking-wider text-on-surface">Auto Scheduling</h3>
+</div>
+<div class="space-y-4">
+<div class="flex items-center justify-between p-3 bg-surface-container-low rounded-lg">
+<span class="text-xs font-bold">Daily Pulse Scan</span>
+<div class="w-10 h-5 bg-primary/20 rounded-full relative p-0.5">
+<div class="h-4 w-4 bg-primary rounded-full absolute right-0.5"></div>
+</div>
+</div>
+<div class="flex items-center justify-between p-3 bg-surface-container-low rounded-lg opacity-60">
+<span class="text-xs font-bold">Weekly PQC Deep Audit</span>
+<div class="w-10 h-5 bg-slate-300 rounded-full relative p-0.5">
+<div class="h-4 w-4 bg-white rounded-full absolute left-0.5"></div>
+</div>
+</div>
+</div>
+<div class="mt-8 pt-6 border-t border-surface-container">
+<p class="text-[0.6875rem] font-bold text-on-surface-variant uppercase tracking-widest mb-4">Upcoming Scans</p>
+<div class="space-y-3">
+<div class="flex items-center gap-4">
+<div class="text-[0.65rem] font-bold bg-surface-container-high px-2 py-1 rounded w-16 text-center">TOMORROW</div>
+<div class="flex-1">
+<p class="text-xs font-bold leading-none">Internal API Hub</p>
+<p class="text-[0.65rem] text-on-surface-variant mt-1">02:00 AM UTC</p>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="text-[0.65rem] font-bold bg-surface-container-high px-2 py-1 rounded w-16 text-center">OCT 24</div>
+<div class="flex-1">
+<p class="text-xs font-bold leading-none">Legacy Mainframe</p>
+<p class="text-[0.65rem] text-on-surface-variant mt-1">04:30 AM UTC</p>
+</div>
+</div>
+</div>
+</div>
+<button class="w-full mt-6 py-2.5 bg-surface-container-highest text-on-surface rounded font-bold text-xs transition-colors hover:bg-surface-dim">
+                            Create Custom Schedule
+                        </button>
+</div>
+<!-- Scan Health / Status -->
+<div class="bg-surface-container-lowest rounded-xl p-6 shadow-sm overflow-hidden relative">
+<!-- Decorative gradient corner -->
+<div class="absolute -top-12 -right-12 w-24 h-24 soul-gradient opacity-10 rounded-full blur-2xl"></div>
+<h3 class="text-sm font-bold uppercase tracking-wider text-on-surface mb-6">Last Run Status</h3>
+<div class="flex items-center gap-4 mb-6">
+<div class="w-12 h-12 rounded-lg bg-tertiary/10 flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div>
+<p class="text-xs font-bold text-on-surface">Successful Finish</p>
+<p class="text-[0.65rem] text-on-surface-variant mt-1">Oct 21, 2023 • 14:32</p>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex items-center justify-between text-[0.65rem] font-bold text-on-surface-variant uppercase">
+<span>Duration</span>
+<span class="text-on-surface">4m 12s</span>
+</div>
+<div class="flex items-center justify-between text-[0.65rem] font-bold text-on-surface-variant uppercase">
+<span>Nodes Scanned</span>
+<span class="text-on-surface">1,240</span>
+</div>
+<div class="flex items-center justify-between text-[0.65rem] font-bold text-on-surface-variant uppercase">
+<span>Vulnerabilities</span>
+<span class="text-on-surface">0</span>
+</div>
+</div>
+</div>
+<!-- Entropy/Status Visualization -->
+<div class="bg-white rounded-xl p-6 shadow-sm flex flex-col items-center">
+<p class="text-[0.6875rem] font-bold text-on-surface-variant uppercase tracking-widest mb-6 w-full">Quantum Entropy Status</p>
+<div class="relative w-32 h-32 flex items-center justify-center">
+<svg class="w-full h-full transform -rotate-90">
+<circle class="text-surface-container" cx="64" cy="64" fill="transparent" r="58" stroke="currentColor" stroke-width="8"></circle>
+<circle class="text-tertiary transition-all" cx="64" cy="64" fill="transparent" r="58" stroke="currentColor" stroke-dasharray="364.4" stroke-dashoffset="18.22" stroke-width="8"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="text-2xl font-extrabold text-on-surface">95%</span>
+<span class="text-[0.6rem] font-bold text-on-surface-variant">PURITY</span>
+</div>
+</div>
+<p class="text-center text-[0.65rem] font-medium text-on-surface-variant mt-6">Cryptographic hygiene is within optimal operational range.</p>
+</div>
+</aside>
+</div>
+</div>
+</main>
+</body></html>

@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CBOM - Quantum-Proof Systems Scanner</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+        }
+        /* Custom scrollbar for high density tables */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #e0e3e5;
+            border-radius: 10px;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              colors: {
+                "background": "#f7f9fb",
+                "on-tertiary-fixed": "#002113",
+                "primary": "#0050cb",
+                "on-primary-fixed": "#001849",
+                "primary-container": "#0066ff",
+                "outline-variant": "#c2c6d8",
+                "surface-variant": "#e0e3e5",
+                "on-secondary": "#ffffff",
+                "inverse-on-surface": "#eff1f3",
+                "tertiary-container": "#008259",
+                "error-container": "#ffdad6",
+                "tertiary-fixed-dim": "#4edea3",
+                "outline": "#727687",
+                "on-secondary-fixed": "#001a42",
+                "secondary": "#0058be",
+                "secondary-fixed-dim": "#adc6ff",
+                "error": "#ba1a1a",
+                "surface-container-highest": "#e0e3e5",
+                "secondary-container": "#2170e4",
+                "on-tertiary-fixed-variant": "#005236",
+                "on-surface-variant": "#424656",
+                "primary-fixed-dim": "#b3c5ff",
+                "on-surface": "#191c1e",
+                "on-primary": "#ffffff",
+                "surface-bright": "#f7f9fb",
+                "on-tertiary": "#ffffff",
+                "on-tertiary-container": "#e1ffec",
+                "on-error": "#ffffff",
+                "inverse-primary": "#b3c5ff",
+                "on-secondary-container": "#fefcff",
+                "on-error-container": "#93000a",
+                "surface-tint": "#0054d6",
+                "surface-container-low": "#f2f4f6",
+                "on-secondary-fixed-variant": "#004395",
+                "secondary-fixed": "#d8e2ff",
+                "on-primary-container": "#f8f7ff",
+                "on-primary-fixed-variant": "#003fa4",
+                "primary-fixed": "#dae1ff",
+                "tertiary": "#006645",
+                "surface-container": "#eceef0",
+                "surface": "#f7f9fb",
+                "surface-dim": "#d8dadc",
+                "on-background": "#191c1e",
+                "surface-container-lowest": "#ffffff",
+                "inverse-surface": "#2d3133",
+                "tertiary-fixed": "#6ffbbe",
+                "surface-container-high": "#e6e8ea"
+              },
+              fontFamily: {
+                "headline": ["Inter"],
+                "body": ["Inter"],
+                "label": ["Inter"]
+              },
+              borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+            },
+          },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface selection:bg-primary-fixed">
+<!-- SideNavBar Component -->
+<aside class="h-screen w-64 fixed left-0 top-0 border-r-0 bg-slate-50 flex flex-col py-6 px-4 z-50">
+<div class="mb-10 px-2">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-primary-container flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-sm">lock_person</span>
+</div>
+<div>
+<h1 class="text-lg font-bold tracking-tight text-slate-900 leading-none">Quantum-Proof</h1>
+<p class="text-[0.65rem] uppercase tracking-[0.1em] text-slate-500 font-bold mt-1">Systems Scanner</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 hover:bg-slate-200/50 transition-colors duration-200 font-sans text-[0.875rem] font-medium tracking-tight rounded-lg" href="#">
+<span class="material-symbols-outlined text-[20px]">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 hover:bg-slate-200/50 transition-colors duration-200 font-sans text-[0.875rem] font-medium tracking-tight rounded-lg" href="#">
+<span class="material-symbols-outlined text-[20px]">inventory_2</span>
+<span>Asset Inventory</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 hover:bg-slate-200/50 transition-colors duration-200 font-sans text-[0.875rem] font-medium tracking-tight rounded-lg" href="#">
+<span class="material-symbols-outlined text-[20px]">search_check</span>
+<span>Asset Discovery</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 hover:bg-slate-200/50 transition-colors duration-200 font-sans text-[0.875rem] font-medium tracking-tight rounded-lg" href="#">
+<span class="material-symbols-outlined text-[20px]">biotech</span>
+<span>Scanner</span>
+</a>
+<!-- Active State for CBOM -->
+<a class="flex items-center gap-3 px-3 py-2 text-blue-700 font-semibold border-r-4 border-blue-700 bg-blue-50/50 transition-colors duration-200 font-sans text-[0.875rem] tracking-tight rounded-l-lg" href="#">
+<span class="material-symbols-outlined text-[20px]">account_tree</span>
+<span>CBOM</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 hover:bg-slate-200/50 transition-colors duration-200 font-sans text-[0.875rem] font-medium tracking-tight rounded-lg" href="#">
+<span class="material-symbols-outlined text-[20px]">security</span>
+<span>PQC Posture</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 hover:bg-slate-200/50 transition-colors duration-200 font-sans text-[0.875rem] font-medium tracking-tight rounded-lg" href="#">
+<span class="material-symbols-outlined text-[20px]">speed</span>
+<span>Cyber Rating</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 hover:bg-slate-200/50 transition-colors duration-200 font-sans text-[0.875rem] font-medium tracking-tight rounded-lg" href="#">
+<span class="material-symbols-outlined text-[20px]">assessment</span>
+<span>Reports</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 hover:bg-slate-200/50 transition-colors duration-200 font-sans text-[0.875rem] font-medium tracking-tight rounded-lg" href="#">
+<span class="material-symbols-outlined text-[20px]">smart_toy</span>
+<span>AI Assistant</span>
+</a>
+</nav>
+<div class="mt-auto pt-6 border-t border-slate-200 space-y-1">
+<button class="w-full mb-4 bg-gradient-to-r from-primary to-primary-container text-white py-2.5 rounded-lg font-bold text-sm shadow-sm scale-95 active:scale-100 transition-transform">
+                Start Scan
+            </button>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 hover:bg-slate-200/50 transition-colors duration-200 font-sans text-[0.875rem] font-medium tracking-tight rounded-lg" href="#">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+<span>Settings</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 hover:bg-slate-200/50 transition-colors duration-200 font-sans text-[0.875rem] font-medium tracking-tight rounded-lg" href="#">
+<span class="material-symbols-outlined text-[20px]">help</span>
+<span>Support</span>
+</a>
+</div>
+</aside>
+<!-- TopNavBar Component -->
+<header class="fixed top-0 right-0 left-64 h-16 z-40 bg-white/80 backdrop-blur-md flex items-center justify-between px-8 w-full shadow-sm">
+<div class="flex items-center gap-4">
+<span class="text-slate-400 font-medium text-xs bg-slate-100 px-3 py-1 rounded-full border border-slate-200">
+                PQC Readiness: <span class="text-tertiary font-bold">98%</span>
+</span>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative">
+<span class="material-symbols-outlined text-slate-500 hover:text-primary transition-colors cursor-pointer">notifications</span>
+<span class="absolute top-0 right-0 w-2 h-2 bg-error rounded-full border-2 border-white"></span>
+</div>
+<span class="material-symbols-outlined text-slate-500 hover:text-primary transition-colors cursor-pointer">history_edu</span>
+<div class="flex items-center gap-3 pl-4 border-l border-slate-200">
+<div class="text-right">
+<p class="text-xs font-bold text-on-surface leading-none">Admin Console</p>
+<p class="text-[10px] text-slate-500 mt-1">Super User</p>
+</div>
+<img alt="User Profile" class="w-8 h-8 rounded-full bg-slate-200 object-cover" data-alt="professional portrait of a security administrator in a modern office environment with soft focus background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDtWuxocUZ7nUk73VunHgMJVzp6I8Z3zoLdXSgT9PH5qS_heo6lMRTKKfcOq_Si2Ptu_9c2GqvBNt-vq4DkEnRNj3Gk7Yd8v3rdxr2PAlfzaKdIrcjd69Q6VEDzV6LUu_iRAkLORsyfyv3yNCz12KQ2vPdgg6d4LH-V1nUOasy21KDyypF6BL3JIEEwP9Tcy-qwiqRAzy60Ghf-jfGpjNS4DFElLrEijpPjzb58B-XVrHKqaNq5-L139EUREp-EksCYslxoxA3gR-KB"/>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-64 mt-16 p-8 bg-background min-h-screen">
+<!-- Page Header -->
+<div class="mb-8 flex justify-between items-end">
+<div>
+<nav class="flex text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 gap-2">
+<span>Inventory</span>
+<span>/</span>
+<span class="text-primary">Cryptography Bill of Materials</span>
+</nav>
+<h2 class="text-3xl font-extrabold tracking-tight text-on-surface">CBOM Explorer</h2>
+<p class="text-on-surface-variant mt-1 text-sm max-w-2xl">Detailed inventory of cryptographic assets, quantum-safe readiness, and certificate hierarchies across the enterprise network.</p>
+</div>
+<div class="flex gap-3">
+<button class="px-4 py-2 bg-surface-container-highest text-on-surface text-sm font-semibold rounded-lg hover:bg-slate-200 transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">download</span> Export CBOM
+                </button>
+<button class="px-4 py-2 bg-gradient-to-br from-primary to-primary-container text-on-primary text-sm font-semibold rounded-lg shadow-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">add</span> Register Asset
+                </button>
+</div>
+</div>
+<!-- Bento Grid: Top Charts & Metrics -->
+<div class="grid grid-cols-12 gap-6 mb-8">
+<!-- Metric 1: Key Length Distribution -->
+<div class="col-span-12 md:col-span-4 bg-surface-container-lowest rounded-xl p-6 shadow-sm">
+<div class="flex justify-between items-start mb-6">
+<h3 class="text-on-surface-variant font-bold text-[0.6875rem] uppercase tracking-wider">Key Length Distribution</h3>
+<span class="material-symbols-outlined text-slate-400 text-[20px]">info</span>
+</div>
+<div class="flex items-end gap-2 h-32 mb-4">
+<div class="flex-1 bg-surface-container-high rounded-t-sm relative group" style="height: 45%;">
+<div class="absolute -top-6 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 text-[10px] font-bold bg-on-surface text-white px-1.5 py-0.5 rounded transition-opacity">1024</div>
+</div>
+<div class="flex-1 bg-secondary-container rounded-t-sm relative group" style="height: 85%;">
+<div class="absolute -top-6 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 text-[10px] font-bold bg-on-surface text-white px-1.5 py-0.5 rounded transition-opacity">2048</div>
+</div>
+<div class="flex-1 bg-primary rounded-t-sm relative group" style="height: 100%;">
+<div class="absolute -top-6 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 text-[10px] font-bold bg-on-surface text-white px-1.5 py-0.5 rounded transition-opacity">4096</div>
+</div>
+<div class="flex-1 bg-tertiary rounded-t-sm relative group" style="height: 30%;">
+<div class="absolute -top-6 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 text-[10px] font-bold bg-on-surface text-white px-1.5 py-0.5 rounded transition-opacity">8192</div>
+</div>
+</div>
+<div class="flex justify-between text-[10px] font-bold text-slate-400">
+<span>1024-bit</span>
+<span>2048-bit</span>
+<span>4096-bit</span>
+<span>ECC</span>
+</div>
+</div>
+<!-- Metric 2: Cipher Usage -->
+<div class="col-span-12 md:col-span-4 bg-surface-container-lowest rounded-xl p-6 shadow-sm">
+<div class="flex justify-between items-start mb-6">
+<h3 class="text-on-surface-variant font-bold text-[0.6875rem] uppercase tracking-wider">Cipher Usage Density</h3>
+<span class="material-symbols-outlined text-slate-400 text-[20px]">pie_chart</span>
+</div>
+<div class="space-y-4">
+<div>
+<div class="flex justify-between text-xs font-bold mb-1.5">
+<span class="text-on-surface">AES-256-GCM</span>
+<span class="text-on-surface-variant">62%</span>
+</div>
+<div class="w-full h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-primary" style="width: 62%"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between text-xs font-bold mb-1.5">
+<span class="text-on-surface">CHACHA20-POLY1305</span>
+<span class="text-on-surface-variant">24%</span>
+</div>
+<div class="w-full h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-tertiary" style="width: 24%"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between text-xs font-bold mb-1.5">
+<span class="text-on-surface">RSA-PSS</span>
+<span class="text-on-surface-variant">14%</span>
+</div>
+<div class="w-full h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-secondary-container" style="width: 14%"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Metric 3: Top CAs -->
+<div class="col-span-12 md:col-span-4 bg-surface-container-lowest rounded-xl p-6 shadow-sm">
+<div class="flex justify-between items-start mb-4">
+<h3 class="text-on-surface-variant font-bold text-[0.6875rem] uppercase tracking-wider">Top Issuing CAs</h3>
+<span class="material-symbols-outlined text-slate-400 text-[20px]">verified</span>
+</div>
+<div class="space-y-3">
+<div class="flex items-center gap-3 p-2 rounded-lg bg-surface-container-low">
+<div class="w-8 h-8 flex items-center justify-center bg-white rounded border border-slate-100">
+<img alt="DigiCert Logo" class="w-5 h-5 grayscale opacity-70" data-alt="clean vector logo of a major digital certificate authority on white background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBiU5NV1CDRJKyEj8Gedu-bj2Dt23iikw-IitsRuj-kYh7w7Zw2PEYfyCW9OcdV5aIwNzgAOd3YKeJybbWxFbm16kjeJsDijnecWJXLWv3CawEErjTqejrinYhhVVC32Xoeggw1LclrjGLHZqHMBAMliBqpYls_D0eEUWCKWPaPUjUdSQ1N8d_Um9pgIZ-a4KrKm7mPFnc_DeD_r3WsmZfZmH9uYyXeVRCAVDiZSIpiQnq5nvqguSG6iMmIeVwfvoINbjnsQPXC74Up"/>
+</div>
+<div class="flex-1">
+<p class="text-[11px] font-bold text-on-surface leading-tight">DigiCert Global Root G2</p>
+<p class="text-[9px] text-slate-500 uppercase">342 Assets</p>
+</div>
+<span class="material-symbols-outlined text-tertiary text-sm" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div class="flex items-center gap-3 p-2 rounded-lg bg-surface-container-low">
+<div class="w-8 h-8 flex items-center justify-center bg-white rounded border border-slate-100">
+<img alt="Sectigo Logo" class="w-5 h-5 grayscale opacity-70" data-alt="minimalist professional logo of a global technology security corporation" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDa6eTM6xn6aq8Lh5A3jjSoUMeu1vpBYPi56PKrqhywXP7mUnslpmbFn6gKjLZH7soA_o1DAuE_AfiAKK0w4AJjf8vFpuVk90R2qSWgUtKfaiKCqQ0SydSNpYLrjY3RBuqFVy6kcS7Akn5CuKT2tKC9ZNBY1KwHkDwn0PifdwwI2XsszRjpSRqkk3_DMAUV01e2POzt4t3ajXTJpsyRfC0sMihDob99Pzgsj9EK0Wil-lvM5LkYW2VEEFOc0ESTEtbQx6V7KoO3ikmM"/>
+</div>
+<div class="flex-1">
+<p class="text-[11px] font-bold text-on-surface leading-tight">Sectigo RSA Extended</p>
+<p class="text-[9px] text-slate-500 uppercase">128 Assets</p>
+</div>
+<span class="material-symbols-outlined text-tertiary text-sm" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div class="flex items-center gap-3 p-2 rounded-lg bg-surface-container-low">
+<div class="w-8 h-8 flex items-center justify-center bg-white rounded border border-slate-100">
+<img alt="Let's Encrypt Logo" class="w-5 h-5 grayscale opacity-70" data-alt="simple geometric logo for an open certificate authority provider" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD9em8Mqyz3fI6zNy2AWJBl_vInr9by37-339AW0Ep0fDkFOsqnDq0KHi4n7G_OoyWhxVbwDJNOy9TELTTw2BzFKZhDxsBODqkOElnkh256TujyogdjeQ5bdBBN3ewW4HpWlSa8oSwQt0njQWl83HzcAeYDJHDVr248YyXzofxT82De1IMOP1jEa-UPlciltcIgmchIMLA7Bs4Tv_2WLtKpf-O5KsNsN2E9rR6ZXvB6qK8W6uF95QsT0z-4sfkS-CPPln3Nf6jivqOr"/>
+</div>
+<div class="flex-1">
+<p class="text-[11px] font-bold text-on-surface leading-tight">R3 (Let's Encrypt)</p>
+<p class="text-[9px] text-slate-500 uppercase">86 Assets</p>
+</div>
+<span class="material-symbols-outlined text-tertiary text-sm" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Main Data Table Section -->
+<section class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden flex flex-col">
+<div class="px-6 py-4 border-b border-surface-container flex items-center justify-between">
+<div class="flex items-center gap-4">
+<h3 class="font-bold text-on-surface text-sm">Algorithm Inventory</h3>
+<div class="flex items-center bg-surface-container-low rounded px-2 py-1 gap-2 border border-outline-variant/20">
+<span class="material-symbols-outlined text-slate-400 text-[18px]">search</span>
+<input class="bg-transparent border-none text-xs focus:ring-0 p-0 w-48 text-on-surface-variant placeholder:text-slate-400" placeholder="Filter OID or Name..." type="text"/>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="p-1.5 hover:bg-surface-container-high rounded transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">tune</span>
+</button>
+<button class="p-1.5 hover:bg-surface-container-high rounded transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">refresh</span>
+</button>
+</div>
+</div>
+<div class="overflow-x-auto custom-scrollbar">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low">
+<th class="px-6 py-3 font-bold text-[0.6875rem] uppercase tracking-[0.05em] text-on-surface-variant">Algorithm Name</th>
+<th class="px-6 py-3 font-bold text-[0.6875rem] uppercase tracking-[0.05em] text-on-surface-variant">Key Size / Curve</th>
+<th class="px-6 py-3 font-bold text-[0.6875rem] uppercase tracking-[0.05em] text-on-surface-variant">State</th>
+<th class="px-6 py-3 font-bold text-[0.6875rem] uppercase tracking-[0.05em] text-on-surface-variant">OID</th>
+<th class="px-6 py-3 font-bold text-[0.6875rem] uppercase tracking-[0.05em] text-on-surface-variant text-center">PQC Ready</th>
+<th class="px-6 py-3 font-bold text-[0.6875rem] uppercase tracking-[0.05em] text-on-surface-variant text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-2 h-2 rounded-full bg-tertiary"></div>
+<div>
+<p class="text-sm font-bold text-on-surface">AES-256-GCM</p>
+<p class="text-[10px] text-slate-500">Symmetric Encryption</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="text-xs font-mono bg-surface-container-high px-2 py-0.5 rounded text-on-surface">256-bit</span>
+</td>
+<td class="px-6 py-4">
+<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-tertiary-container/10 text-tertiary uppercase tracking-tight">Active</span>
+</td>
+<td class="px-6 py-4">
+<span class="text-[11px] font-mono text-slate-500">2.16.840.1.101.3.4.1.42</span>
+</td>
+<td class="px-6 py-4 text-center">
+<span class="material-symbols-outlined text-tertiary" style="font-variation-settings: 'FILL' 1;">verified</span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-2 h-2 rounded-full bg-primary"></div>
+<div>
+<p class="text-sm font-bold text-on-surface">RSA-OAEP</p>
+<p class="text-[10px] text-slate-500">Asymmetric Key Wrap</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="text-xs font-mono bg-surface-container-high px-2 py-0.5 rounded text-on-surface">2048-bit</span>
+</td>
+<td class="px-6 py-4">
+<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-secondary-container/10 text-secondary uppercase tracking-tight">Active</span>
+</td>
+<td class="px-6 py-4">
+<span class="text-[11px] font-mono text-slate-500">1.2.840.113549.1.1.7</span>
+</td>
+<td class="px-6 py-4 text-center">
+<span class="material-symbols-outlined text-slate-300">hourglass_empty</span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-2 h-2 rounded-full bg-error"></div>
+<div>
+<p class="text-sm font-bold text-on-surface">SHA-1</p>
+<p class="text-[10px] text-slate-500">Hashing Function</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="text-xs font-mono bg-surface-container-high px-2 py-0.5 rounded text-on-surface">160-bit</span>
+</td>
+<td class="px-6 py-4">
+<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-error-container/20 text-error uppercase tracking-tight">Expired</span>
+</td>
+<td class="px-6 py-4">
+<span class="text-[11px] font-mono text-slate-500">1.3.14.3.2.26</span>
+</td>
+<td class="px-6 py-4 text-center">
+<span class="material-symbols-outlined text-error" style="font-variation-settings: 'FILL' 1;">dangerous</span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-2 h-2 rounded-full bg-tertiary"></div>
+<div>
+<p class="text-sm font-bold text-on-surface">Dilithium2</p>
+<p class="text-[10px] text-slate-500">Post-Quantum Signature</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="text-xs font-mono bg-surface-container-high px-2 py-0.5 rounded text-on-surface">Level 2</span>
+</td>
+<td class="px-6 py-4">
+<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-tertiary-container/10 text-tertiary uppercase tracking-tight">Active</span>
+</td>
+<td class="px-6 py-4">
+<span class="text-[11px] font-mono text-slate-500">2.16.840.1.101.3.4.3.17</span>
+</td>
+<td class="px-6 py-4 text-center">
+<span class="material-symbols-outlined text-tertiary" style="font-variation-settings: 'FILL' 1;">verified</span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 5 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-2 h-2 rounded-full bg-tertiary"></div>
+<div>
+<p class="text-sm font-bold text-on-surface">ECC-P384</p>
+<p class="text-[10px] text-slate-500">Elliptic Curve Digital Signature</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="text-xs font-mono bg-surface-container-high px-2 py-0.5 rounded text-on-surface">384-bit</span>
+</td>
+<td class="px-6 py-4">
+<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-tertiary-container/10 text-tertiary uppercase tracking-tight">Active</span>
+</td>
+<td class="px-6 py-4">
+<span class="text-[11px] font-mono text-slate-500">1.3.132.0.34</span>
+</td>
+<td class="px-6 py-4 text-center">
+<span class="material-symbols-outlined text-tertiary" style="font-variation-settings: 'FILL' 1;">verified</span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="px-6 py-4 border-t border-surface-container flex items-center justify-between text-xs text-on-surface-variant font-medium">
+<p>Showing 5 of 142 detected cryptographic assets</p>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-1">
+<button class="w-8 h-8 flex items-center justify-center rounded hover:bg-surface-container-high disabled:opacity-30" disabled="">
+<span class="material-symbols-outlined text-[20px]">chevron_left</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center rounded bg-primary text-white font-bold">1</button>
+<button class="w-8 h-8 flex items-center justify-center rounded hover:bg-surface-container-high">2</button>
+<button class="w-8 h-8 flex items-center justify-center rounded hover:bg-surface-container-high">3</button>
+<button class="w-8 h-8 flex items-center justify-center rounded hover:bg-surface-container-high">
+<span class="material-symbols-outlined text-[20px]">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Technical Metadata Sidebar / Detail View Placeholder -->
+<div class="mt-8 grid grid-cols-12 gap-6">
+<div class="col-span-12 lg:col-span-8 bg-surface-container-lowest rounded-xl p-6 shadow-sm border border-outline-variant/5">
+<div class="flex items-center justify-between mb-4">
+<h3 class="font-bold text-on-surface text-sm">Certificate Dependency Chain</h3>
+<span class="text-[10px] font-bold text-primary uppercase">Live Graph View</span>
+</div>
+<!-- Node Map visualization placeholder -->
+<div class="relative h-64 bg-surface-container-low rounded-lg border border-dashed border-outline-variant/30 flex items-center justify-center overflow-hidden">
+<div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(#0054d6 0.5px, transparent 0.5px); background-size: 20px 20px;"></div>
+<div class="relative z-10 flex flex-col items-center gap-4">
+<div class="flex items-center gap-8">
+<div class="w-16 h-16 rounded-full bg-white border-2 border-primary flex items-center justify-center shadow-lg relative">
+<span class="material-symbols-outlined text-primary">hub</span>
+<div class="absolute -bottom-1 -right-1 w-5 h-5 bg-tertiary rounded-full border-2 border-white flex items-center justify-center text-[10px] text-white">4</div>
+</div>
+<div class="w-12 h-px bg-primary opacity-30"></div>
+<div class="w-12 h-12 rounded-lg bg-white border border-outline-variant flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-slate-400">cloud_done</span>
+</div>
+<div class="w-12 h-px bg-primary opacity-30"></div>
+<div class="w-12 h-12 rounded-lg bg-white border border-outline-variant flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-slate-400">account_balance</span>
+</div>
+</div>
+<p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Select an algorithm to visualize its impact surface</p>
+</div>
+</div>
+</div>
+<div class="col-span-12 lg:col-span-4 space-y-6">
+<div class="bg-primary text-white rounded-xl p-6 shadow-lg shadow-primary/10 relative overflow-hidden">
+<div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-3xl -mr-16 -mt-16"></div>
+<div class="relative z-10">
+<h4 class="text-sm font-bold mb-2">PQC Readiness Task</h4>
+<p class="text-xs text-white/80 leading-relaxed mb-4">Your infrastructure contains 3 legacy SHA-1 and 12 RSA-1024 assets that must be rotated within 90 days to meet compliance.</p>
+<button class="w-full bg-white text-primary py-2 rounded-lg text-xs font-bold hover:bg-on-primary-container transition-colors">Generate Remediation Plan</button>
+</div>
+</div>
+<div class="bg-surface-container-lowest rounded-xl p-6 shadow-sm border border-outline-variant/5">
+<h4 class="font-bold text-on-surface text-sm mb-4">Scanner Statistics</h4>
+<div class="space-y-4">
+<div class="flex items-center justify-between">
+<span class="text-xs text-on-surface-variant font-medium">Last Scan</span>
+<span class="text-xs font-bold text-on-surface">14 mins ago</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-xs text-on-surface-variant font-medium">Total OIDs Scanned</span>
+<span class="text-xs font-bold text-on-surface">4,281</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-xs text-on-surface-variant font-medium">Unique Entities</span>
+<span class="text-xs font-bold text-on-surface">192</span>
+</div>
+<div class="pt-2">
+<div class="h-1 w-full bg-surface-container-low rounded-full">
+<div class="h-full bg-tertiary w-[88%] rounded-full"></div>
+</div>
+<p class="text-[9px] font-bold text-slate-400 mt-2 uppercase">Compliance Integrity: 88%</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

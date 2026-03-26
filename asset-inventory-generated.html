@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Asset Inventory | Quantum Shield</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-secondary-fixed": "#001a42",
+              "surface-tint": "#0054d6",
+              "surface-variant": "#e0e3e5",
+              "on-primary-fixed-variant": "#003fa4",
+              "secondary": "#0058be",
+              "on-tertiary": "#ffffff",
+              "on-secondary-container": "#fefcff",
+              "on-secondary": "#ffffff",
+              "background": "#f7f9fb",
+              "tertiary-fixed-dim": "#4edea3",
+              "secondary-fixed": "#d8e2ff",
+              "tertiary": "#006645",
+              "on-primary-container": "#f8f7ff",
+              "secondary-container": "#2170e4",
+              "primary-fixed-dim": "#b3c5ff",
+              "tertiary-fixed": "#6ffbbe",
+              "on-surface-variant": "#424656",
+              "on-background": "#191c1e",
+              "on-tertiary-fixed-variant": "#005236",
+              "surface-container": "#eceef0",
+              "surface-bright": "#f7f9fb",
+              "on-tertiary-fixed": "#002113",
+              "surface-container-lowest": "#ffffff",
+              "outline": "#727687",
+              "tertiary-container": "#008259",
+              "surface-dim": "#d8dadc",
+              "secondary-fixed-dim": "#adc6ff",
+              "inverse-primary": "#b3c5ff",
+              "on-primary": "#ffffff",
+              "inverse-surface": "#2d3133",
+              "primary-container": "#0066ff",
+              "on-secondary-fixed-variant": "#004395",
+              "primary-fixed": "#dae1ff",
+              "inverse-on-surface": "#eff1f3",
+              "on-error": "#ffffff",
+              "surface-container-high": "#e6e8ea",
+              "outline-variant": "#c2c6d8",
+              "on-tertiary-container": "#e1ffec",
+              "error": "#ba1a1a",
+              "surface-container-highest": "#e0e3e5",
+              "on-surface": "#191c1e",
+              "surface-container-low": "#f2f4f6",
+              "on-error-container": "#93000a",
+              "error-container": "#ffdad6",
+              "surface": "#f7f9fb",
+              "primary": "#0050cb",
+              "on-primary-fixed": "#001849"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #e0e3e5; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-background text-on-surface antialiased overflow-x-hidden">
+<!-- TopNavBar Execution -->
+<header class="bg-white dark:bg-slate-900 font-['Inter'] antialiased docked full-width top-0 border-b-0 tonal-shift bg-slate-50 dark:bg-slate-950 flat no shadows flex justify-between items-center w-full px-6 h-16 sticky top-0 z-50">
+<div class="flex items-center gap-8">
+<div class="text-xl font-bold tracking-tight text-blue-700 dark:text-blue-400">Quantum Shield</div>
+<nav class="hidden md:flex items-center gap-6">
+<a class="text-slate-500 dark:text-slate-400 hover:text-blue-600 cursor-pointer active:opacity-80 transition-colors" href="#">Dashboard</a>
+<a class="text-blue-700 dark:text-blue-400 border-b-2 border-blue-700 dark:border-blue-400 pb-1 font-semibold cursor-pointer active:opacity-80" href="#">Assets</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-blue-600 cursor-pointer active:opacity-80 transition-colors" href="#">Vulnerabilities</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-blue-600 cursor-pointer active:opacity-80 transition-colors" href="#">Reports</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative hidden lg:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">search</span>
+<input class="bg-slate-100 dark:bg-slate-800 border-none rounded-full py-1.5 pl-10 pr-4 text-sm w-64 focus:ring-2 focus:ring-primary/20 transition-all" placeholder="Global search..." type="text"/>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors rounded-full text-slate-600 dark:text-slate-400">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors rounded-full text-slate-600 dark:text-slate-400">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<img alt="User profile avatar" class="w-8 h-8 rounded-full border border-slate-200" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBCULhltjwbk61Yz8rAl4FFprQVlQoZeVGboYvf1ZFKvAsnR43mW7fmhbTne3_Sy1uQPxj9LnllqgVhfzUbhx8YBda9j5vFSkLmcHIAXpV_iCpbZg2TEvBzp-dpazhnO7T_a03v2AkTcGbwhnTuHRk0mvX_EjEEMyjEv4jUI8SpbSkLTn_5R3kgSwLaxCU5E8uQbfK_sUobUrlPM12zrfkU8QXClfk-Ct9qpODRcJFnsdwuZXzXuYUnB9wPSEs2PK2c1X5bpMVzeGnc"/>
+</div>
+</div>
+</header>
+<div class="flex">
+<!-- SideNavBar Execution -->
+<aside class="bg-slate-50 dark:bg-slate-950 font-['Inter'] text-sm font-medium h-screen w-64 fixed left-0 top-16 border-r-0 tonal-shift using surface-container-low flat no shadows flex flex-col h-[calc(100vh-64px)] p-4 gap-2 hidden lg:flex">
+<div class="mb-6 px-2">
+<div class="text-lg font-black text-slate-900 dark:text-slate-100">Asset Sentinel</div>
+<div class="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Precision Monitoring</div>
+</div>
+<div class="flex-1 flex flex-col gap-1">
+<a class="bg-white dark:bg-slate-900 text-blue-700 dark:text-blue-400 shadow-sm rounded-lg flex items-center gap-3 px-3 py-2.5 transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined text-xl">inventory_2</span>
+                    Inventory
+                </a>
+<a class="text-slate-600 dark:text-slate-400 hover:text-blue-600 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined text-xl">laptop_mac</span>
+                    Endpoints
+                </a>
+<a class="text-slate-600 dark:text-slate-400 hover:text-blue-600 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined text-xl">cloud</span>
+                    Cloud Storage
+                </a>
+<a class="text-slate-600 dark:text-slate-400 hover:text-blue-600 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined text-xl">router</span>
+                    Network
+                </a>
+<a class="text-slate-600 dark:text-slate-400 hover:text-blue-600 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined text-xl">group</span>
+                    Users
+                </a>
+<a class="text-slate-600 dark:text-slate-400 hover:text-blue-600 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined text-xl">verified_user</span>
+                    Compliance
+                </a>
+</div>
+<div class="mt-auto border-t border-slate-200/60 dark:border-slate-800/60 pt-4 flex flex-col gap-1">
+<a class="text-slate-600 dark:text-slate-400 hover:text-blue-600 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined text-xl">help_outline</span>
+                    Support
+                </a>
+<a class="text-slate-600 dark:text-slate-400 hover:text-blue-600 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined text-xl">description</span>
+                    Documentation
+                </a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 lg:ml-64 p-6 min-h-screen">
+<!-- Header Section -->
+<div class="mb-10">
+<h1 class="text-[1.75rem] font-bold text-on-surface leading-tight tracking-tight headline-md">Asset Inventory</h1>
+<p class="text-on-surface-variant body-md mt-1">Comprehensive visibility into all network infrastructure and software components.</p>
+</div>
+<!-- Bento Summary Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+<div class="bg-surface-container-lowest p-6 rounded-xl border-l-4 border-primary shadow-sm hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start mb-2">
+<span class="text-on-surface-variant text-[0.6875rem] font-bold uppercase tracking-wider label-sm">Total Assets</span>
+<span class="material-symbols-outlined text-primary opacity-60">inventory</span>
+</div>
+<div class="text-3xl font-bold text-on-surface display-lg">24,812</div>
+<div class="mt-4 flex items-center text-tertiary text-xs font-semibold">
+<span class="material-symbols-outlined text-xs mr-1">trending_up</span>
+                        +12% from last month
+                    </div>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl border-l-4 border-secondary shadow-sm hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start mb-2">
+<span class="text-on-surface-variant text-[0.6875rem] font-bold uppercase tracking-wider label-sm">Managed Assets</span>
+<span class="material-symbols-outlined text-secondary opacity-60">admin_panel_settings</span>
+</div>
+<div class="text-3xl font-bold text-on-surface display-lg">21,405</div>
+<div class="mt-4 text-on-surface-variant text-xs font-medium">
+                        86.2% of total fleet
+                    </div>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl border-l-4 border-outline shadow-sm hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start mb-2">
+<span class="text-on-surface-variant text-[0.6875rem] font-bold uppercase tracking-wider label-sm">Shadow Assets</span>
+<span class="material-symbols-outlined text-outline opacity-60">visibility_off</span>
+</div>
+<div class="text-3xl font-bold text-on-surface display-lg">342</div>
+<div class="mt-4 flex items-center text-error text-xs font-semibold">
+<span class="material-symbols-outlined text-xs mr-1">warning</span>
+                        Requires immediate audit
+                    </div>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl border-l-4 border-error shadow-sm hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start mb-2">
+<span class="text-on-surface-variant text-[0.6875rem] font-bold uppercase tracking-wider label-sm">High Risk</span>
+<span class="material-symbols-outlined text-error opacity-60">report</span>
+</div>
+<div class="text-3xl font-bold text-on-surface display-lg">18</div>
+<div class="mt-4 flex items-center text-error text-xs font-semibold">
+<span class="material-symbols-outlined text-xs mr-1">priority_high</span>
+                        Across 3 critical nodes
+                    </div>
+</div>
+</div>
+<!-- Filters and Table Card -->
+<div class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden flex flex-col min-h-[600px]">
+<!-- Filter Bar -->
+<div class="p-4 bg-surface-container-low flex flex-wrap items-center justify-between gap-4">
+<div class="flex items-center gap-3">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
+<input class="bg-white border-outline-variant/30 rounded-lg py-2 pl-10 pr-4 text-sm w-80 focus:ring-2 focus:ring-primary/20 focus:border-primary" placeholder="Filter assets by name, IP, or vendor..." type="text"/>
+</div>
+<div class="flex gap-2">
+<select class="bg-white border-outline-variant/30 rounded-lg py-2 pl-3 pr-8 text-sm focus:ring-2 focus:ring-primary/20 text-on-surface-variant font-medium">
+<option>Asset Type</option>
+<option>Hardware</option>
+<option>Software</option>
+</select>
+<select class="bg-white border-outline-variant/30 rounded-lg py-2 pl-3 pr-8 text-sm focus:ring-2 focus:ring-primary/20 text-on-surface-variant font-medium">
+<option>Status</option>
+<option>Safe</option>
+<option>Warning</option>
+<option>Critical</option>
+</select>
+<select class="bg-white border-outline-variant/30 rounded-lg py-2 pl-3 pr-8 text-sm focus:ring-2 focus:ring-primary/20 text-on-surface-variant font-medium">
+<option>Risk Level</option>
+<option>Low</option>
+<option>Medium</option>
+<option>High</option>
+</select>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="bg-surface-container-highest text-on-surface px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined text-sm">file_download</span>
+                            Export
+                        </button>
+<button class="bg-gradient-to-br from-primary to-primary-container text-white px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined text-sm">add</span>
+                            Add Asset
+                        </button>
+</div>
+</div>
+<!-- Data Table -->
+<div class="flex-1 overflow-x-auto custom-scrollbar">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-b border-outline-variant/10">
+<th class="px-6 py-4 text-[0.6875rem] font-bold uppercase tracking-wider text-on-surface-variant label-sm">Asset Name</th>
+<th class="px-6 py-4 text-[0.6875rem] font-bold uppercase tracking-wider text-on-surface-variant label-sm">Status</th>
+<th class="px-6 py-4 text-[0.6875rem] font-bold uppercase tracking-wider text-on-surface-variant label-sm">Type</th>
+<th class="px-6 py-4 text-[0.6875rem] font-bold uppercase tracking-wider text-on-surface-variant label-sm">Region</th>
+<th class="px-6 py-4 text-[0.6875rem] font-bold uppercase tracking-wider text-on-surface-variant label-sm">IP Address</th>
+<th class="px-6 py-4 text-[0.6875rem] font-bold uppercase tracking-wider text-on-surface-variant label-sm">Vendor</th>
+<th class="px-6 py-4 text-[0.6875rem] font-bold uppercase tracking-wider text-on-surface-variant label-sm text-right">Risk Level</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/10">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-low transition-colors group cursor-pointer">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-primary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-lg">dns</span>
+</div>
+<div>
+<div class="font-semibold text-on-surface text-sm">PROD-DB-CORE-01</div>
+<div class="text-xs text-on-surface-variant">PostgreSQL Cluster</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-tertiary-container text-on-tertiary-container">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary mr-1.5"></span>
+                                        Safe
+                                    </span>
+</td>
+<td class="px-6 py-4 text-sm text-on-surface-variant">Software</td>
+<td class="px-6 py-4 text-sm text-on-surface-variant">US-East-1</td>
+<td class="px-6 py-4 text-sm font-mono text-on-surface-variant">10.0.4.122</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<img alt="AWS logo" class="w-4 h-4 grayscale opacity-70" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDWDGsQArAtME2-zHoQML8WNeGM4CgT3vlrENHcgE5Fna2JY9mKnd4Ulj6eywyM-msJTgBgB9BEUZo95EpaNZanP5jOOmh_HAYasG1fcwhz2X7y_-KkCXWyho57HBKzVQqe9gKya_FyRcHL4e8eHuMqXUxTYckUVXWHJqwR-mLoLNuYhpcSE522Qq2G6cY_FmOAXqJC6gFywTbZj9KvO9ZK0FcxdiEjDpb2NHd8TAKOqhC6ybv1c_4miHM0-AxrIOoW-M91-QpFi23e"/>
+<span class="text-sm text-on-surface-variant">AWS</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex items-center justify-end gap-2">
+<div class="w-16 h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-tertiary rounded-full" style="width: 15%"></div>
+</div>
+<span class="text-xs font-bold text-tertiary">15%</span>
+</div>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-low transition-colors group cursor-pointer">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-secondary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary text-lg">router</span>
+</div>
+<div>
+<div class="font-semibold text-on-surface text-sm">HQ-GATEWAY-ISR</div>
+<div class="text-xs text-on-surface-variant">Cisco ISR 4451</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-secondary-container/20 text-secondary">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary mr-1.5"></span>
+                                        Warning
+                                    </span>
+</td>
+<td class="px-6 py-4 text-sm text-on-surface-variant">Hardware</td>
+<td class="px-6 py-4 text-sm text-on-surface-variant">EU-West-2</td>
+<td class="px-6 py-4 text-sm font-mono text-on-surface-variant">192.168.1.1</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<img alt="Cisco logo" class="w-4 h-4 grayscale opacity-70" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBy5H6fX68uPfhepvfNCiPw40a0mgggLaLJ6HJLDXHVn3rC-vo1kA87BOb3CIiJ0NS9H79JEt5lX9sYfKNeP5x15kRiu1xB_FQFtBJSphT3_k9zuHVGxz0XZIhIYzBZLXHZP-0mqgtYG09oyobsPctEUmHk5uGY-qSZduFoQxPzTNzmaPLqfkmdCZaa6vSSFD6lHEgzAQrXgYxwhrA90dXieIoveRghEG_jfar4-2zfgR6ShMiDMd2_Wffe0zl9Nvnch9Rn2Bd6fR7n"/>
+<span class="text-sm text-on-surface-variant">Cisco</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex items-center justify-end gap-2">
+<div class="w-16 h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-secondary-container rounded-full" style="width: 58%"></div>
+</div>
+<span class="text-xs font-bold text-secondary">58%</span>
+</div>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-low transition-colors group cursor-pointer">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-error/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-error text-lg">terminal</span>
+</div>
+<div>
+<div class="font-semibold text-on-surface text-sm">LEGACY-FTP-SRV</div>
+<div class="text-xs text-on-surface-variant">Ubuntu 16.04 LTS</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-error-container text-on-error-container">
+<span class="w-1.5 h-1.5 rounded-full bg-error mr-1.5"></span>
+                                        Critical
+                                    </span>
+</td>
+<td class="px-6 py-4 text-sm text-on-surface-variant">Software</td>
+<td class="px-6 py-4 text-sm text-on-surface-variant">US-West-2</td>
+<td class="px-6 py-4 text-sm font-mono text-on-surface-variant">10.0.8.44</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<img alt="Microsoft logo" class="w-4 h-4 grayscale opacity-70" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCVv7Qm0vhP_V_aDh1bJCGsXkoj-mpZKcP2JaEfVS4E3h0Z1asrDkc5Mf83sPV8shKGobEtQ-5JoLOUSF8Ymrik7xYLlk5SMohBzJvRi3E-QCa9W1cf8Q7reldUGoQwc7CyKWyfLxJ3TznCFvi7MJZPZz7YyhCcLKcl-64mwHQsUh1eVI8wl_cgCbbAD-W2-ob8TzPu8ZtAk7nMXyq8TtejoOD3Pe2o1K1dd6uNOW8wTqbU8hHhVEeyKXR1bVZYNqrpqqJugOq86YzY"/>
+<span class="text-sm text-on-surface-variant">Azure</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex items-center justify-end gap-2">
+<div class="w-16 h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-error rounded-full" style="width: 92%"></div>
+</div>
+<span class="text-xs font-bold text-error">92%</span>
+</div>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-surface-container-low transition-colors group cursor-pointer">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-surface-tint/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-surface-tint text-lg">laptop</span>
+</div>
+<div>
+<div class="font-semibold text-on-surface text-sm">WKS-8821-M1</div>
+<div class="text-xs text-on-surface-variant">MacBook Pro 16"</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-tertiary-container text-on-tertiary-container">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary mr-1.5"></span>
+                                        Safe
+                                    </span>
+</td>
+<td class="px-6 py-4 text-sm text-on-surface-variant">Hardware</td>
+<td class="px-6 py-4 text-sm text-on-surface-variant">Remote</td>
+<td class="px-6 py-4 text-sm font-mono text-on-surface-variant">172.16.4.15</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<span class="text-sm text-on-surface-variant">Apple Inc.</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex items-center justify-end gap-2">
+<div class="w-16 h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-tertiary rounded-full" style="width: 8%"></div>
+</div>
+<span class="text-xs font-bold text-tertiary">8%</span>
+</div>
+</td>
+</tr>
+<!-- Row 5 -->
+<tr class="hover:bg-surface-container-low transition-colors group cursor-pointer">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-primary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-lg">cloud</span>
+</div>
+<div>
+<div class="font-semibold text-on-surface text-sm">S3-ARCHIVE-GOLD</div>
+<div class="text-xs text-on-surface-variant">Object Storage</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-secondary-container/20 text-secondary">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary mr-1.5"></span>
+                                        Warning
+                                    </span>
+</td>
+<td class="px-6 py-4 text-sm text-on-surface-variant">Software</td>
+<td class="px-6 py-4 text-sm text-on-surface-variant">US-East-1</td>
+<td class="px-6 py-4 text-sm font-mono text-on-surface-variant">-</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<img alt="AWS logo" class="w-4 h-4 grayscale opacity-70" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPkbzZ6XthlXHlMjxuQqN10-Y44JoSZg_X8oFq6pZtX4xCSzLSz3x7jkH56Dbj9llmKi7ZtKk3h0FhBmGr7wzW_51Nba2eZFLT0ShBgOWPEZPdfWL8rXVNt5oItm-KYGv5oSOuE1VvIR0-9sl0KICVf9KFhjxsheTn1Zple7-1w3Zsd1RnJgmh2DZkaOPbtsSzPQ68IbaJVbG0FEUjFApmYTWCob1QvvEM1H-JcECoWUaLr_7jErI1a1TZaO20w3nQiueLr5FjDJ6G"/>
+<span class="text-sm text-on-surface-variant">AWS</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex items-center justify-end gap-2">
+<div class="w-16 h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-secondary-container rounded-full" style="width: 42%"></div>
+</div>
+<span class="text-xs font-bold text-secondary">42%</span>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination -->
+<div class="px-6 py-4 border-t border-outline-variant/10 flex items-center justify-between bg-surface-container-low">
+<div class="text-xs text-on-surface-variant font-medium">
+                        Showing 1-10 of 24,812 assets
+                    </div>
+<div class="flex gap-1">
+<button class="w-8 h-8 flex items-center justify-center rounded border border-outline-variant/30 text-on-surface-variant hover:bg-white transition-colors">
+<span class="material-symbols-outlined text-sm">chevron_left</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center rounded bg-primary text-white text-xs font-bold">1</button>
+<button class="w-8 h-8 flex items-center justify-center rounded border border-outline-variant/30 text-on-surface-variant hover:bg-white transition-colors text-xs font-medium">2</button>
+<button class="w-8 h-8 flex items-center justify-center rounded border border-outline-variant/30 text-on-surface-variant hover:bg-white transition-colors text-xs font-medium">3</button>
+<button class="w-8 h-8 flex items-center justify-center rounded border border-outline-variant/30 text-on-surface-variant hover:bg-white transition-colors">
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Contextual Insights Section -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+<div class="lg:col-span-2 bg-surface-container-lowest p-6 rounded-xl shadow-sm">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-bold text-on-surface text-base">Asset Distribution by Vendor</h3>
+<button class="text-primary text-xs font-bold uppercase tracking-wider">Full Report</button>
+</div>
+<div class="h-48 flex items-end justify-between gap-4 px-4">
+<div class="flex flex-col items-center gap-2 w-full">
+<div class="w-full bg-primary/20 rounded-t-sm relative group cursor-pointer" style="height: 80%">
+<div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-inverse-surface text-inverse-on-surface text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">AWS: 12,402</div>
+<div class="absolute inset-0 bg-primary opacity-40 group-hover:opacity-60 transition-opacity"></div>
+</div>
+<span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-tighter">AWS</span>
+</div>
+<div class="flex flex-col items-center gap-2 w-full">
+<div class="w-full bg-primary/20 rounded-t-sm relative group cursor-pointer" style="height: 45%">
+<div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-inverse-surface text-inverse-on-surface text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Azure: 6,112</div>
+<div class="absolute inset-0 bg-primary opacity-40 group-hover:opacity-60 transition-opacity"></div>
+</div>
+<span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-tighter">Azure</span>
+</div>
+<div class="flex flex-col items-center gap-2 w-full">
+<div class="w-full bg-primary/20 rounded-t-sm relative group cursor-pointer" style="height: 30%">
+<div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-inverse-surface text-inverse-on-surface text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Cisco: 3,921</div>
+<div class="absolute inset-0 bg-primary opacity-40 group-hover:opacity-60 transition-opacity"></div>
+</div>
+<span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-tighter">Cisco</span>
+</div>
+<div class="flex flex-col items-center gap-2 w-full">
+<div class="w-full bg-primary/20 rounded-t-sm relative group cursor-pointer" style="height: 15%">
+<div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-inverse-surface text-inverse-on-surface text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Other: 2,377</div>
+<div class="absolute inset-0 bg-primary opacity-40 group-hover:opacity-60 transition-opacity"></div>
+</div>
+<span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-tighter">Other</span>
+</div>
+</div>
+</div>
+<div class="bg-gradient-to-br from-primary to-primary-container p-6 rounded-xl shadow-lg relative overflow-hidden group">
+<div class="absolute -right-4 -top-4 w-24 h-24 bg-white/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700"></div>
+<h3 class="text-white font-bold text-base mb-2">Automated Discovery</h3>
+<p class="text-blue-100 text-xs leading-relaxed mb-6">Discovery agents identified 14 new endpoints in the last 24 hours. Would you like to categorize them now?</p>
+<button class="w-full py-2.5 bg-white text-primary text-xs font-bold rounded-lg hover:bg-blue-50 transition-colors shadow-sm">Review New Assets</button>
+<div class="mt-4 pt-4 border-t border-white/10">
+<div class="flex items-center gap-2 text-[10px] font-bold text-blue-200 uppercase tracking-widest">
+<span class="material-symbols-outlined text-xs">sync</span>
+                            Next scan in 14m 22s
+                        </div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Mobile Navigation Suppressed as per context rules - using TopNavBar Link cluster -->
+</body></html>

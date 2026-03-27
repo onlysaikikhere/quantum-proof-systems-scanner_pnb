@@ -1,8 +1,6 @@
 # 🛡️ Quantum Shield: Enterprise Post-Quantum Security Platform
 
 <div align="center">
-  <img src="src/assets/scanner.png" alt="Quantum Shield Scanner Interface" width="100%" style="border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 24px rgba(0,0,0,0.1);" />
-  
   **The ultimate real-time cryptographic scanner and AI-driven post-quantum readiness engine.**<br>
   *Built by Team - CyberRiot*
   
@@ -11,6 +9,10 @@
   [![Hackathon](https://img.shields.io/badge/Event-PNB_Hackathon-0050cb?style=for-the-badge&logo=codeforces)](#)
   [![Security](https://img.shields.io/badge/Security-NIST_PQC_Compliant-10b981?style=for-the-badge&logo=shield)](#)
   [![Architecture](https://img.shields.io/badge/Architecture-FastAPI_%7C_React-black?style=for-the-badge&logo=python)](#)
+  
+  <br>
+  
+  <img src="src/assets/scanner.png" alt="Quantum Shield Scanner Interface" width="100%" style="border-radius: 12px; margin-top: 15px; margin-bottom: 20px; box-shadow: 0 4px 24px rgba(0,0,0,0.1);" />
   
 </div>
 

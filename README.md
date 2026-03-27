@@ -1,7 +1,9 @@
+<div align="center">
+
 # 🛡️ Quantum Shield: Enterprise Post-Quantum Security Platform
 
-<div align="center">
-  **The ultimate real-time cryptographic scanner and AI-driven post-quantum readiness engine.**<br>
+  **The ultimate real-time cryptographic scanner and AI-driven post-quantum readiness engine.**
+  <br>
   *Built by Team - CyberRiot*
   
   <br>

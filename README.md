@@ -39,6 +39,19 @@ Quantum Shield doesn't rely on cached data. Our advanced Python backend manually
 *   The raw algorithm profile (RSA, ECDSA) to calculate a deterministic **Quantum Risk Score**.
 *   Any impending certificate expirations that could result in devastating outages.
 
+#### 🧮 Scoring Logic & Criticality Definition (Prototype)
+Our integrated Risk Engine deterministically calculates the severity and criticality of scanned assets based on a strict 100-point metric system. Factors defining the risk exposure include:
+
+*   **Protocol & Transport (max 35 pts):** TLS 1.3 (+35) vs legacy TLS 1.2 (+20) or outdated TLS 1.1/1.0.
+*   **Cryptographic Algorithm (max 35 pts):** PQC-resistant symmetric ciphers like AES/ChaCha (+35), ECC/ECDSA (+20), and legacy asymmetric like RSA (+5).
+*   **Key Size Strength (max 30 pts):** Robust >= 4096-bit (+30) vs standard 2048-bit (+15) vs extremely weak < 2048-bit (+0).
+*   **Operational Penalties:** Assets with certificates expiring within 30 days receive a severe point reduction (-20). Fully expired certificates automatically cap the overall score at **10 (Critical failure)**.
+
+**Risk Severity Categorization:**
+1.  **Low Risk (Score ≥ 85):** Asset is utilizing modern transport (TLS 1.3) with perfect forward secrecy and quantum-resistant key lengths. Graded as **PQC Ready**.
+2.  **Medium Risk (Score 50 - 84):** Typical of standard AES/ECC 2048-bit implementations. Graded as **Partial**. *(Note: Any asset running RSA algorithms is strictly clamped to a minimum of Medium risk regardless of key size due to Shor's algorithm vulnerability).*
+3.  **High Risk (Score < 50):** Critical vulnerabilities. The asset utilizes deprecated TLS, extremely weak key lengths, or expired certificates. Immediate remediation is required. Graded as **Vulnerable / Not Safe**.
+
 ### 🤖 Precise Sentinel AI (Generative NLP Chatbot)
 <div align="center">
   <img src="src/assets/chatbot.png" alt="Quantum AI Chatbot Interface" width="90%" style="border-radius: 8px; margin: 15px 0; border: 1px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.05);" />

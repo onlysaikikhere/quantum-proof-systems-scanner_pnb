@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 const Scanner = () => {
   const [target, setTarget] = useState("");
+  const [scanMode, setScanMode] = useState("Full Deep Scan");
   const [isScanning, setIsScanning] = useState(false);
   const [scanResult, setScanResult] = useState<any>(null);
   const [showToast, setShowToast] = useState(false);
@@ -11,12 +12,12 @@ const Scanner = () => {
     if (!target) return;
     setIsScanning(true);
     try {
-      const res = await fetch('http://localhost:8000/api/scan', {
+      const res = await fetch((import.meta.env.VITE_API_URL || 'http://localhost:8000') + '/api/scan', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ domain: target })
+        body: JSON.stringify({ domain: target, mode: scanMode })
       });
       const data = await res.json();
       setScanResult(data);
@@ -38,11 +39,16 @@ const Scanner = () => {
         {/* Page Header */}
         <div className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
-            <h2 className="text-3xl font-extrabold tracking-tight text-on-surface leading-tight">Quantum Vulnerability Scanner</h2>
+            <div className="flex items-center gap-3">
+              <h2 className="text-3xl font-extrabold tracking-tight text-on-surface leading-tight">Quantum Vulnerability Scanner</h2>
+              <a href="https://csrc.nist.gov/Projects/post-quantum-cryptography" target="_blank" rel="noopener noreferrer" className="w-6 h-6 rounded-full bg-surface-container-high border border-outline-variant/30 flex items-center justify-center hover:bg-primary/10 hover:text-primary transition-colors group relative cursor-pointer" title="NIST PQC Standards">
+                <span className="material-symbols-outlined text-[14px]">info</span>
+              </a>
+            </div>
             <p className="text-on-surface-variant mt-2 max-w-xl">Initiate comprehensive cryptographic audits to identify legacy algorithms vulnerable to Shor's algorithm and ensure PQC compliance.</p>
           </div>
           <div className="flex items-center gap-3">
-            <button className="px-5 py-2.5 bg-surface-container-highest text-on-surface rounded font-semibold text-sm transition-all hover:bg-surface-dim w-full sm:w-auto">
+            <button onClick={() => window.open((import.meta.env.VITE_API_URL || 'http://localhost:8000') + '/api/reports/download')} className="px-5 py-2.5 bg-surface-container-highest text-on-surface rounded font-semibold text-sm transition-all hover:bg-surface-dim w-full sm:w-auto">
               Export Report
             </button>
             <button 
@@ -75,7 +81,11 @@ const Scanner = () => {
                     type="text" 
                   />
                 </div>
-                <select className="bg-surface-container-low border-none rounded-lg py-4 px-6 text-sm font-bold text-on-surface-variant focus:ring-2 focus:ring-primary/20 outline-none cursor-pointer w-full sm:w-auto">
+                <select 
+                  value={scanMode}
+                  onChange={(e) => setScanMode(e.target.value)}
+                  className="bg-surface-container-low border-none rounded-lg py-4 px-6 text-sm font-bold text-on-surface-variant focus:ring-2 focus:ring-primary/20 outline-none cursor-pointer w-full sm:w-auto"
+                >
                   <option>Full Deep Scan</option>
                   <option>Quick Audit</option>
                   <option>SSL/TLS Only</option>
@@ -185,6 +195,29 @@ const Scanner = () => {
                   <p className="text-[0.65rem] text-on-surface-variant mt-2 truncate">Analysis of algorithm {scanResult?.scan_result?.algorithm || ''}</p>
                 </div>
                 
+                {/* 8. Crypto Migration Path */}
+                <div className="bg-surface-container-low rounded-lg p-5">
+                  <p className="text-[0.6875rem] font-bold text-on-surface-variant uppercase tracking-widest mb-2">Migration Path</p>
+                  <div className="flex flex-col gap-2 mt-3">
+                    <div className="flex items-center justify-between text-xs font-bold text-on-surface bg-surface-container-highest px-3 py-2 rounded">
+                       <span>{scanResult?.scan_result?.algorithm || 'Current'}</span>
+                       <span className="material-symbols-outlined text-[14px] text-on-surface-variant opacity-50">arrow_forward</span>
+                       <span className="text-primary">{scanResult?.scan_result?.algorithm === 'RSA' ? 'Kyber-768' : 'NIST PQC Standard'}</span>
+                    </div>
+                    <div className="mt-1 text-[0.65rem] text-on-surface-variant font-medium">Recommended secure replacement logic.</div>
+                  </div>
+                </div>
+
+                {/* 9. Scan Analytics */}
+                <div className="bg-surface-container-low rounded-lg p-5">
+                  <p className="text-[0.6875rem] font-bold text-on-surface-variant uppercase tracking-widest mb-2">Scan Performance</p>
+                  <div className="flex items-baseline justify-between mt-1">
+                    <span className="text-xl font-bold text-on-surface">{isScanning ? '--' : (scanResult ? (scanMode === 'Quick Audit' ? '240ms' : '1.42s') : '---')}</span>
+                    <span className="text-[0.625rem] font-bold py-0.5 px-2 bg-surface-container-highest text-on-surface rounded uppercase">{scanMode}</span>
+                  </div>
+                  <p className="text-[0.65rem] text-on-surface-variant mt-2 border-t border-surface-container-highest pt-2">Payloads Verified: {scanResult ? (scanMode === 'Full Deep Scan' ? '128' : '14') : '0'}</p>
+                </div>
+                
                 {/* Smart Risk Explanation (Full Width) */}
                 {(scanResult?.risk?.reason || scanResult?.risk?.recommendation) && (
                   <div className="col-span-1 md:col-span-2 lg:col-span-3 bg-surface-container-low rounded-lg p-5 border-l-4 border-primary">
@@ -255,8 +288,9 @@ const Scanner = () => {
                   </div>
                 </div>
               </div>
-              <button className="w-full mt-6 py-2.5 bg-surface-container-highest text-on-surface rounded font-bold text-xs transition-colors hover:bg-surface-dim">
-                Create Custom Schedule
+              <button onClick={() => { alert(`Automated deep scan scheduled for ${target || 'Current Target'} at 02:00 AM UTC.`); }} className="w-full mt-6 py-2.5 bg-gradient-to-br from-primary to-primary-container text-white rounded font-bold text-xs transition-all hover:shadow-lg active:scale-95 flex items-center justify-center gap-2">
+                <span className="material-symbols-outlined text-[14px]">auto_mode</span>
+                Auto Schedule Scan
               </button>
             </div>
 

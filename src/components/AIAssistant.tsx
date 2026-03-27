@@ -21,7 +21,7 @@ const AIAssistant = () => {
     setIsTyping(true);
 
     try {
-      const res = await fetch('http://localhost:8000/api/chat', {
+      const res = await fetch((import.meta.env.VITE_API_URL || 'http://localhost:8000') + '/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: userMsg })
@@ -113,13 +113,13 @@ const AIAssistant = () => {
                     <span>Scan pnb.com</span>
                     <span className="material-symbols-outlined text-[14px] text-primary opacity-0 group-hover:opacity-100 transition-opacity">rocket_launch</span>
                   </button>
-                  <button onClick={() => handleSend("Generate report")} className="text-left px-3 py-2 bg-white/50 hover:bg-white text-[11px] font-medium rounded-lg border border-outline-variant/10 transition-all flex items-center justify-between group">
-                    <span>Generate report</span>
+                  <button onClick={() => handleSend("Email the risk report to ceo@bank.com")} className="text-left px-3 py-2 bg-white/50 hover:bg-white text-[11px] font-medium rounded-lg border border-outline-variant/10 transition-all flex items-center justify-between group">
+                    <span>Email the risk report to ceo@bank.com</span>
                     <span className="material-symbols-outlined text-[14px] text-primary opacity-0 group-hover:opacity-100 transition-opacity">description</span>
                   </button>
-                  <button onClick={() => handleSend("Schedule weekly scan")} className="text-left px-3 py-2 bg-white/50 hover:bg-white text-[11px] font-medium rounded-lg border border-outline-variant/10 transition-all flex items-center justify-between group">
-                    <span>Schedule weekly scan</span>
-                    <span className="material-symbols-outlined text-[14px] text-primary opacity-0 group-hover:opacity-100 transition-opacity">event_repeat</span>
+                  <button onClick={() => handleSend("Schedule check for internal.com every week at 3 PM")} className="text-left px-3 py-2 bg-white/50 hover:bg-white text-[11px] font-medium rounded-lg border border-outline-variant/10 transition-all flex items-center justify-between group">
+                    <span className="truncate mr-2">Schedule check for internal.com every week at 3 PM</span>
+                    <span className="material-symbols-outlined text-[14px] text-primary opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">event_repeat</span>
                   </button>
                 </div>
               </div>

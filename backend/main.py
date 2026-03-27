@@ -65,6 +65,7 @@ from pydantic import BaseModel
 
 class ScanRequest(BaseModel):
     domain: str
+    mode: Optional[str] = "Full Deep Scan"
 
 @app.post("/api/scan", response_model=Asset)
 def run_scan(request: ScanRequest, background_tasks: BackgroundTasks):
@@ -95,7 +96,7 @@ def run_scan(request: ScanRequest, background_tasks: BackgroundTasks):
         "ip_address": "Resolving...",
         "risk": risk_data,
         "scan_result": scan_data,
-        "metadata": {"source": "manual_scan"}
+        "metadata": {"source": "manual_scan", "mode": request.mode}
     }
     
     db_assets[asset_id] = new_asset
@@ -228,6 +229,41 @@ def download_pdf_report():
         headers={"Content-Disposition": f"attachment; filename={pdf_name}"}
     )
 
+@app.get("/api/reports/vulnerable-download")
+def download_vulnerable_pdf_report():
+    """Generates and downloads a PDF report containing ONLY vulnerable assets."""
+    risk_data = get_dashboard_metrics()
+    all_assets = get_all_assets_list()
+    vuln_assets = [a for a in all_assets if a.get("risk", {}).get("risk_level") in ["High", "Medium"]]
+    
+    overall_risk = "High" if risk_data["summary"]["high_risk"] > 0 else "Low"
+    
+    pdf_bytes = generate_pdf_report({
+        "report_title": "Critical Vulnerability Disclosures",
+        "theme_color": "#dc2626",
+        "secondary_theme_color": "#991b1b",
+        "executive_summary": f"This report focuses exclusively on vulnerable assets. We identified {len(vuln_assets)} assets requiring immediate remediation due to legacy cryptography or impending certificate expiration.",
+        "risk_score": risk_data["summary"]["pqc_readiness_pct"],
+        "overall_risk": overall_risk,
+        "assets": vuln_assets, 
+        "vulnerable_assets": vuln_assets,
+        "recommendations": [
+            "Upgrade outdated TLS to 1.3 across all perimeter gateways.",
+            "Replace RSA signatures with PQC algorithms like Kyber.",
+            "Renew certificates expiring within 30 days."
+        ]
+    })
+    
+    import datetime
+    date_prefix = datetime.datetime.now().strftime('%Y_%m_%d')
+    pdf_name = f'{date_prefix}-Vulnerable_Assets_Report.pdf'
+    
+    return Response(
+        content=pdf_bytes, 
+        media_type="application/pdf", 
+        headers={"Content-Disposition": f"attachment; filename={pdf_name}"}
+    )
+
 # --- MODULE 9: AI CHATBOT ---
 class ChatRequest(BaseModel):
     message: str
@@ -277,8 +313,21 @@ def chat_with_assistant(request: ChatRequest):
             "recommendations": ["Upgrade legacy algorithms to NIST-compliant standards", "Prioritize rotating expiring certificates"]
         })
 
-        # 4. Send Email
-        success = send_email(recipient, subject, body, pdf_bytes)
+        # 4. Generate Vulnerable PDF Report
+        vuln_pdf_bytes = generate_pdf_report({
+            "report_title": "Critical Vulnerability Disclosures",
+            "theme_color": "#dc2626",
+            "secondary_theme_color": "#991b1b",
+            "executive_summary": f"This report focuses exclusively on vulnerable assets. We identified {len(vuln_assets)} assets requiring immediate remediation due to legacy cryptography or impending certificate expiration.",
+            "risk_score": risk_data["summary"]["pqc_readiness_pct"],
+            "overall_risk": overall_risk,
+            "assets": vuln_assets,
+            "vulnerable_assets": vuln_assets,
+            "recommendations": ["Upgrade legacy algorithms to NIST-compliant standards", "Prioritize rotating expiring certificates"]
+        })
+
+        # 5. Send Email
+        success = send_email(recipient, subject, body, pdf_bytes, vuln_pdf_bytes)
         
         # 5. Return API Response
         if success is True:

@@ -13,7 +13,7 @@ const Reports = () => {
               <span className="material-symbols-outlined text-lg" data-icon="calendar_month">calendar_month</span>
               Schedule
             </button>
-            <button onClick={() => window.open('http://localhost:8000/api/reports/download')} className="flex items-center gap-2 px-6 py-2.5 bg-gradient-to-br from-primary to-primary-container text-white rounded-lg font-bold shadow-md hover:shadow-lg active:scale-95 transition-all text-sm w-full sm:w-auto">
+            <button onClick={() => window.open((import.meta.env.VITE_API_URL || 'http://localhost:8000') + '/api/reports/download')} className="flex items-center gap-2 px-6 py-2.5 bg-gradient-to-br from-primary to-primary-container text-white rounded-lg font-bold shadow-md hover:shadow-lg active:scale-95 transition-all text-sm w-full sm:w-auto">
               <span className="material-symbols-outlined text-lg" data-icon="download">download</span>
               Export Report
             </button>
@@ -67,21 +67,34 @@ const Reports = () => {
             <div className="bg-surface-container-lowest p-6 rounded-xl shadow-[0_4px_24px_rgba(0,0,0,0.04)] border border-outline-variant/10">
               <h3 className="text-sm font-bold text-on-surface mb-6 uppercase tracking-wider">Export Document</h3>
               <div className="space-y-3">
-                <button onClick={() => window.open('http://localhost:8000/api/reports/download')} className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-surface-container-low border border-transparent hover:border-outline-variant/20 transition-all group">
+                <button onClick={() => window.open((import.meta.env.VITE_API_URL || 'http://localhost:8000') + '/api/reports/download')} className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-surface-container-low border border-transparent hover:border-outline-variant/20 transition-all group">
                   <div className="flex items-center gap-3">
                     <span className="material-symbols-outlined text-error" data-icon="picture_as_pdf">picture_as_pdf</span>
                     <span className="text-sm font-medium">Standard PDF Report</span>
                   </div>
                   <span className="material-symbols-outlined text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity" data-icon="chevron_right">chevron_right</span>
                 </button>
-                <button onClick={() => window.open('http://localhost:8000/api/reports/download')} className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-surface-container-low border border-transparent hover:border-outline-variant/20 transition-all group">
+                <button onClick={() => window.open((import.meta.env.VITE_API_URL || 'http://localhost:8000') + '/api/vulnerable-assets')} className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-surface-container-low border border-transparent hover:border-error/30 transition-all group bg-error/5">
+                  <div className="flex items-center gap-3">
+                    <span className="material-symbols-outlined text-error" data-icon="warning">warning</span>
+                    <span className="text-sm font-medium text-error font-bold">Vulnerable Assets Report</span>
+                  </div>
+                  <span className="material-symbols-outlined text-error opacity-0 group-hover:opacity-100 transition-opacity" data-icon="download">download</span>
+                </button>
+                <button onClick={() => window.open((import.meta.env.VITE_API_URL || 'http://localhost:8000') + '/api/report')} className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-surface-container-low border border-transparent hover:border-outline-variant/20 transition-all group">
                   <div className="flex items-center gap-3">
                     <span className="material-symbols-outlined text-primary" data-icon="javascript">javascript</span>
                     <span className="text-sm font-medium">Data Export (JSON)</span>
                   </div>
                   <span className="material-symbols-outlined text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity" data-icon="chevron_right">chevron_right</span>
                 </button>
-                <button onClick={() => alert("Email Sent!")} className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-surface-container-low border border-transparent hover:border-outline-variant/20 transition-all group">
+                <button onClick={() => {
+                  fetch((import.meta.env.VITE_API_URL || 'http://localhost:8000') + '/api/email', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ recipient: 'admin@quantumshield.local' })
+                  }).then(() => alert("Email Report Dispatched Successfully!"));
+                }} className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-surface-container-low border border-transparent hover:border-outline-variant/20 transition-all group">
                   <div className="flex items-center gap-3">
                     <span className="material-symbols-outlined text-tertiary" data-icon="mail">mail</span>
                     <span className="text-sm font-medium">Email Report</span>

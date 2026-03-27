@@ -14,7 +14,7 @@ const Dashboard = () => {
   });
 
   useEffect(() => {
-    fetch('http://localhost:8000/api/risk')
+    fetch((import.meta.env.VITE_API_URL || 'http://localhost:8000') + '/api/risk')
       .then(res => res.json())
       .then(data => {
         if (data && data.summary) {
@@ -41,7 +41,7 @@ const Dashboard = () => {
             Last 24 Hours
           </button>
           <button 
-            onClick={() => window.open('http://localhost:8000/api/reports/download', '_blank')}
+            onClick={() => window.open((import.meta.env.VITE_API_URL || 'http://localhost:8000') + '/api/reports/download', '_blank')}
             className="flex items-center justify-center gap-2 px-6 py-2.5 bg-gradient-to-br from-primary to-primary-container text-white rounded-lg text-sm font-bold shadow-md shadow-primary/20 hover:scale-105 active:scale-95 transition-all"
           >
             Export Complete Report

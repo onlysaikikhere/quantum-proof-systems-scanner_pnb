@@ -19,7 +19,7 @@ def process_chat_message(message: str) -> dict:
         time_str = time_match.group(1) if time_match else "12:00 AM"
         
         frequency = "daily"
-        if "monday" in msg_lower or "weekly" in msg_lower:
+        if "monday" in msg_lower or "weekly" in msg_lower or "week" in msg_lower:
             frequency = "weekly"
         elif "hour" in msg_lower:
             frequency = "hourly"
@@ -106,7 +106,7 @@ def summarize_report(data: dict) -> str:
         print(f"Gemini API Error: {e}")
         return fallback
 
-def send_email(to_email: str, subject: str, body: str, pdf_bytes: bytes = None) -> bool:
+def send_email(to_email: str, subject: str, body: str, pdf_bytes: bytes = None, vuln_pdf_bytes: bytes = None) -> bool:
     """
     Sends an SMTP email using TLS encryption with optional PDF attachment.
     Expects SMTP_EMAIL and SMTP_PASSWORD in environment.
@@ -156,6 +156,14 @@ def send_email(to_email: str, subject: str, body: str, pdf_bytes: bytes = None) 
         pdf_attachment = MIMEApplication(pdf_bytes, _subtype="pdf")
         pdf_attachment.add_header('Content-Disposition', 'attachment', filename=pdf_name)
         msg.attach(pdf_attachment)
+    
+    # Attach Vulnerable Assets PDF if provided
+    if vuln_pdf_bytes:
+        date_prefix = datetime.datetime.now().strftime('%Y_%m_%d')
+        vuln_pdf_name = f'{date_prefix}-Vulnerable_Assets_Report.pdf'
+        vuln_attachment = MIMEApplication(vuln_pdf_bytes, _subtype="pdf")
+        vuln_attachment.add_header('Content-Disposition', 'attachment', filename=vuln_pdf_name)
+        msg.attach(vuln_attachment)
     
     try:
         server = smtplib.SMTP(smtp_server, smtp_port, timeout=10)

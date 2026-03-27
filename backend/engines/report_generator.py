@@ -31,7 +31,8 @@ def generate_pdf_report(data: dict) -> bytes:
     normal_style = styles['Normal']
     
     # Title
-    elements.append(Paragraph("Enterprise Quantum Security Report", title_style))
+    report_title = data.get("report_title", "Enterprise Quantum Security Report")
+    elements.append(Paragraph(report_title, title_style))
     elements.append(Paragraph(f"Generated on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}", normal_style))
     elements.append(Spacer(1, 20))
     
@@ -64,7 +65,7 @@ def generate_pdf_report(data: dict) -> bytes:
             ])
         t = Table(table_data)
         t.setStyle(TableStyle([
-            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#0050cb')),
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor(data.get("theme_color", "#0050cb"))),
             ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
             ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
             ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
@@ -98,7 +99,7 @@ def generate_pdf_report(data: dict) -> bytes:
             
         t2 = Table(master_data)
         t2.setStyle(TableStyle([
-            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#0f172a')),
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor(data.get("secondary_theme_color", "#0f172a"))),
             ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
             ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
             ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),

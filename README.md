@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="./assets/scanner.png" alt="Quantum Shield Scanner Interface" width="100%" style="border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 24px rgba(0,0,0,0.1);" />
+  <img src="src/assets/scanner.png" alt="Quantum Shield Scanner Interface" width="100%" style="border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 24px rgba(0,0,0,0.1);" />
   
   # 🛡️ Quantum Shield: Enterprise Post-Quantum Security Platform
   
@@ -34,7 +34,7 @@ Quantum Shield doesn't rely on cached data. Our advanced Python backend manually
 
 ### 🤖 Precise Sentinel AI (Generative NLP Chatbot)
 <div align="center">
-  <img src="./assets/chatbot.png" alt="Quantum AI Chatbot Interface" width="90%" style="border-radius: 8px; margin: 15px 0; border: 1px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.05);" />
+  <img src="src/assets/chatbot.png" alt="Quantum AI Chatbot Interface" width="90%" style="border-radius: 8px; margin: 15px 0; border: 1px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.05);" />
 </div>
 
 Why click through 50 menus when you can literally just **tell your infrastructure what to do?** We integrated Google’s Gemini foundation model natively into our control center.

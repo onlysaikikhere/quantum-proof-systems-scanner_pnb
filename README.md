@@ -1,7 +1,7 @@
 <div align="center">
-  <img src="src/assets/scanner.png" alt="Quantum Shield Scanner Interface" width="100%" style="border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 24px rgba(0,0,0,0.1);" />
-  
   # 🛡️ Quantum Shield: Enterprise Post-Quantum Security Platform
+  
+  <img src="src/assets/scanner.png" alt="Quantum Shield Scanner Interface" width="100%" style="border-radius: 12px; margin: 20px 0; box-shadow: 0 4px 24px rgba(0,0,0,0.1);" />
   
   **The ultimate real-time cryptographic scanner and AI-driven post-quantum readiness engine.**
   
@@ -25,11 +25,11 @@ Your enterprise’s **confidentiality and integrity** are actively preserved thr
 
 ## 🚀 Jaw-Dropping Features
 
-### 🔍 Real-Time Deep Cryptographic Scanning
-Quantum Shield doesn't rely on cached data. Our advanced Python backend manually opens TCP socket streams to target infrastructure, pulling raw cryptographic metadata. It detects:
+### 🔍 Real-Time Deep Cryptographic Scanning & CBOM Generation
+Quantum Shield doesn't rely on cached data. Our advanced Python backend manually opens TCP socket streams to target infrastructure, pulling raw cryptographic metadata to build a massive **Cryptographic Bill of Materials (CBOM)**. It detects:
 *   The exact **TLS implementation version**.
 *   The full **Cipher Suite & Key Lengths** negotiated.
-*   The raw algorithm profile to calculate a deterministic **Quantum Risk Score**.
+*   The raw algorithm profile (RSA, ECDSA) to calculate a deterministic **Quantum Risk Score**.
 *   Any impending certificate expirations that could result in devastating outages.
 
 ### 🤖 Precise Sentinel AI (Generative NLP Chatbot)
@@ -41,10 +41,19 @@ Why click through 50 menus when you can literally just **tell your infrastructur
 *   **Fully Automated Scan Scheduling:** Just type *"Schedule check for internal.com every week at 3 PM"* and the AI natively accesses the internal Python Cron engine to schedule and queue the job indefinitely.
 *   **Automated Email Scheduling & Dispatch:** Type *"Email the risk report to ceo@bank.com"* and the AI will assemble a beautiful, contextual PDF, generate a C-Suite executive summary, and dispatch it via SMTP—all autonomously.
 
-### 🔐 Multi-Layered Threat Defense
-*   **2x Authentication (2FA) Implementation:** We integrated robust Two-Factor OTP authentication out of the gate to ensure that only cleared personnel can trigger deep network scans or view cryptographic vulnerabilities. 
-*   **Dynamic Executive Reporting:** Generates distinct, highly visual PDF disclosures separating Master Inventories from Critical Vulnerability Reports so board members know exactly what needs fixing.
-*   **Auto-Scheduling UI:** You don't have to use the AI to automate tasks. We built direct 1-click Auto Schedule buttons directly into the scanner grid.
+### 📑 Dynamic Executive PDF Reporting
+<div align="center">
+  <img src="src/assets/report.png" alt="Executive Vulnerability Report" width="90%" style="border-radius: 8px; margin: 15px 0; border: 1px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.05);" />
+</div>
+
+Information is useless if board members cannot understand it. We implemented a completely dynamic **ReportLab Engine** that generates executive disclosures on-the-fly.
+*   **Master Inventories:** Sleek, midnight-blue themed PDF generation of every endpoint your company operates.
+*   **Critical Vulnerability Disclosures:** Extracts *only* the failing algorithms (e.g., RSA-2048) and highlights them in aggressive crimson-red tables, demanding immediate remediation signatures from Executives.
+
+### 🔐 Multi-Layered Threat Defense & Interactive Dashboards
+*   **2x Authentication (2FA) Implementation:** We integrated robust Two-Factor OTP authentication out of the gate to ensure that only cleared personnel can trigger deep network scans or view cryptographic vulnerabilities.
+*   **Risk Heatmaps & Graph Visualization:** Instead of raw JSON, network topologies are visualized through interactive Node-Edge network graphs and dense heatmap matrices tracking historical risk exposure.
+*   **Auto-Scheduling UI Buttons:** You don't have to use the AI to automate tasks. We built direct 1-click Auto Schedule buttons directly into the scanner grid.
 
 ---
 

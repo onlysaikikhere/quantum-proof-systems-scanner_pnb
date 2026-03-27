@@ -1,10 +1,13 @@
+# 🛡️ Quantum Shield: Enterprise Post-Quantum Security Platform
+
 <div align="center">
-  # 🛡️ Quantum Shield: Enterprise Post-Quantum Security Platform
+  <img src="src/assets/scanner.png" alt="Quantum Shield Scanner Interface" width="100%" style="border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 24px rgba(0,0,0,0.1);" />
   
-  <img src="src/assets/scanner.png" alt="Quantum Shield Scanner Interface" width="100%" style="border-radius: 12px; margin: 20px 0; box-shadow: 0 4px 24px rgba(0,0,0,0.1);" />
+  **The ultimate real-time cryptographic scanner and AI-driven post-quantum readiness engine.**<br>
+  *Built by Team - CyberRiot*
   
-  **The ultimate real-time cryptographic scanner and AI-driven post-quantum readiness engine.**
-  
+  <br>
+
   [![Hackathon](https://img.shields.io/badge/Event-PNB_Hackathon-0050cb?style=for-the-badge&logo=codeforces)](#)
   [![Security](https://img.shields.io/badge/Security-NIST_PQC_Compliant-10b981?style=for-the-badge&logo=shield)](#)
   [![Architecture](https://img.shields.io/badge/Architecture-FastAPI_%7C_React-black?style=for-the-badge&logo=python)](#)
@@ -96,5 +99,5 @@ We spared absolutely no expense building a modern, highly concurrent stack:
 
 <br><br><br>
 <p align="center">
-  <small>Made by <b>Team CyberRiot</b> for PNB Hackathon</small>
+  <small>Open Source initiative by <b>Team - CyberRiot</b> for the PNB Hackathon</small>
 </p>

@@ -5,11 +5,27 @@ interface HeaderProps {
 }
 
 const Header = ({ setSidebarOpen }: HeaderProps) => {
-  const [role, setRole] = useState(() => localStorage.getItem('userRole') || 'Super Admin');
+  const [role, setRole] = useState(() => localStorage.getItem('userRole') || 'User');
+  const [displayName, setDisplayName] = useState('Guest Viewer');
 
   useEffect(() => {
-    localStorage.setItem('userRole', role);
-  }, [role]);
+    const syncSession = () => {
+      setRole(localStorage.getItem('userRole') || 'User');
+      try {
+        const raw = localStorage.getItem('authSession');
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          setDisplayName(parsed.name || parsed.username || 'Guest Viewer');
+        }
+      } catch {
+        setDisplayName('Guest Viewer');
+      }
+    };
+
+    syncSession();
+    window.addEventListener('storage', syncSession);
+    return () => window.removeEventListener('storage', syncSession);
+  }, []);
 
   return (
     <header className="fixed top-0 right-0 left-0 md:left-64 h-16 bg-white/80 backdrop-blur-md flex items-center justify-between px-4 md:px-8 z-40 border-b border-slate-100/50">
@@ -34,14 +50,7 @@ const Header = ({ setSidebarOpen }: HeaderProps) => {
         
         <div className="flex items-center gap-3 pl-4 border-l border-slate-200">
           <div className="text-right flex flex-col">
-            <select
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-              className="text-xs font-bold text-on-surface bg-transparent border-none focus:ring-0 cursor-pointer appearance-none outline-none py-1"
-            >
-              <option value="Super Admin">Admin@QuantumShield</option>
-              <option value="User">Guest Viewer</option>
-            </select>
+            <p className="text-xs font-bold text-on-surface py-1">{displayName}</p>
             <p className="text-[10px] text-slate-500 uppercase font-semibold">{role} Role</p>
           </div>
           <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">

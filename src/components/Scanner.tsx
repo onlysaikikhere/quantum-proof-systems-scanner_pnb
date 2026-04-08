@@ -7,11 +7,11 @@ const Scanner = () => {
   const [scanResult, setScanResult] = useState<any>(null);
   const [showToast, setShowToast] = useState(false);
   const [toastMsg, setToastMsg] = useState("");
+  const role = localStorage.getItem('userRole') || 'User';
 
   const handleScan = async () => {
     if (!target) return;
     setIsScanning(true);
-    const role = localStorage.getItem('userRole') || 'Super Admin';
     try {
       const res = await fetch((import.meta.env.VITE_API_URL || 'http://localhost:8000') + '/api/scan', {
         method: 'POST',
@@ -50,7 +50,16 @@ const Scanner = () => {
             <p className="text-on-surface-variant mt-2 max-w-xl">Initiate comprehensive cryptographic audits to identify legacy algorithms vulnerable to Shor's algorithm and ensure PQC compliance.</p>
           </div>
           <div className="flex items-center gap-3">
-            <button onClick={() => window.open((import.meta.env.VITE_API_URL || 'http://localhost:8000') + '/api/reports/download')} className="px-5 py-2.5 bg-surface-container-highest text-on-surface rounded font-semibold text-sm transition-all hover:bg-surface-dim w-full sm:w-auto">
+            <button
+              onClick={() => {
+                if (role !== 'Super Admin') {
+                  alert('Only Super Admin can export the full CISO PDF report.');
+                  return;
+                }
+                window.open((import.meta.env.VITE_API_URL || 'http://localhost:8000') + `/api/reports/download?x_user_role=${encodeURIComponent(role)}`);
+              }}
+              className="px-5 py-2.5 bg-surface-container-highest text-on-surface rounded font-semibold text-sm transition-all hover:bg-surface-dim w-full sm:w-auto"
+            >
               Export Report
             </button>
             <button 

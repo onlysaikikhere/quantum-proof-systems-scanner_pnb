@@ -216,11 +216,27 @@ def generate_report():
 
 from fastapi import Query
 
+VALID_ROLES = {"Super Admin", "Admin", "User"}
+
+def resolve_role(x_user_role_header: Optional[str], x_user_role_query: Optional[str]) -> str:
+    role = (x_user_role_header or x_user_role_query or "User").strip()
+    if role not in VALID_ROLES:
+        return "User"
+    return role
+
+def require_super_admin(role: str):
+    if role != "Super Admin":
+        raise HTTPException(status_code=403, detail="Only Super Admins can access this report.")
+
+def require_admin_or_super(role: str):
+    if role == "User":
+        raise HTTPException(status_code=403, detail="Users can view JSON reports but cannot export PDFs.")
+
 @app.get("/api/reports/download")
-def download_pdf_report(x_user_role: Optional[str] = Query(None)):
+def download_pdf_report(x_user_role: Optional[str] = Query(None), x_user_role_header: Optional[str] = Header(None)):
     """Generates and downloads a robust PDF report of the current infrastructure."""
-    if x_user_role != "Super Admin":
-        raise HTTPException(status_code=403, detail="Only Super Admins can export the full CISO-level PDF report.")
+    role = resolve_role(x_user_role_header, x_user_role)
+    require_super_admin(role)
     risk_data = get_dashboard_metrics()
     all_assets = get_all_assets_list()
     vuln_assets = [a for a in all_assets if a.get("risk", {}).get("risk_level") in ["High", "Medium", "Critical"]]
@@ -251,10 +267,10 @@ def download_pdf_report(x_user_role: Optional[str] = Query(None)):
     )
 
 @app.get("/api/reports/vulnerable-download")
-def download_vulnerable_pdf_report(x_user_role: Optional[str] = Query(None)):
+def download_vulnerable_pdf_report(x_user_role: Optional[str] = Query(None), x_user_role_header: Optional[str] = Header(None)):
     """Generates and downloads a PDF report containing ONLY vulnerable assets."""
-    if x_user_role == "User":
-        raise HTTPException(status_code=403, detail="Basic users cannot export full CISO reports.")
+    role = resolve_role(x_user_role_header, x_user_role)
+    require_super_admin(role)
     risk_data = get_dashboard_metrics()
     all_assets = get_all_assets_list()
     vuln_assets = [a for a in all_assets if a.get("risk", {}).get("risk_level") in ["High", "Medium", "Critical"]]
@@ -292,6 +308,7 @@ class CreateUserRequest(BaseModel):
     username: str
     target_role: str
     name: str
+    password: Optional[str] = None
 
 from .database import db_users
 
@@ -311,7 +328,8 @@ def create_user(request: CreateUserRequest, x_user_role: Optional[str] = Header(
     db_users[user_id] = {
         "username": request.username,
         "role": request.target_role,
-        "name": request.name
+        "name": request.name,
+        "password": request.password or "User@123"
     }
     return {"message": f"User {request.name} created successfully with role {request.target_role}"}
 
@@ -320,41 +338,356 @@ def list_users(x_user_role: Optional[str] = Header(None)):
     """Review User Access (Governance)."""
     if x_user_role == "User":
         raise HTTPException(status_code=403, detail="Governance review requires Admin+")
-    return list(db_users.values())
+    return [
+        {"username": user.get("username"), "role": user.get("role"), "name": user.get("name")}
+        for user in db_users.values()
+    ]
 
 @app.get("/api/reports/asset-discovery")
 def report_asset_discovery():
     all_assets = get_all_assets_list()
-    return {"report_type": "Asset Discovery", "assets": [
-        {"domain": a["name"], "subdomains": a.get("subdomains", []), "active": a.get("is_active", True)} for a in all_assets
-    ]}
+    rows = []
+    active_domains = 0
+    inactive_domains = 0
+
+    for a in all_assets:
+        scan_result = a.get("scan_result", {}) or {}
+        subdomains = a.get("subdomains", [])
+        sub_info = scan_result.get("subdomains_info", {}) if isinstance(scan_result, dict) else {}
+        is_active = bool(a.get("is_active", True) and a.get("status", "active") != "inactive")
+
+        if is_active:
+            active_domains += 1
+        else:
+            inactive_domains += 1
+
+        rows.append({
+            "domain": a["name"],
+            "asset_type": a.get("type"),
+            "vendor": a.get("vendor"),
+            "status": "active" if is_active else "inactive",
+            "subdomains_count": len(subdomains),
+            "active_subdomains": sub_info.get("active_assets", 0),
+            "inactive_subdomains": sub_info.get("inactive_assets", 0),
+            "subdomains": subdomains
+        })
+
+    return {
+        "report_type": "Asset Discovery",
+        "summary": {
+            "total_domains": len(rows),
+            "active_domains": active_domains,
+            "inactive_domains": inactive_domains
+        },
+        "assets": rows
+    }
 
 @app.get("/api/reports/subdomain-risk")
 def report_subdomain_risk():
     all_assets = get_all_assets_list()
     results = []
+    classification = {"pqc_ready": 0, "standard": 0, "critical": 0}
+
     for a in all_assets:
-        for sub in a.get("subdomains", []):
-            results.append({"subdomain": sub, "parent_risk": a.get("risk", {})})
-    return {"report_type": "Subdomain Risk", "data": results}
+        scan_result = a.get("scan_result", {}) or {}
+        detailed_subs = scan_result.get("all_subdomains_detailed", []) if isinstance(scan_result, dict) else []
+
+        if detailed_subs:
+            for sub in detailed_subs:
+                days = sub.get("days_to_expiry")
+                if isinstance(days, int) and days > 180:
+                    bucket = "pqc_ready"
+                elif isinstance(days, int) and days > 90:
+                    bucket = "standard"
+                else:
+                    bucket = "critical"
+                classification[bucket] += 1
+
+                results.append({
+                    "subdomain": sub.get("subdomain"),
+                    "domain": a.get("name"),
+                    "status": sub.get("status", "unknown"),
+                    "ssl_rating": sub.get("ssl_rating", "N/A"),
+                    "days_to_expiry": sub.get("days_to_expiry"),
+                    "bucket": bucket,
+                    "parent_risk": a.get("risk", {})
+                })
+        else:
+            # Fallback for seeded/static assets that only contain subdomain names
+            parent_bucket = "critical"
+            parent_risk_level = str(a.get("risk", {}).get("risk_level", "")).lower()
+            if parent_risk_level == "low":
+                parent_bucket = "pqc_ready"
+            elif parent_risk_level == "medium":
+                parent_bucket = "standard"
+
+            for sub in a.get("subdomains", []):
+                classification[parent_bucket] += 1
+                results.append({
+                    "subdomain": sub,
+                    "domain": a.get("name"),
+                    "status": "unknown",
+                    "ssl_rating": "N/A",
+                    "days_to_expiry": None,
+                    "bucket": parent_bucket,
+                    "parent_risk": a.get("risk", {})
+                })
+
+    return {
+        "report_type": "Subdomain Risk",
+        "summary": {
+            "total_subdomains": len(results),
+            "pqc_ready": classification["pqc_ready"],
+            "standard": classification["standard"],
+            "critical": classification["critical"]
+        },
+        "data": results
+    }
 
 @app.get("/api/reports/vulnerability")
 def report_vulnerabilities():
     all_assets = get_all_assets_list()
     results = []
+    high_count = 0
+    third_party_count = 0
+
     for a in all_assets:
         if a.get("vulnerabilities"):
-            results.append({"domain": a["name"], "vulnerabilities": a["vulnerabilities"], "hosting": a.get("hosting")})
-    return {"report_type": "Vulnerabilities", "data": results}
+            hosting = a.get("hosting") or {}
+            vulns = a.get("vulnerabilities", [])
+            if any(v.get("severity") == "High" for v in vulns):
+                high_count += 1
+            if hosting.get("type") == "third_party":
+                third_party_count += 1
+
+            results.append({
+                "domain": a["name"],
+                "vulnerabilities": vulns,
+                "vulnerability_count": len(vulns),
+                "hosting": hosting,
+                "is_third_party": hosting.get("type") == "third_party"
+            })
+
+    return {
+        "report_type": "Vulnerabilities",
+        "summary": {
+            "vulnerable_domains": len(results),
+            "high_severity_domains": high_count,
+            "third_party_hosted": third_party_count
+        },
+        "data": results
+    }
 
 @app.get("/api/reports/mobile-app")
 def report_mobile_app():
     all_assets = get_all_assets_list()
     results = []
+    android_count = 0
+    ios_count = 0
+
     for a in all_assets:
         if a.get("mobile_apps"):
-            results.append({"domain": a["name"], "apps": a["mobile_apps"]})
-    return {"report_type": "Mobile Apps", "data": results}
+            apps = a["mobile_apps"]
+            android_count += sum(1 for app in apps if app.get("platform") == "android")
+            ios_count += sum(1 for app in apps if app.get("platform") == "ios")
+            results.append({"domain": a["name"], "apps": apps, "apps_count": len(apps)})
+
+    return {
+        "report_type": "Mobile Apps",
+        "summary": {
+            "domains_with_mobile_apps": len(results),
+            "total_apps": android_count + ios_count,
+            "android_apps": android_count,
+            "ios_apps": ios_count
+        },
+        "data": results
+    }
+
+@app.get("/api/reports/overview")
+def report_overview():
+    """Unified report payload for the Reports dashboard."""
+    asset_discovery = report_asset_discovery()
+    subdomain_risk = report_subdomain_risk()
+    vulnerability = report_vulnerabilities()
+    mobile_app = report_mobile_app()
+
+    return {
+        "report_type": "Reports Overview",
+        "generated_at": datetime.datetime.now().isoformat(),
+        "asset_discovery": asset_discovery,
+        "subdomain_risk": subdomain_risk,
+        "vulnerability": vulnerability,
+        "mobile_app": mobile_app
+    }
+
+def _pdf_response(pdf_bytes: bytes, filename: str) -> Response:
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f"attachment; filename={filename}"}
+    )
+
+@app.get("/api/reports/asset-discovery/download")
+def download_asset_discovery_pdf(x_user_role: Optional[str] = Query(None), x_user_role_header: Optional[str] = Header(None)):
+    role = resolve_role(x_user_role_header, x_user_role)
+    require_admin_or_super(role)
+    payload = report_asset_discovery()
+    assets = []
+    for row in payload.get("assets", []):
+        assets.append({
+            "name": row.get("domain"),
+            "type": row.get("asset_type", "Domain"),
+            "risk": {"risk_level": row.get("status", "Unknown")},
+            "scan_result": {
+                "ipv4": "N/A",
+                "ipv6": "N/A",
+                "algorithm": f"Active Subdomains: {row.get('active_subdomains', 0)}",
+                "tls_version": f"Inactive Subdomains: {row.get('inactive_subdomains', 0)}"
+            }
+        })
+
+    pdf_bytes = generate_pdf_report({
+        "report_title": "Asset Discovery Report",
+        "executive_summary": (
+            f"Discovered {payload['summary']['total_domains']} domains. "
+            f"Active domains: {payload['summary']['active_domains']}, "
+            f"Inactive domains: {payload['summary']['inactive_domains']}."
+        ),
+        "risk_score": payload["summary"]["active_domains"],
+        "overall_risk": "Moderate" if payload["summary"]["inactive_domains"] > 0 else "Low",
+        "assets": assets,
+        "vulnerable_assets": [],
+        "recommendations": [
+            "Investigate inactive domains for DNS hygiene and ownership.",
+            "Track active/inactive drift as part of weekly governance reviews."
+        ]
+    })
+    date_prefix = datetime.datetime.now().strftime('%Y_%m_%d')
+    return _pdf_response(pdf_bytes, f"{date_prefix}-Asset_Discovery_Report.pdf")
+
+@app.get("/api/reports/subdomain-risk/download")
+def download_subdomain_risk_pdf(x_user_role: Optional[str] = Query(None), x_user_role_header: Optional[str] = Header(None)):
+    role = resolve_role(x_user_role_header, x_user_role)
+    require_admin_or_super(role)
+    payload = report_subdomain_risk()
+    assets = []
+    vulnerable_assets = []
+    for row in payload.get("data", []):
+        record = {
+            "name": row.get("subdomain"),
+            "type": "Subdomain",
+            "risk": {"risk_level": row.get("bucket", "Unknown")},
+            "scan_result": {
+                "ipv4": "N/A",
+                "ipv6": "N/A",
+                "algorithm": row.get("ssl_rating", "N/A"),
+                "tls_version": row.get("status", "unknown")
+            }
+        }
+        assets.append(record)
+        if row.get("bucket") == "critical":
+            vulnerable_assets.append(record)
+
+    pdf_bytes = generate_pdf_report({
+        "report_title": "Subdomain Risk Classification Report",
+        "executive_summary": (
+            f"Total subdomains: {payload['summary']['total_subdomains']}. "
+            f"PQC Ready: {payload['summary']['pqc_ready']}, "
+            f"Standard: {payload['summary']['standard']}, "
+            f"Critical: {payload['summary']['critical']}."
+        ),
+        "risk_score": payload["summary"]["pqc_ready"],
+        "overall_risk": "High" if payload["summary"]["critical"] > 0 else "Low",
+        "assets": assets,
+        "vulnerable_assets": vulnerable_assets,
+        "recommendations": [
+            "Prioritize critical subdomains with weak or expiring crypto posture.",
+            "Promote standard subdomains into PQC-ready compliance baselines."
+        ]
+    })
+    date_prefix = datetime.datetime.now().strftime('%Y_%m_%d')
+    return _pdf_response(pdf_bytes, f"{date_prefix}-Subdomain_Risk_Report.pdf")
+
+@app.get("/api/reports/vulnerability/download")
+def download_vulnerability_pdf(x_user_role: Optional[str] = Query(None), x_user_role_header: Optional[str] = Header(None)):
+    role = resolve_role(x_user_role_header, x_user_role)
+    require_admin_or_super(role)
+    payload = report_vulnerabilities()
+    assets = []
+    for row in payload.get("data", []):
+        vuln_names = ", ".join(v.get("type", "Unknown") for v in row.get("vulnerabilities", [])) or "None"
+        assets.append({
+            "name": row.get("domain"),
+            "type": "Domain",
+            "risk": {"risk_level": "High" if row.get("vulnerability_count", 0) > 0 else "Low"},
+            "scan_result": {
+                "ipv4": "N/A",
+                "ipv6": "N/A",
+                "algorithm": vuln_names,
+                "tls_version": "3rd Party" if row.get("is_third_party") else "Internal"
+            }
+        })
+
+    pdf_bytes = generate_pdf_report({
+        "report_title": "Vulnerability & Hosting Report",
+        "theme_color": "#dc2626",
+        "secondary_theme_color": "#991b1b",
+        "executive_summary": (
+            f"Vulnerable domains: {payload['summary']['vulnerable_domains']}. "
+            f"High severity domains: {payload['summary']['high_severity_domains']}. "
+            f"Third-party hosted: {payload['summary']['third_party_hosted']}."
+        ),
+        "risk_score": max(0, 100 - (payload["summary"]["high_severity_domains"] * 10)),
+        "overall_risk": "High" if payload["summary"]["high_severity_domains"] > 0 else "Moderate",
+        "assets": assets,
+        "vulnerable_assets": assets,
+        "recommendations": [
+            "Remediate SQL Injection and XSS findings with immediate patch cycles.",
+            "Review contracts and controls for third-party hosted critical assets."
+        ]
+    })
+    date_prefix = datetime.datetime.now().strftime('%Y_%m_%d')
+    return _pdf_response(pdf_bytes, f"{date_prefix}-Vulnerability_Report.pdf")
+
+@app.get("/api/reports/mobile-app/download")
+def download_mobile_app_pdf(x_user_role: Optional[str] = Query(None), x_user_role_header: Optional[str] = Header(None)):
+    role = resolve_role(x_user_role_header, x_user_role)
+    require_admin_or_super(role)
+    payload = report_mobile_app()
+    assets = []
+    for row in payload.get("data", []):
+        for app in row.get("apps", []):
+            assets.append({
+                "name": f"{row.get('domain')} - {app.get('name')}",
+                "type": f"Mobile ({app.get('platform', 'unknown')})",
+                "risk": {"risk_level": app.get("risk_score", 0)},
+                "scan_result": {
+                    "ipv4": "N/A",
+                    "ipv6": "N/A",
+                    "algorithm": "Store Discovery",
+                    "tls_version": "iOS" if app.get("platform") == "ios" else "Android"
+                }
+            })
+
+    pdf_bytes = generate_pdf_report({
+        "report_title": "Mobile Application Discovery Report",
+        "theme_color": "#16a34a",
+        "secondary_theme_color": "#166534",
+        "executive_summary": (
+            f"Domains with mobile footprint: {payload['summary']['domains_with_mobile_apps']}. "
+            f"Total apps: {payload['summary']['total_apps']} (Android: {payload['summary']['android_apps']}, iOS: {payload['summary']['ios_apps']})."
+        ),
+        "risk_score": 100 if payload["summary"]["total_apps"] > 0 else 0,
+        "overall_risk": "Low",
+        "assets": assets,
+        "vulnerable_assets": [],
+        "recommendations": [
+            "Map discovered apps to official store listings and publisher accounts.",
+            "Enforce release-signing and runtime hardening baselines for mobile channels."
+        ]
+    })
+    date_prefix = datetime.datetime.now().strftime('%Y_%m_%d')
+    return _pdf_response(pdf_bytes, f"{date_prefix}-Mobile_App_Report.pdf")
 
 # --- MODULE 9: AI CHATBOT ---
 class ChatRequest(BaseModel):
@@ -441,6 +774,8 @@ otp_store = {}
 
 class OTPRequest(BaseModel):
     email: str
+    password: str
+    role: str
 
 class OTPVerify(BaseModel):
     email: str
@@ -448,8 +783,28 @@ class OTPVerify(BaseModel):
 
 @app.post("/api/auth/send-otp")
 def auth_send_otp(request: OTPRequest):
+    if request.role not in VALID_ROLES:
+        raise HTTPException(status_code=400, detail="Invalid role selected.")
+
+    user = next(
+        (
+            u for u in db_users.values()
+            if str(u.get("username", "")).lower() == request.email.lower() and u.get("role") == request.role
+        ),
+        None,
+    )
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found for selected role.")
+    if user.get("password") != request.password:
+        raise HTTPException(status_code=401, detail="Invalid credentials.")
+
     code = f"{random.randint(100000, 999999)}"
-    otp_store[request.email] = code
+    otp_store[request.email.lower()] = {
+        "otp": code,
+        "role": user.get("role"),
+        "name": user.get("name"),
+        "username": user.get("username")
+    }
     subject = "Quantum Shield Auth Code"
     body = f"Your secure 6-digit authentication code is: {code}\n\nThis code will expire shortly. Do not share it."
     send_email(request.email, subject, body)
@@ -457,9 +812,15 @@ def auth_send_otp(request: OTPRequest):
 
 @app.post("/api/auth/verify-otp")
 def auth_verify_otp(request: OTPVerify):
-    if otp_store.get(request.email) == request.otp:
-        del otp_store[request.email]
-        return {"success": True}
+    otp_record = otp_store.get(request.email.lower())
+    if otp_record and otp_record.get("otp") == request.otp:
+        del otp_store[request.email.lower()]
+        return {
+            "success": True,
+            "role": otp_record.get("role"),
+            "name": otp_record.get("name"),
+            "username": otp_record.get("username")
+        }
     raise HTTPException(status_code=400, detail="Invalid OTP code")
 
 class EmailRequest(BaseModel):

@@ -1,4 +1,71 @@
+import { useEffect, useMemo, useState } from 'react';
+
+type ReportsOverview = {
+  generated_at?: string;
+  asset_discovery?: { summary?: { total_domains?: number; active_domains?: number; inactive_domains?: number } };
+  subdomain_risk?: { summary?: { total_subdomains?: number; pqc_ready?: number; standard?: number; critical?: number } };
+  vulnerability?: { summary?: { vulnerable_domains?: number; high_severity_domains?: number; third_party_hosted?: number } };
+  mobile_app?: { summary?: { domains_with_mobile_apps?: number; total_apps?: number; android_apps?: number; ios_apps?: number } };
+};
+
 const Reports = () => {
+  const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+  const [overview, setOverview] = useState<ReportsOverview | null>(null);
+  const [loading, setLoading] = useState(true);
+  const role = localStorage.getItem('userRole') || 'User';
+  const canExportPdf = role !== 'User';
+  const canExportCiso = role === 'Super Admin';
+
+  const openJsonReport = (endpoint: string) => {
+    window.open(`${apiBase}${endpoint}`, '_blank');
+  };
+
+  const openPdfReport = (endpoint: string) => {
+    if (!canExportPdf) {
+      alert('Your role can view reports but cannot export PDFs.');
+      return;
+    }
+    window.open(`${apiBase}${endpoint}?x_user_role=${encodeURIComponent(role)}`, '_blank');
+  };
+
+  useEffect(() => {
+    const loadOverview = async () => {
+      try {
+        const response = await fetch(`${apiBase}/api/reports/overview`);
+        if (!response.ok) {
+          throw new Error('Failed to load reports overview');
+        }
+        const data: ReportsOverview = await response.json();
+        setOverview(data);
+      } catch (error) {
+        console.error('Unable to load reports overview', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadOverview();
+  }, [apiBase]);
+
+  const summary = useMemo(() => {
+    const totalDomains = overview?.asset_discovery?.summary?.total_domains ?? 0;
+    const activeDomains = overview?.asset_discovery?.summary?.active_domains ?? 0;
+    const totalSubdomains = overview?.subdomain_risk?.summary?.total_subdomains ?? 0;
+    const criticalSubdomains = overview?.subdomain_risk?.summary?.critical ?? 0;
+    const vulnerableDomains = overview?.vulnerability?.summary?.vulnerable_domains ?? 0;
+    const mobileApps = overview?.mobile_app?.summary?.total_apps ?? 0;
+
+    return {
+      totalDomains,
+      activeDomains,
+      totalSubdomains,
+      criticalSubdomains,
+      vulnerableDomains,
+      mobileApps,
+      activePct: totalDomains > 0 ? Math.round((activeDomains / totalDomains) * 100) : 0
+    };
+  }, [overview]);
+
   return (
     <main className="md:ml-64 pt-16 min-h-screen">
       <div className="max-w-[1200px] mx-auto p-12">
@@ -13,7 +80,16 @@ const Reports = () => {
               <span className="material-symbols-outlined text-lg" data-icon="calendar_month">calendar_month</span>
               Schedule
             </button>
-            <button onClick={() => window.open((import.meta.env.VITE_API_URL || 'http://localhost:8000') + '/api/reports/download')} className="flex items-center gap-2 px-6 py-2.5 bg-gradient-to-br from-primary to-primary-container text-white rounded-lg font-bold shadow-md hover:shadow-lg active:scale-95 transition-all text-sm w-full sm:w-auto">
+            <button
+              onClick={() => {
+                if (!canExportCiso) {
+                  alert('Only Super Admin can export the full CISO PDF report.');
+                  return;
+                }
+                window.open(`${apiBase}/api/reports/download?x_user_role=${encodeURIComponent(role)}`, '_blank');
+              }}
+              className="flex items-center gap-2 px-6 py-2.5 bg-gradient-to-br from-primary to-primary-container text-white rounded-lg font-bold shadow-md hover:shadow-lg active:scale-95 transition-all text-sm w-full sm:w-auto"
+            >
               <span className="material-symbols-outlined text-lg" data-icon="download">download</span>
               Export Report
             </button>
@@ -38,7 +114,15 @@ const Reports = () => {
                 <div className="p-6 bg-surface-container-low rounded-xl border-l-4 border-primary">
                   <h4 className="text-sm font-bold text-primary mb-2 uppercase tracking-tight">Executive Summary</h4>
                   <p className="text-[0.875rem] leading-relaxed text-on-surface-variant">
-                    The system has reached a <span className="text-primary font-semibold">98% PQC Readiness rating</span>. Critical infrastructure components have successfully transitioned to Kyber-768 and Dilithium-3 implementations. Our AI analysis identifies that the remaining 2% represents legacy IoT endpoints that require firmware intervention. No immediate high-priority vulnerabilities were detected during the last 24-hour cycle.
+                    {loading ? 'Generating unified reports...' : (
+                      <>
+                        Scanned <span className="text-primary font-semibold">{summary.totalDomains} domains</span> with <span className="text-primary font-semibold">{summary.activePct}% active availability</span>. 
+                        Current report set includes <span className="text-primary font-semibold">{summary.totalSubdomains} subdomains</span>, 
+                        <span className="text-error font-semibold"> {summary.criticalSubdomains} critical subdomains</span>, 
+                        <span className="text-error font-semibold"> {summary.vulnerableDomains} vulnerable domains</span>, and 
+                        <span className="text-secondary font-semibold"> {summary.mobileApps} mobile apps</span> discovered.
+                      </>
+                    )}
                   </p>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -47,14 +131,22 @@ const Reports = () => {
                       <span className="material-symbols-outlined text-tertiary text-lg" data-icon="check_circle">check_circle</span>
                       <span className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Risk Mitigation</span>
                     </div>
-                    <p className="text-sm text-on-surface font-medium leading-snug">Quantum-safe tunnel established for 100% of inter-continental data transits.</p>
+                    <p className="text-sm text-on-surface font-medium leading-snug">
+                      {loading
+                        ? 'Compiling active/inactive domain report...'
+                        : `${summary.activeDomains} active domains are currently reachable and included in governance reporting.`}
+                    </p>
                   </div>
                   <div className="p-5 bg-surface-container-lowest border border-outline-variant/10 rounded-lg flex flex-col items-start">
                     <div className="flex items-center gap-2 mb-3">
                       <span className="material-symbols-outlined text-secondary text-lg" data-icon="info">info</span>
                       <span className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Attention Required</span>
                     </div>
-                    <p className="text-sm text-on-surface font-medium leading-snug">Observed 3 deprecated TLS 1.2 handshakes from external vendor nodes.</p>
+                    <p className="text-sm text-on-surface font-medium leading-snug">
+                      {loading
+                        ? 'Compiling vulnerability and third-party exposure report...'
+                        : `${summary.vulnerableDomains} domains are currently flagged in the vulnerability report and need remediation tracking.`}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -66,32 +158,66 @@ const Reports = () => {
             {/* Export Options */}
             <div className="bg-surface-container-lowest p-6 rounded-xl shadow-[0_4px_24px_rgba(0,0,0,0.04)] border border-outline-variant/10">
               <h3 className="text-sm font-bold text-on-surface mb-6 uppercase tracking-wider">Modular Audit Reports</h3>
+              <div className="grid grid-cols-2 gap-2 mb-4 text-xs">
+                <div className="rounded-md bg-surface-container-low px-3 py-2 text-on-surface-variant">Domains: <span className="font-bold text-on-surface">{summary.totalDomains}</span></div>
+                <div className="rounded-md bg-surface-container-low px-3 py-2 text-on-surface-variant">Subdomains: <span className="font-bold text-on-surface">{summary.totalSubdomains}</span></div>
+                <div className="rounded-md bg-surface-container-low px-3 py-2 text-on-surface-variant">Critical: <span className="font-bold text-error">{summary.criticalSubdomains}</span></div>
+                <div className="rounded-md bg-surface-container-low px-3 py-2 text-on-surface-variant">Mobile Apps: <span className="font-bold text-on-surface">{summary.mobileApps}</span></div>
+              </div>
               <div className="space-y-3">
-                <button onClick={() => window.open((import.meta.env.VITE_API_URL || 'http://localhost:8000') + '/api/reports/asset-discovery')} className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-surface-container-low border border-transparent hover:border-outline-variant/20 transition-all group">
+                <button onClick={() => openJsonReport('/api/reports/asset-discovery')} className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-surface-container-low border border-transparent hover:border-outline-variant/20 transition-all group">
                   <div className="flex items-center gap-3">
                     <span className="material-symbols-outlined text-primary" data-icon="search_check">search_check</span>
                     <span className="text-sm font-medium">1. Asset Discovery (JSON)</span>
                   </div>
                   <span className="material-symbols-outlined text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity" data-icon="download">download</span>
                 </button>
-                <button onClick={() => window.open((import.meta.env.VITE_API_URL || 'http://localhost:8000') + '/api/reports/subdomain-risk')} className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-surface-container-low border border-transparent hover:border-outline-variant/20 transition-all group">
+                <button onClick={() => openPdfReport('/api/reports/asset-discovery/download')} className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-surface-container-low border border-transparent hover:border-outline-variant/20 transition-all group">
+                  <div className="flex items-center gap-3">
+                    <span className="material-symbols-outlined text-primary" data-icon="picture_as_pdf">picture_as_pdf</span>
+                    <span className="text-sm font-medium">1. Asset Discovery (PDF)</span>
+                  </div>
+                  <span className="material-symbols-outlined text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity" data-icon="download">download</span>
+                </button>
+                <button onClick={() => openJsonReport('/api/reports/subdomain-risk')} className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-surface-container-low border border-transparent hover:border-outline-variant/20 transition-all group">
                   <div className="flex items-center gap-3">
                     <span className="material-symbols-outlined text-tertiary" data-icon="lan">lan</span>
                     <span className="text-sm font-medium">2. Subdomain Risk (JSON)</span>
                   </div>
                   <span className="material-symbols-outlined text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity" data-icon="download">download</span>
                 </button>
-                <button onClick={() => window.open((import.meta.env.VITE_API_URL || 'http://localhost:8000') + '/api/reports/vulnerability')} className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-surface-container-low border border-transparent hover:border-error/30 transition-all group bg-error/5">
+                <button onClick={() => openPdfReport('/api/reports/subdomain-risk/download')} className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-surface-container-low border border-transparent hover:border-outline-variant/20 transition-all group">
+                  <div className="flex items-center gap-3">
+                    <span className="material-symbols-outlined text-tertiary" data-icon="picture_as_pdf">picture_as_pdf</span>
+                    <span className="text-sm font-medium">2. Subdomain Risk (PDF)</span>
+                  </div>
+                  <span className="material-symbols-outlined text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity" data-icon="download">download</span>
+                </button>
+                <button onClick={() => openJsonReport('/api/reports/vulnerability')} className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-surface-container-low border border-transparent hover:border-error/30 transition-all group bg-error/5">
                   <div className="flex items-center gap-3">
                     <span className="material-symbols-outlined text-error" data-icon="manage_search">manage_search</span>
                     <span className="text-sm font-medium text-error font-bold">3. Vulnerability Report (JSON)</span>
                   </div>
                   <span className="material-symbols-outlined text-error opacity-0 group-hover:opacity-100 transition-opacity" data-icon="download">download</span>
                 </button>
-                <button onClick={() => window.open((import.meta.env.VITE_API_URL || 'http://localhost:8000') + '/api/reports/mobile-app')} className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-surface-container-low border border-transparent hover:border-outline-variant/20 transition-all group">
+                <button onClick={() => openPdfReport('/api/reports/vulnerability/download')} className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-surface-container-low border border-transparent hover:border-error/30 transition-all group bg-error/5">
+                  <div className="flex items-center gap-3">
+                    <span className="material-symbols-outlined text-error" data-icon="picture_as_pdf">picture_as_pdf</span>
+                    <span className="text-sm font-medium text-error font-bold">3. Vulnerability Report (PDF)</span>
+                  </div>
+                  <span className="material-symbols-outlined text-error opacity-0 group-hover:opacity-100 transition-opacity" data-icon="download">download</span>
+                </button>
+                <button onClick={() => openJsonReport('/api/reports/mobile-app')} className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-surface-container-low border border-transparent hover:border-outline-variant/20 transition-all group">
                   <div className="flex items-center gap-3">
                     <span className="material-symbols-outlined text-secondary" data-icon="smartphone">smartphone</span>
                     <span className="text-sm font-medium">4. Mobile App Report (JSON)</span>
+                  </div>
+                  <span className="material-symbols-outlined text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity" data-icon="download">download</span>
+                </button>
+                <button onClick={() => openPdfReport('/api/reports/mobile-app/download')} className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-surface-container-low border border-transparent hover:border-outline-variant/20 transition-all group">
+                  <div className="flex items-center gap-3">
+                    <span className="material-symbols-outlined text-secondary" data-icon="picture_as_pdf">picture_as_pdf</span>
+                    <span className="text-sm font-medium">4. Mobile App Report (PDF)</span>
                   </div>
                   <span className="material-symbols-outlined text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity" data-icon="download">download</span>
                 </button>

@@ -13,12 +13,32 @@ import Reports from './components/Reports';
 import Login from './components/Login';
 import { useState } from 'react';
 
+type AuthSession = {
+  username: string;
+  name: string;
+  role: 'Super Admin' | 'Admin' | 'User';
+};
+
 function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [session, setSession] = useState<AuthSession | null>(() => {
+    const raw = localStorage.getItem('authSession');
+    if (!raw) return null;
+    try {
+      return JSON.parse(raw);
+    } catch {
+      return null;
+    }
+  });
 
-  if (!isAuthenticated) {
-    return <Login onLogin={() => setIsAuthenticated(true)} />;
+  const handleLogin = (authSession: AuthSession) => {
+    localStorage.setItem('authSession', JSON.stringify(authSession));
+    localStorage.setItem('userRole', authSession.role);
+    setSession(authSession);
+  };
+
+  if (!session) {
+    return <Login onLogin={handleLogin} />;
   }
   
   return (

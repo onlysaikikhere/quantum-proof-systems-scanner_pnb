@@ -1,8 +1,15 @@
 import { useState } from 'react';
 
-export default function Login({ onLogin }: { onLogin: () => void }) {
+type AuthSession = {
+  username: string;
+  name: string;
+  role: 'Super Admin' | 'Admin' | 'User';
+};
+
+export default function Login({ onLogin }: { onLogin: (session: AuthSession) => void }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [role, setRole] = useState<'Super Admin' | 'Admin' | 'User'>('User');
   const [step, setStep] = useState<'login' | 'otp'>('login');
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
 
@@ -18,12 +25,13 @@ export default function Login({ onLogin }: { onLogin: () => void }) {
         const res = await fetch((import.meta.env.VITE_API_URL || 'http://localhost:8000') + '/api/auth/send-otp', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email })
+          body: JSON.stringify({ email, password, role })
         });
         if (res.ok) {
           setStep('otp');
         } else {
-          setErrorMsg('Failed to send OTP. Is the backend running?');
+          const payload = await res.json().catch(() => ({}));
+          setErrorMsg(payload.detail || 'Failed to send OTP. Is the backend running?');
         }
       } catch (err) {
         setErrorMsg('Network error connecting to backend.');
@@ -45,9 +53,16 @@ export default function Login({ onLogin }: { onLogin: () => void }) {
           body: JSON.stringify({ email, otp: code })
         });
         if (res.ok) {
-          onLogin();
+          const payload = await res.json();
+          const session: AuthSession = {
+            username: payload.username || email,
+            name: payload.name || email,
+            role: payload.role || role
+          };
+          onLogin(session);
         } else {
-          setErrorMsg('Invalid or expired OTP.');
+          const payload = await res.json().catch(() => ({}));
+          setErrorMsg(payload.detail || 'Invalid or expired OTP.');
         }
       } catch (err) {
         setErrorMsg('Network error.');
@@ -95,6 +110,19 @@ export default function Login({ onLogin }: { onLogin: () => void }) {
               />
             </div>
             <div>
+              <label className="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Role</label>
+              <select
+                required
+                className="w-full px-4 py-3 bg-surface-container-highest rounded-xl border border-outline-variant/30 focus:border-primary focus:ring-1 focus:ring-primary transition-all text-sm font-medium text-on-surface"
+                value={role}
+                onChange={(e) => setRole(e.target.value as 'Super Admin' | 'Admin' | 'User')}
+              >
+                <option value="Super Admin">Super Admin</option>
+                <option value="Admin">Admin</option>
+                <option value="User">User</option>
+              </select>
+            </div>
+            <div>
               <label className="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Password</label>
               <input
                 type="password"
@@ -112,18 +140,9 @@ export default function Login({ onLogin }: { onLogin: () => void }) {
             >
               {loading ? 'Sending OTP...' : 'Sign In with 2FA'} <span className="material-symbols-outlined text-[18px]">lock_open</span>
             </button>
-            <div className="relative flex py-2 items-center">
-              <div className="flex-grow border-t border-outline-variant/30"></div>
-              <span className="flex-shrink-0 mx-4 text-xs text-on-surface-variant font-bold uppercase">or</span>
-              <div className="flex-grow border-t border-outline-variant/30"></div>
+            <div className="rounded-xl bg-surface-container-highest p-3 text-[11px] text-on-surface-variant leading-relaxed border border-outline-variant/20">
+              Demo credentials: super admin <b>admin@quantumshield.local / Admin@123</b>, admin <b>j.doe@quantumshield.local / Admin@123</b>, user <b>guest@quantumshield.local / User@123</b>.
             </div>
-            <button
-              type="button"
-              onClick={onLogin}
-              className="w-full py-3 bg-surface-container-highest text-on-surface border border-outline-variant/30 rounded-xl font-bold text-sm hover:bg-surface-variant transition-colors flex items-center justify-center gap-2"
-            >
-              Direct Admin Access <span className="material-symbols-outlined text-[18px]">admin_panel_settings</span>
-            </button>
             {errorMsg && <p className="text-error text-xs font-bold text-center mt-2">{errorMsg}</p>}
           </form>
         ) : (

@@ -10,9 +10,24 @@ db_edges: List[dict] = []
 
 # RBAC & Gov module Data
 db_users: Dict[str, dict] = {
-    "super_admin": {"username": "admin@quantumshield.local", "role": "Super Admin", "name": "System Administrator"},
-    "admin": {"username": "j.doe", "role": "Admin", "name": "John Doe"},
-    "user": {"username": "guest", "role": "User", "name": "Guest Viewer"}
+    "super_admin": {
+        "username": "admin@quantumshield.local",
+        "role": "Super Admin",
+        "name": "System Administrator",
+        "password": "Admin@123"
+    },
+    "admin": {
+        "username": "j.doe@quantumshield.local",
+        "role": "Admin",
+        "name": "John Doe",
+        "password": "Admin@123"
+    },
+    "user": {
+        "username": "guest@quantumshield.local",
+        "role": "User",
+        "name": "Guest Viewer",
+        "password": "User@123"
+    }
 }
 db_audit_logs: List[dict] = []
 

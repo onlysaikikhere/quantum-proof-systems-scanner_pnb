@@ -12,6 +12,7 @@ const Scanner = () => {
   const [subdomainQuery, setSubdomainQuery] = useState('');
   const [subdomainPage, setSubdomainPage] = useState(0);
   const role = localStorage.getItem('userRole') || 'User';
+  const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8010';
 
   const subdomainRows = useMemo(() => {
     const rows = scanResult?.scan_result?.all_subdomains_detailed || [];
@@ -52,7 +53,7 @@ const Scanner = () => {
     if (!target) return;
     setIsScanning(true);
     try {
-      const res = await fetch((import.meta.env.VITE_API_URL || 'http://localhost:8010') + '/api/scan', {
+      const res = await fetch(apiBase + '/api/scan', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -91,11 +92,23 @@ const Scanner = () => {
           <div className="flex items-center gap-3">
             <button
               onClick={() => {
+                if (!target.trim()) {
+                  alert('Enter a domain first to export its website report.');
+                  return;
+                }
+                window.open(`${apiBase}/api/reports/website/download?domain=${encodeURIComponent(target.trim())}&x_user_role=${encodeURIComponent(role)}`);
+              }}
+              className="px-5 py-2.5 bg-surface-container-highest text-on-surface rounded font-semibold text-sm transition-all hover:bg-surface-dim w-full sm:w-auto"
+            >
+              Website Report
+            </button>
+            <button
+              onClick={() => {
                 if (role !== 'Super Admin') {
                   alert('Only Super Admin can export the full CISO PDF report.');
                   return;
                 }
-                window.open((import.meta.env.VITE_API_URL || 'http://localhost:8010') + `/api/reports/download?x_user_role=${encodeURIComponent(role)}`);
+                window.open(`${apiBase}/api/reports/download?x_user_role=${encodeURIComponent(role)}`);
               }}
               className="px-5 py-2.5 bg-surface-container-highest text-on-surface rounded font-semibold text-sm transition-all hover:bg-surface-dim w-full sm:w-auto"
             >

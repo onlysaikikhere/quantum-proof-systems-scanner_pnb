@@ -553,6 +553,73 @@ def report_overview():
         "mobile_app": mobile_app
     }
 
+@app.get("/api/reports/website")
+def report_website(domain: str):
+    """Return a single website-specific report for the latest matching scan."""
+    all_assets = get_all_assets_list()
+    matching_assets = [a for a in all_assets if str(a.get("name", "")).lower() == domain.lower()]
+
+    if not matching_assets:
+        raise HTTPException(status_code=404, detail="No scanned website found for the requested domain.")
+
+    asset = matching_assets[-1]
+    scan = asset.get("scan_result", {}) or {}
+    subdomains = scan.get("all_subdomains_detailed", []) if isinstance(scan, dict) else []
+    active_subdomains = [sub for sub in subdomains if sub.get("status") == "active"]
+    inactive_subdomains = [sub for sub in subdomains if sub.get("status") == "inactive"]
+
+    return {
+        "report_type": "Website Report",
+        "domain": asset.get("name"),
+        "summary": {
+            "risk_level": asset.get("risk", {}).get("risk_level", "Unknown"),
+            "risk_score": asset.get("risk", {}).get("score", 0),
+            "tls_version": scan.get("tls_version", "Unknown"),
+            "algorithm": scan.get("algorithm", "Unknown"),
+            "key_size": scan.get("key_size", 0),
+            "subdomains_total": len(subdomains),
+            "subdomains_active": len(active_subdomains),
+            "subdomains_inactive": len(inactive_subdomains)
+        },
+        "website": asset,
+        "subdomains": subdomains,
+        "active_subdomains": active_subdomains,
+        "inactive_subdomains": inactive_subdomains
+    }
+
+@app.get("/api/reports/website/download")
+def download_website_report(domain: str, x_user_role: Optional[str] = Query(None), x_user_role_header: Optional[str] = Header(None)):
+    """Download a PDF report for a single scanned website/domain."""
+    role = resolve_role(x_user_role_header, x_user_role)
+    require_admin_or_super(role)
+
+    payload = report_website(domain)
+    asset = payload["website"]
+    scan = asset.get("scan_result", {}) or {}
+    subdomains = payload.get("subdomains", [])
+    vulnerable_assets = [asset] if asset.get("risk", {}).get("risk_level") in ["High", "Critical"] else []
+
+    pdf_bytes = generate_pdf_report({
+        "report_title": f"Website Report - {asset.get('name')}",
+        "executive_summary": (
+            f"Website {asset.get('name')} currently has {payload['summary']['subdomains_total']} discovered subdomains. "
+            f"Active: {payload['summary']['subdomains_active']}, Inactive: {payload['summary']['subdomains_inactive']}."
+        ),
+        "risk_score": payload["summary"]["risk_score"],
+        "overall_risk": payload["summary"]["risk_level"],
+        "assets": [asset],
+        "vulnerable_assets": vulnerable_assets,
+        "recommendations": [
+            "Review inactive subdomains for DNS cleanup and ownership drift.",
+            "Prioritize TLS 1.3 adoption on lower-scoring subdomains.",
+            "Rotate certificates and retire legacy crypto where applicable."
+        ]
+    })
+
+    date_prefix = datetime.datetime.now().strftime('%Y_%m_%d')
+    pdf_name = f'{date_prefix}-{domain}-Website_Report.pdf'
+    return _pdf_response(pdf_bytes, pdf_name)
+
 def _pdf_response(pdf_bytes: bytes, filename: str) -> Response:
     return Response(
         content=pdf_bytes,
@@ -897,3 +964,9 @@ class EmailRequest(BaseModel):
 def send_report(request: EmailRequest):
     """Mock endpoint to simulate dispatching SMTP reports."""
     return {"status": "success", "message": f"Enterprise Cryptographic Risk Report queued for {request.recipient}"}
+
+
+if __name__ == "__main__":
+    import uvicorn
+
+    uvicorn.run("backend.main:app", host="0.0.0.0", port=8010, reload=False)

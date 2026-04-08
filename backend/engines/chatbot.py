@@ -12,6 +12,12 @@ def process_chat_message(message: str) -> dict:
     Hybrid offline AI action parser using regex to extract user intent.
     """
     msg_lower = message.lower()
+    domain_match = re.search(r'(?:report\s+of|report\s+for|website\s+of|website|scan\s+report\s+of|scan\s+report\s+for)\s+([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})', msg_lower)
+    if not domain_match:
+        domain_match = re.search(r'([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})', msg_lower)
+    target_domain = domain_match.group(1) if domain_match else None
+    email_match = re.search(r'[\w\.-]+@[\w\.-]+\.\w+', msg_lower)
+    target_email = email_match.group(0) if email_match else None
     
     # Intent: Scheduler
     if "schedule" in msg_lower or "automate" in msg_lower or "every" in msg_lower:
@@ -47,14 +53,12 @@ def process_chat_message(message: str) -> dict:
         }
         
     # Intent: Report Generation / Email
-    email_match = re.search(r'[\w\.-]+@[\w\.-]+\.\w+', msg_lower)
-    
-    if "report" in msg_lower and (email_match or "email" in msg_lower or "send" in msg_lower):
-        email = email_match.group(0) if email_match else "admin@quantumshield.local"
+    if "report" in msg_lower and (target_email or "email" in msg_lower or "send" in msg_lower):
+        email = target_email if target_email else "admin@quantumshield.local"
         return {
             "action": "EMAIL_REPORT",
-            "parameters": {"recipient": email},
-            "explanation": f"I'm generating the enterprise risk report with PDF attachment and sending it to {email}."
+            "parameters": {"recipient": email, "domain": target_domain},
+            "explanation": f"I'm generating the website and security report bundle for {target_domain or 'your latest scan'} and sending it to {email}."
         }
     elif "report" in msg_lower:
         return {
@@ -106,7 +110,7 @@ def summarize_report(data: dict) -> str:
         print(f"Gemini API Error: {e}")
         return fallback
 
-def send_email(to_email: str, subject: str, body: str, pdf_bytes: bytes = None, vuln_pdf_bytes: bytes = None) -> bool:
+def send_email(to_email: str, subject: str, body: str, attachments: list = None) -> bool:
     """
     Sends an SMTP email using TLS encryption with optional PDF attachment.
     Expects SMTP_EMAIL and SMTP_PASSWORD in environment.
@@ -149,21 +153,17 @@ def send_email(to_email: str, subject: str, body: str, pdf_bytes: bytes = None, 
     
     msg.attach(MIMEText(html_body, 'html'))
     
-    # Attach PDF if provided
-    if pdf_bytes:
-        date_prefix = datetime.datetime.now().strftime('%Y_%m_%d')
-        pdf_name = f'{date_prefix}-CyberRiot_Report.pdf'
+    # Attach PDFs if provided
+    for attachment in attachments or []:
+        if not attachment:
+            continue
+        pdf_bytes = attachment.get("bytes")
+        filename = attachment.get("filename", "report.pdf")
+        if not pdf_bytes:
+            continue
         pdf_attachment = MIMEApplication(pdf_bytes, _subtype="pdf")
-        pdf_attachment.add_header('Content-Disposition', 'attachment', filename=pdf_name)
+        pdf_attachment.add_header('Content-Disposition', 'attachment', filename=filename)
         msg.attach(pdf_attachment)
-    
-    # Attach Vulnerable Assets PDF if provided
-    if vuln_pdf_bytes:
-        date_prefix = datetime.datetime.now().strftime('%Y_%m_%d')
-        vuln_pdf_name = f'{date_prefix}-Vulnerable_Assets_Report.pdf'
-        vuln_attachment = MIMEApplication(vuln_pdf_bytes, _subtype="pdf")
-        vuln_attachment.add_header('Content-Disposition', 'attachment', filename=vuln_pdf_name)
-        msg.attach(vuln_attachment)
     
     try:
         server = smtplib.SMTP(smtp_server, smtp_port, timeout=10)

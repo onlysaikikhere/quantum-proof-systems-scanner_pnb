@@ -593,22 +593,43 @@ def download_website_report(domain: str, x_user_role: Optional[str] = Query(None
     role = resolve_role(x_user_role_header, x_user_role)
     require_admin_or_super(role)
 
+    pdf_bytes = build_website_report_pdf(domain)
+
+    date_prefix = datetime.datetime.now().strftime('%Y_%m_%d')
+    pdf_name = f'{date_prefix}-{domain}-Website_Report.pdf'
+    return _pdf_response(pdf_bytes, pdf_name)
+
+def build_website_report_pdf(domain: str) -> bytes:
     payload = report_website(domain)
     asset = payload["website"]
     scan = asset.get("scan_result", {}) or {}
-    subdomains = payload.get("subdomains", [])
-    vulnerable_assets = [asset] if asset.get("risk", {}).get("risk_level") in ["High", "Critical"] else []
 
-    pdf_bytes = generate_pdf_report({
+    return generate_pdf_report({
         "report_title": f"Website Report - {asset.get('name')}",
+        "theme_color": "#0050cb",
+        "secondary_theme_color": "#0f172a",
         "executive_summary": (
             f"Website {asset.get('name')} currently has {payload['summary']['subdomains_total']} discovered subdomains. "
             f"Active: {payload['summary']['subdomains_active']}, Inactive: {payload['summary']['subdomains_inactive']}."
         ),
         "risk_score": payload["summary"]["risk_score"],
         "overall_risk": payload["summary"]["risk_level"],
+        "summary_cards": [
+            {"label": "Risk Score", "value": f"{payload['summary']['risk_score']}%", "color": "#dc2626" if payload["summary"]["risk_score"] < 40 else "#f59e0b" if payload["summary"]["risk_score"] < 80 else "#16a34a"},
+            {"label": "TLS Version", "value": scan.get("tls_version", "Unknown"), "color": "#0050cb"},
+            {"label": "Subdomains", "value": str(payload["summary"]["subdomains_total"]), "color": "#0f172a"},
+            {"label": "Active / Inactive", "value": f"{payload['summary']['subdomains_active']} / {payload['summary']['subdomains_inactive']}", "color": "#16a34a" if payload["summary"]["subdomains_inactive"] == 0 else "#f59e0b"},
+        ],
+        "chart_data": {
+            "title": "Website Subdomain Status",
+            "type": "pie",
+            "labels": ["Active", "Inactive"],
+            "values": [payload["summary"]["subdomains_active"], payload["summary"]["subdomains_inactive"]],
+            "colors": ["#16a34a", "#dc2626"],
+        },
+        "subdomain_rows": payload.get("subdomains", []),
         "assets": [asset],
-        "vulnerable_assets": vulnerable_assets,
+        "vulnerable_assets": [asset] if asset.get("risk", {}).get("risk_level") in ["High", "Critical"] else [],
         "recommendations": [
             "Review inactive subdomains for DNS cleanup and ownership drift.",
             "Prioritize TLS 1.3 adoption on lower-scoring subdomains.",
@@ -616,9 +637,158 @@ def download_website_report(domain: str, x_user_role: Optional[str] = Query(None
         ]
     })
 
-    date_prefix = datetime.datetime.now().strftime('%Y_%m_%d')
-    pdf_name = f'{date_prefix}-{domain}-Website_Report.pdf'
-    return _pdf_response(pdf_bytes, pdf_name)
+def build_asset_discovery_report_pdf() -> bytes:
+    payload = report_asset_discovery()
+    summary = payload["summary"]
+    return generate_pdf_report({
+        "report_title": "Asset Discovery Report",
+        "theme_color": "#0050cb",
+        "secondary_theme_color": "#0f172a",
+        "executive_summary": (
+            f"Discovered {summary['total_domains']} domains. Active domains: {summary['active_domains']}, inactive domains: {summary['inactive_domains']}. "
+            f"This report also tracks subdomain footprints per asset."
+        ),
+        "risk_score": summary["active_domains"],
+        "overall_risk": "Moderate" if summary["inactive_domains"] > 0 else "Low",
+        "summary_cards": [
+            {"label": "Total Domains", "value": str(summary["total_domains"]), "color": "#0f172a"},
+            {"label": "Active Domains", "value": str(summary["active_domains"]), "color": "#16a34a"},
+            {"label": "Inactive Domains", "value": str(summary["inactive_domains"]), "color": "#dc2626"},
+        ],
+        "chart_data": {
+            "title": "Domain Status Distribution",
+            "type": "pie",
+            "labels": ["Active", "Inactive"],
+            "values": [summary["active_domains"], summary["inactive_domains"]],
+            "colors": ["#16a34a", "#dc2626"],
+        },
+        "assets": [
+            {
+                "name": row.get("domain"),
+                "type": row.get("asset_type", "Domain"),
+                "risk": {"risk_level": row.get("status", "Unknown")},
+                "scan_result": {
+                    "algorithm": f"Active Subdomains: {row.get('active_subdomains', 0)}",
+                    "tls_version": f"Inactive Subdomains: {row.get('inactive_subdomains', 0)}",
+                },
+                "subdomains": row.get("subdomains", []),
+            }
+            for row in payload.get("assets", [])
+        ],
+        "recommendations": [
+            "Investigate inactive domains for DNS hygiene and ownership.",
+            "Track active/inactive drift as part of weekly governance reviews."
+        ]
+    })
+
+def build_subdomain_risk_report_pdf() -> bytes:
+    payload = report_subdomain_risk()
+    summary = payload["summary"]
+    return generate_pdf_report({
+        "report_title": "Subdomain Risk Classification Report",
+        "theme_color": "#7c3aed",
+        "secondary_theme_color": "#312e81",
+        "executive_summary": (
+            f"Total subdomains: {summary['total_subdomains']}. PQC Ready: {summary['pqc_ready']}, "
+            f"Standard: {summary['standard']}, Critical: {summary['critical']}."
+        ),
+        "risk_score": summary["pqc_ready"],
+        "overall_risk": "High" if summary["critical"] > 0 else "Low",
+        "summary_cards": [
+            {"label": "Total Subdomains", "value": str(summary["total_subdomains"]), "color": "#0f172a"},
+            {"label": "PQC Ready", "value": str(summary["pqc_ready"]), "color": "#16a34a"},
+            {"label": "Standard", "value": str(summary["standard"]), "color": "#f59e0b"},
+            {"label": "Critical", "value": str(summary["critical"]), "color": "#dc2626"},
+        ],
+        "chart_data": {
+            "title": "Subdomain Classification",
+            "type": "bar",
+            "labels": ["PQC Ready", "Standard", "Critical"],
+            "values": [summary["pqc_ready"], summary["standard"], summary["critical"]],
+            "color": "#7c3aed",
+        },
+        "subdomain_rows": payload.get("data", []),
+        "recommendations": [
+            "Prioritize critical subdomains with weak or expiring crypto posture.",
+            "Promote standard subdomains into PQC-ready compliance baselines."
+        ]
+    })
+
+def build_vulnerability_report_pdf() -> bytes:
+    payload = report_vulnerabilities()
+    summary = payload["summary"]
+    return generate_pdf_report({
+        "report_title": "Vulnerability & Hosting Report",
+        "theme_color": "#dc2626",
+        "secondary_theme_color": "#991b1b",
+        "executive_summary": (
+            f"Vulnerable domains: {summary['vulnerable_domains']}. High severity domains: {summary['high_severity_domains']}. "
+            f"Third-party hosted: {summary['third_party_hosted']}."
+        ),
+        "risk_score": max(0, 100 - (summary["high_severity_domains"] * 10)),
+        "overall_risk": "High" if summary["high_severity_domains"] > 0 else "Moderate",
+        "summary_cards": [
+            {"label": "Vulnerable Domains", "value": str(summary["vulnerable_domains"]), "color": "#dc2626"},
+            {"label": "High Severity", "value": str(summary["high_severity_domains"]), "color": "#b91c1c"},
+            {"label": "Third-Party Hosted", "value": str(summary["third_party_hosted"]), "color": "#f59e0b"},
+        ],
+        "chart_data": {
+            "title": "Hosting / Severity Overview",
+            "type": "bar",
+            "labels": ["Vulnerable", "High Severity", "Third-Party"],
+            "values": [summary["vulnerable_domains"], summary["high_severity_domains"], summary["third_party_hosted"]],
+            "color": "#dc2626",
+        },
+        "vulnerable_assets": [
+            {
+                "name": row.get("domain"),
+                "type": "Domain",
+                "risk": {"risk_level": "High" if row.get("vulnerability_count", 0) > 0 else "Low"},
+                "scan_result": {
+                    "algorithm": ", ".join(v.get("type", "Unknown") for v in row.get("vulnerabilities", [])) or "None",
+                    "tls_version": "3rd Party" if row.get("is_third_party") else "Internal",
+                },
+            }
+            for row in payload.get("data", [])
+        ],
+        "recommendations": [
+            "Remediate SQL Injection and XSS findings with immediate patch cycles.",
+            "Review contracts and controls for third-party hosted critical assets."
+        ]
+    })
+
+def build_mobile_app_report_pdf() -> bytes:
+    payload = report_mobile_app()
+    summary = payload["summary"]
+    return generate_pdf_report({
+        "report_title": "Mobile Application Discovery Report",
+        "theme_color": "#16a34a",
+        "secondary_theme_color": "#166534",
+        "executive_summary": (
+            f"Domains with mobile footprint: {summary['domains_with_mobile_apps']}. Total apps: {summary['total_apps']} "
+            f"(Android: {summary['android_apps']}, iOS: {summary['ios_apps']})."
+        ),
+        "risk_score": 100 if summary["total_apps"] > 0 else 0,
+        "overall_risk": "Low",
+        "summary_cards": [
+            {"label": "Domains with Apps", "value": str(summary["domains_with_mobile_apps"]), "color": "#16a34a"},
+            {"label": "Total Apps", "value": str(summary["total_apps"]), "color": "#0f172a"},
+            {"label": "Android", "value": str(summary["android_apps"]), "color": "#22c55e"},
+            {"label": "iOS", "value": str(summary["ios_apps"]), "color": "#2563eb"},
+        ],
+        "chart_data": {
+            "title": "Mobile Platform Split",
+            "type": "bar",
+            "labels": ["Android", "iOS"],
+            "values": [summary["android_apps"], summary["ios_apps"]],
+            "color": "#16a34a",
+        },
+        "mobile_rows": payload.get("data", []),
+        "recommendations": [
+            "Map discovered apps to official store listings and publisher accounts.",
+            "Enforce release-signing and runtime hardening baselines for mobile channels."
+        ]
+    })
 
 def _pdf_response(pdf_bytes: bytes, filename: str) -> Response:
     return Response(
@@ -631,37 +801,7 @@ def _pdf_response(pdf_bytes: bytes, filename: str) -> Response:
 def download_asset_discovery_pdf(x_user_role: Optional[str] = Query(None), x_user_role_header: Optional[str] = Header(None)):
     role = resolve_role(x_user_role_header, x_user_role)
     require_admin_or_super(role)
-    payload = report_asset_discovery()
-    assets = []
-    for row in payload.get("assets", []):
-        assets.append({
-            "name": row.get("domain"),
-            "type": row.get("asset_type", "Domain"),
-            "risk": {"risk_level": row.get("status", "Unknown")},
-            "scan_result": {
-                "ipv4": "N/A",
-                "ipv6": "N/A",
-                "algorithm": f"Active Subdomains: {row.get('active_subdomains', 0)}",
-                "tls_version": f"Inactive Subdomains: {row.get('inactive_subdomains', 0)}"
-            }
-        })
-
-    pdf_bytes = generate_pdf_report({
-        "report_title": "Asset Discovery Report",
-        "executive_summary": (
-            f"Discovered {payload['summary']['total_domains']} domains. "
-            f"Active domains: {payload['summary']['active_domains']}, "
-            f"Inactive domains: {payload['summary']['inactive_domains']}."
-        ),
-        "risk_score": payload["summary"]["active_domains"],
-        "overall_risk": "Moderate" if payload["summary"]["inactive_domains"] > 0 else "Low",
-        "assets": assets,
-        "vulnerable_assets": [],
-        "recommendations": [
-            "Investigate inactive domains for DNS hygiene and ownership.",
-            "Track active/inactive drift as part of weekly governance reviews."
-        ]
-    })
+    pdf_bytes = build_asset_discovery_report_pdf()
     date_prefix = datetime.datetime.now().strftime('%Y_%m_%d')
     return _pdf_response(pdf_bytes, f"{date_prefix}-Asset_Discovery_Report.pdf")
 
@@ -669,42 +809,7 @@ def download_asset_discovery_pdf(x_user_role: Optional[str] = Query(None), x_use
 def download_subdomain_risk_pdf(x_user_role: Optional[str] = Query(None), x_user_role_header: Optional[str] = Header(None)):
     role = resolve_role(x_user_role_header, x_user_role)
     require_admin_or_super(role)
-    payload = report_subdomain_risk()
-    assets = []
-    vulnerable_assets = []
-    for row in payload.get("data", []):
-        record = {
-            "name": row.get("subdomain"),
-            "type": "Subdomain",
-            "risk": {"risk_level": row.get("bucket", "Unknown")},
-            "scan_result": {
-                "ipv4": "N/A",
-                "ipv6": "N/A",
-                "algorithm": row.get("ssl_rating", "N/A"),
-                "tls_version": row.get("status", "unknown")
-            }
-        }
-        assets.append(record)
-        if row.get("bucket") == "critical":
-            vulnerable_assets.append(record)
-
-    pdf_bytes = generate_pdf_report({
-        "report_title": "Subdomain Risk Classification Report",
-        "executive_summary": (
-            f"Total subdomains: {payload['summary']['total_subdomains']}. "
-            f"PQC Ready: {payload['summary']['pqc_ready']}, "
-            f"Standard: {payload['summary']['standard']}, "
-            f"Critical: {payload['summary']['critical']}."
-        ),
-        "risk_score": payload["summary"]["pqc_ready"],
-        "overall_risk": "High" if payload["summary"]["critical"] > 0 else "Low",
-        "assets": assets,
-        "vulnerable_assets": vulnerable_assets,
-        "recommendations": [
-            "Prioritize critical subdomains with weak or expiring crypto posture.",
-            "Promote standard subdomains into PQC-ready compliance baselines."
-        ]
-    })
+    pdf_bytes = build_subdomain_risk_report_pdf()
     date_prefix = datetime.datetime.now().strftime('%Y_%m_%d')
     return _pdf_response(pdf_bytes, f"{date_prefix}-Subdomain_Risk_Report.pdf")
 
@@ -712,40 +817,7 @@ def download_subdomain_risk_pdf(x_user_role: Optional[str] = Query(None), x_user
 def download_vulnerability_pdf(x_user_role: Optional[str] = Query(None), x_user_role_header: Optional[str] = Header(None)):
     role = resolve_role(x_user_role_header, x_user_role)
     require_admin_or_super(role)
-    payload = report_vulnerabilities()
-    assets = []
-    for row in payload.get("data", []):
-        vuln_names = ", ".join(v.get("type", "Unknown") for v in row.get("vulnerabilities", [])) or "None"
-        assets.append({
-            "name": row.get("domain"),
-            "type": "Domain",
-            "risk": {"risk_level": "High" if row.get("vulnerability_count", 0) > 0 else "Low"},
-            "scan_result": {
-                "ipv4": "N/A",
-                "ipv6": "N/A",
-                "algorithm": vuln_names,
-                "tls_version": "3rd Party" if row.get("is_third_party") else "Internal"
-            }
-        })
-
-    pdf_bytes = generate_pdf_report({
-        "report_title": "Vulnerability & Hosting Report",
-        "theme_color": "#dc2626",
-        "secondary_theme_color": "#991b1b",
-        "executive_summary": (
-            f"Vulnerable domains: {payload['summary']['vulnerable_domains']}. "
-            f"High severity domains: {payload['summary']['high_severity_domains']}. "
-            f"Third-party hosted: {payload['summary']['third_party_hosted']}."
-        ),
-        "risk_score": max(0, 100 - (payload["summary"]["high_severity_domains"] * 10)),
-        "overall_risk": "High" if payload["summary"]["high_severity_domains"] > 0 else "Moderate",
-        "assets": assets,
-        "vulnerable_assets": assets,
-        "recommendations": [
-            "Remediate SQL Injection and XSS findings with immediate patch cycles.",
-            "Review contracts and controls for third-party hosted critical assets."
-        ]
-    })
+    pdf_bytes = build_vulnerability_report_pdf()
     date_prefix = datetime.datetime.now().strftime('%Y_%m_%d')
     return _pdf_response(pdf_bytes, f"{date_prefix}-Vulnerability_Report.pdf")
 
@@ -753,39 +825,7 @@ def download_vulnerability_pdf(x_user_role: Optional[str] = Query(None), x_user_
 def download_mobile_app_pdf(x_user_role: Optional[str] = Query(None), x_user_role_header: Optional[str] = Header(None)):
     role = resolve_role(x_user_role_header, x_user_role)
     require_admin_or_super(role)
-    payload = report_mobile_app()
-    assets = []
-    for row in payload.get("data", []):
-        for app in row.get("apps", []):
-            assets.append({
-                "name": f"{row.get('domain')} - {app.get('name')}",
-                "type": f"Mobile ({app.get('platform', 'unknown')})",
-                "risk": {"risk_level": app.get("risk_score", 0)},
-                "scan_result": {
-                    "ipv4": "N/A",
-                    "ipv6": "N/A",
-                    "algorithm": "Store Discovery",
-                    "tls_version": "iOS" if app.get("platform") == "ios" else "Android"
-                }
-            })
-
-    pdf_bytes = generate_pdf_report({
-        "report_title": "Mobile Application Discovery Report",
-        "theme_color": "#16a34a",
-        "secondary_theme_color": "#166534",
-        "executive_summary": (
-            f"Domains with mobile footprint: {payload['summary']['domains_with_mobile_apps']}. "
-            f"Total apps: {payload['summary']['total_apps']} (Android: {payload['summary']['android_apps']}, iOS: {payload['summary']['ios_apps']})."
-        ),
-        "risk_score": 100 if payload["summary"]["total_apps"] > 0 else 0,
-        "overall_risk": "Low",
-        "assets": assets,
-        "vulnerable_assets": [],
-        "recommendations": [
-            "Map discovered apps to official store listings and publisher accounts.",
-            "Enforce release-signing and runtime hardening baselines for mobile channels."
-        ]
-    })
+    pdf_bytes = build_mobile_app_report_pdf()
     date_prefix = datetime.datetime.now().strftime('%Y_%m_%d')
     return _pdf_response(pdf_bytes, f"{date_prefix}-Mobile_App_Report.pdf")
 
@@ -809,6 +849,7 @@ def chat_with_assistant(request: ChatRequest):
 
     if result["action"] == "EMAIL_REPORT":
         recipient = result["parameters"].get("recipient", "admin@quantumshield.local")
+        target_domain = result["parameters"].get("domain")
         risk_data = get_dashboard_metrics()
         all_assets = get_all_assets_list()
         vuln_assets = [a for a in all_assets if a.get("risk", {}).get("risk_level") in ["High", "Medium"]]
@@ -827,32 +868,28 @@ def chat_with_assistant(request: ChatRequest):
         body += f"Risk Score: {risk_data['summary']['pqc_readiness_pct']}% PQC Ready\n"
         body += f"Key Findings: {risk_data['summary']['high_risk']} High Risk Assets, {risk_data['summary']['expiring_certs']} Expiring Certs\n"
         body += f"Recommendations: Upgrade legacy algorithms to NIST-compliant standards and prioritize rotating expiring certificates."
-        
-        # 3. Generate PDF Report
-        pdf_bytes = generate_pdf_report({
-            "executive_summary": summary,
-            "risk_score": risk_data["summary"]["pqc_readiness_pct"],
-            "overall_risk": overall_risk,
-            "assets": all_assets,
-            "vulnerable_assets": vuln_assets,
-            "recommendations": ["Upgrade legacy algorithms to NIST-compliant standards", "Prioritize rotating expiring certificates"]
-        })
 
-        # 4. Generate Vulnerable PDF Report
-        vuln_pdf_bytes = generate_pdf_report({
-            "report_title": "Critical Vulnerability Disclosures",
-            "theme_color": "#dc2626",
-            "secondary_theme_color": "#991b1b",
-            "executive_summary": f"This report focuses exclusively on vulnerable assets. We identified {len(vuln_assets)} assets requiring immediate remediation due to legacy cryptography or impending certificate expiration.",
-            "risk_score": risk_data["summary"]["pqc_readiness_pct"],
-            "overall_risk": overall_risk,
-            "assets": vuln_assets,
-            "vulnerable_assets": vuln_assets,
-            "recommendations": ["Upgrade legacy algorithms to NIST-compliant standards", "Prioritize rotating expiring certificates"]
-        })
+        attachments = [
+            {"filename": f"{datetime.datetime.now().strftime('%Y_%m_%d')}-Asset_Discovery_Report.pdf", "bytes": build_asset_discovery_report_pdf()},
+            {"filename": f"{datetime.datetime.now().strftime('%Y_%m_%d')}-Subdomain_Risk_Report.pdf", "bytes": build_subdomain_risk_report_pdf()},
+            {"filename": f"{datetime.datetime.now().strftime('%Y_%m_%d')}-Vulnerability_Report.pdf", "bytes": build_vulnerability_report_pdf()},
+            {"filename": f"{datetime.datetime.now().strftime('%Y_%m_%d')}-Mobile_App_Report.pdf", "bytes": build_mobile_app_report_pdf()},
+        ]
+
+        if target_domain:
+            try:
+                attachments.insert(0, {
+                    "filename": f"{datetime.datetime.now().strftime('%Y_%m_%d')}-{target_domain}-Website_Report.pdf",
+                    "bytes": build_website_report_pdf(target_domain)
+                })
+            except HTTPException:
+                pass
+
+        subject = f"Quantum Security Report Bundle - {target_domain or 'All Scans'} - Risk Level: {overall_risk}"
+        body += f"\nReport Bundle: {len(attachments)} PDF attachments included."
 
         # 5. Send Email
-        success = send_email(recipient, subject, body, pdf_bytes, vuln_pdf_bytes)
+        success = send_email(recipient, subject, body, attachments)
         
         # 5. Return API Response
         if success is True:

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 const Scanner = () => {
   const [target, setTarget] = useState("");
@@ -7,7 +7,34 @@ const Scanner = () => {
   const [scanResult, setScanResult] = useState<any>(null);
   const [showToast, setShowToast] = useState(false);
   const [toastMsg, setToastMsg] = useState("");
+  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
+  const [bucketFilter, setBucketFilter] = useState<'all' | 'pqc_ready' | 'standard' | 'critical'>('all');
+  const [subdomainQuery, setSubdomainQuery] = useState('');
   const role = localStorage.getItem('userRole') || 'User';
+
+  const subdomainRows = useMemo(() => {
+    const rows = scanResult?.scan_result?.all_subdomains_detailed || [];
+    return rows.map((row: any) => {
+      const days = row?.days_to_expiry;
+      let bucket = 'critical';
+      if (typeof days === 'number' && days > 180) bucket = 'pqc_ready';
+      else if (typeof days === 'number' && days > 90) bucket = 'standard';
+
+      return {
+        ...row,
+        bucket,
+      };
+    });
+  }, [scanResult]);
+
+  const filteredSubdomainRows = useMemo(() => {
+    return subdomainRows.filter((row: any) => {
+      const matchesStatus = statusFilter === 'all' || row.status === statusFilter;
+      const matchesBucket = bucketFilter === 'all' || row.bucket === bucketFilter;
+      const matchesQuery = !subdomainQuery.trim() || String(row.subdomain || '').toLowerCase().includes(subdomainQuery.toLowerCase());
+      return matchesStatus && matchesBucket && matchesQuery;
+    });
+  }, [subdomainRows, statusFilter, bucketFilter, subdomainQuery]);
 
   const handleScan = async () => {
     if (!target) return;
@@ -253,6 +280,120 @@ const Scanner = () => {
                   </div>
                 )}
               </div>
+
+              {/* Subdomain Table with Filters */}
+              {scanResult?.scan_result?.all_subdomains_detailed && (
+                <div className="mt-8 bg-surface-container-low rounded-lg p-5 border border-outline-variant/20">
+                  <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 mb-5">
+                    <div>
+                      <p className="text-[0.6875rem] font-bold text-on-surface-variant uppercase tracking-widest">Subdomain Discovery</p>
+                      <h4 className="text-sm font-bold text-on-surface mt-1">{scanResult?.name || target} - Subdomain Inventory</h4>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2 text-[11px]">
+                      <div className="px-3 py-2 rounded bg-surface-container-highest">Total: <span className="font-bold">{subdomainRows.length}</span></div>
+                      <div className="px-3 py-2 rounded bg-surface-container-highest">Showing: <span className="font-bold">{filteredSubdomainRows.length}</span></div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-4">
+                    <input
+                      value={subdomainQuery}
+                      onChange={(e) => setSubdomainQuery(e.target.value)}
+                      className="md:col-span-2 bg-surface-container-highest border border-outline-variant/20 rounded px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-primary"
+                      placeholder="Search subdomain..."
+                      type="text"
+                    />
+                    <select
+                      value={statusFilter}
+                      onChange={(e) => setStatusFilter(e.target.value as 'all' | 'active' | 'inactive')}
+                      className="bg-surface-container-highest border border-outline-variant/20 rounded px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-primary"
+                    >
+                      <option value="all">All Status</option>
+                      <option value="active">Active</option>
+                      <option value="inactive">Inactive</option>
+                    </select>
+                    <select
+                      value={bucketFilter}
+                      onChange={(e) => setBucketFilter(e.target.value as 'all' | 'pqc_ready' | 'standard' | 'critical')}
+                      className="bg-surface-container-highest border border-outline-variant/20 rounded px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-primary"
+                    >
+                      <option value="all">All Criteria</option>
+                      <option value="pqc_ready">PQC Ready</option>
+                      <option value="standard">Standard</option>
+                      <option value="critical">Critical</option>
+                    </select>
+                  </div>
+
+                  <div className="overflow-x-auto rounded border border-outline-variant/20">
+                    <table className="w-full text-left text-xs min-w-max">
+                      <thead className="bg-surface-container-highest sticky top-0">
+                        <tr>
+                          <th className="px-3 py-2 text-[10px] uppercase tracking-wider text-on-surface-variant font-bold whitespace-nowrap">Subdomain</th>
+                          <th className="px-3 py-2 text-[10px] uppercase tracking-wider text-on-surface-variant font-bold whitespace-nowrap">Status</th>
+                          <th className="px-3 py-2 text-[10px] uppercase tracking-wider text-on-surface-variant font-bold whitespace-nowrap">Criteria</th>
+                          <th className="px-3 py-2 text-[10px] uppercase tracking-wider text-on-surface-variant font-bold whitespace-nowrap">SSL ⭐</th>
+                          <th className="px-3 py-2 text-[10px] uppercase tracking-wider text-on-surface-variant font-bold whitespace-nowrap">TLS/SSL</th>
+                          <th className="px-3 py-2 text-[10px] uppercase tracking-wider text-on-surface-variant font-bold whitespace-nowrap">Algorithm</th>
+                          <th className="px-3 py-2 text-[10px] uppercase tracking-wider text-on-surface-variant font-bold whitespace-nowrap">Key Size</th>
+                          <th className="px-3 py-2 text-[10px] uppercase tracking-wider text-on-surface-variant font-bold whitespace-nowrap">Cipher Suite</th>
+                          <th className="px-3 py-2 text-[10px] uppercase tracking-wider text-on-surface-variant font-bold whitespace-nowrap">Issuer</th>
+                          <th className="px-3 py-2 text-[10px] uppercase tracking-wider text-on-surface-variant font-bold whitespace-nowrap">Expires</th>
+                          <th className="px-3 py-2 text-[10px] uppercase tracking-wider text-on-surface-variant font-bold whitespace-nowrap">Days Left</th>
+                          <th className="px-3 py-2 text-[10px] uppercase tracking-wider text-on-surface-variant font-bold whitespace-nowrap">Response</th>
+                          <th className="px-3 py-2 text-[10px] uppercase tracking-wider text-on-surface-variant font-bold whitespace-nowrap">Cert Valid</th>
+                          <th className="px-3 py-2 text-[10px] uppercase tracking-wider text-on-surface-variant font-bold whitespace-nowrap">Vulns</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {filteredSubdomainRows.length === 0 ? (
+                          <tr>
+                            <td className="px-3 py-6 text-sm text-on-surface-variant" colSpan={14}>No subdomains match current filters.</td>
+                          </tr>
+                        ) : (
+                          filteredSubdomainRows.map((row: any, idx: number) => (
+                            <tr key={`${row.subdomain}-${idx}`} className="border-t border-outline-variant/10 hover:bg-surface-container-highest/50 transition-colors">
+                              <td className="px-3 py-2 text-xs font-medium text-on-surface whitespace-nowrap">{row.subdomain || 'N/A'}</td>
+                              <td className="px-3 py-2 text-xs whitespace-nowrap">
+                                <span className={`px-2 py-1 rounded font-bold text-xs ${row.status === 'active' ? 'bg-tertiary/15 text-tertiary' : 'bg-error/15 text-error'}`}>
+                                  {row.status || 'unknown'}
+                                </span>
+                              </td>
+                              <td className="px-3 py-2 text-xs font-bold uppercase whitespace-nowrap">
+                                <span className={`${row.bucket === 'pqc_ready' ? 'text-tertiary' : row.bucket === 'standard' ? 'text-secondary' : 'text-error'}`}>
+                                  {String(row.bucket || 'critical').replace('_', ' ')}
+                                </span>
+                              </td>
+                              <td className="px-3 py-2 text-xs font-bold whitespace-nowrap">{row.ssl_rating || 'N/A'}</td>
+                              <td className="px-3 py-2 text-xs text-on-surface-variant whitespace-nowrap">{(row.tls_versions || []).join(', ') || 'N/A'}</td>
+                              <td className="px-3 py-2 text-xs text-on-surface-variant font-medium whitespace-nowrap">{row.algorithm || 'N/A'}</td>
+                              <td className="px-3 py-2 text-xs text-on-surface-variant font-mono whitespace-nowrap">{row.key_size ? `${row.key_size}b` : 'N/A'}</td>
+                              <td className="px-3 py-2 text-xs text-on-surface-variant truncate max-w-xs" title={row.cipher_suite}>{row.cipher_suite ? row.cipher_suite.substring(0, 30) + '...' : 'N/A'}</td>
+                              <td className="px-3 py-2 text-xs text-on-surface-variant truncate max-w-sm" title={row.certificate_issuer}>{row.certificate_issuer ? row.certificate_issuer.substring(0, 25) : 'N/A'}</td>
+                              <td className="px-3 py-2 text-xs text-on-surface-variant whitespace-nowrap">{row.expiry_date ? new Date(row.expiry_date).toLocaleDateString() : 'N/A'}</td>
+                              <td className="px-3 py-2 text-xs font-bold whitespace-nowrap">
+                                <span className={`${row.days_to_expiry === null ? 'text-on-surface-variant' : row.days_to_expiry < 30 ? 'text-error' : row.days_to_expiry < 90 ? 'text-secondary' : 'text-tertiary'}`}>
+                                  {row.days_to_expiry ?? 'N/A'}
+                                </span>
+                              </td>
+                              <td className="px-3 py-2 text-xs text-on-surface-variant whitespace-nowrap">{row.response_time_ms ? `${row.response_time_ms}ms` : 'N/A'}</td>
+                              <td className="px-3 py-2 text-xs whitespace-nowrap">
+                                <span className={`px-2 py-1 rounded font-bold text-xs ${row.certificate_valid ? 'bg-tertiary/15 text-tertiary' : 'bg-error/15 text-error'}`}>
+                                  {row.certificate_valid ? '✓' : '✗'}
+                                </span>
+                              </td>
+                              <td className="px-3 py-2 text-xs whitespace-nowrap">
+                                <span className={`px-2 py-1 rounded font-bold text-xs ${row.has_vulnerabilities ? 'bg-error/15 text-error' : 'bg-tertiary/15 text-tertiary'}`}>
+                                  {row.has_vulnerabilities ? '⚠️' : 'None'}
+                                </span>
+                              </td>
+                            </tr>
+                          ))
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
             </div>
           </section>
 

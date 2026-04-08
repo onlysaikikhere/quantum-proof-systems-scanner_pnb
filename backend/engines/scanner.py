@@ -116,14 +116,24 @@ def discover_subdomains(domain: str) -> dict:
     # Generate realistic subdomains based on common patterns
     common_prefixes = ["login", "api", "vpn", "mail", "dev", "staging", "test", 
                        "admin", "ftp", "dns", "storage", "cdn", "app", "web", 
-                       "secure", "payment", "portal", "dashboard", "git", "build"]
+                       "secure", "payment", "portal", "dashboard", "git", "build",
+                       "prod", "internal", "monitoring", "backup", "database", "cache",
+                       "messaging", "queue", "worker", "service", "analytics", "logs",
+                       "search", "elastic", "meta", "reports", "export", "import",
+                       "sync", "update", "deploy", "release", "staging2", "preview",
+                       "mobile", "desktop", "frontend", "backend", "server", "tool"]
     
-    # Generate variable number of subdomains
-    num_subdomains = random.randint(8, 25)
+    # Generate variable number of subdomains (increased range)
+    num_subdomains = random.randint(20, 45)
     subdomains_list = []
+    used_prefixes = set()
     
     for i in range(num_subdomains):
         prefix = random.choice(common_prefixes)
+        # Avoid duplicate subdomains
+        while prefix in used_prefixes:
+            prefix = random.choice(common_prefixes)
+        used_prefixes.add(prefix)
         subdomain = f"{prefix}.{domain}"
         subdomains_list.append(subdomain)
     

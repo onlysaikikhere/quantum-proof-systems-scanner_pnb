@@ -70,7 +70,7 @@ class ScanRequest(BaseModel):
 from fastapi import Header
 from .engines.risk_engine import calculate_advanced_risk
 
-@app.post("/api/scan", response_model=Asset)
+@app.post("/api/scan")
 def run_scan(request: ScanRequest, background_tasks: BackgroundTasks, x_user_role: Optional[str] = Header(None)):
     """Executes the cryptographic scanner on a domain and computes advanced quantum risk."""
     domain = request.domain

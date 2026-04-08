@@ -16,7 +16,7 @@ from database import db_assets, db_jobs, db_nodes, db_edges, seed_database
 
 # Import Engines
 from engines.scanner import scan_target
-from engines.risk_engine import calculate_risk
+from engines.risk_engine import calculate_advanced_risk
 from engines.cbom_generator import generate_cbom
 from engines.chatbot import process_chat_message, summarize_report, send_email
 from engines.scheduler import start_scheduler, schedule_scan_job
@@ -67,20 +67,25 @@ class ScanRequest(BaseModel):
     domain: str
     mode: Optional[str] = "Full Deep Scan"
 
+from fastapi import Header
+from engines.risk_engine import calculate_advanced_risk
+
 @app.post("/api/scan", response_model=Asset)
-def run_scan(request: ScanRequest, background_tasks: BackgroundTasks):
-    """Executes the cryptographic scanner on a domain and computes quantum risk."""
+def run_scan(request: ScanRequest, background_tasks: BackgroundTasks, x_user_role: Optional[str] = Header(None)):
+    """Executes the cryptographic scanner on a domain and computes advanced quantum risk."""
     domain = request.domain
     
-    # 1. Run actual/mock scan
+    # 1. Run full discovery scan
     scan_data = scan_target(domain)
     
-    # 2. Compute risk grading
-    risk_data = calculate_risk(
-        scan_data["tls_version"],
+    # 2. Compute advanced risk grading
+    risk_data = calculate_advanced_risk(
+        scan_data.get("tls_versions_list", [scan_data.get("tls_version", "TLS 1.2")]),
         scan_data["algorithm"],
         scan_data["key_size"],
-        scan_data["days_to_expiry"]
+        scan_data["days_to_expiry"],
+        scan_data.get("vulnerabilities", []),
+        scan_data.get("hosting", {"type": "internal"})
     )
     
     # 3. Create or Update Asset Record
@@ -90,13 +95,18 @@ def run_scan(request: ScanRequest, background_tasks: BackgroundTasks):
         "type": "Domain",
         "name": domain,
         "detection_date": datetime.datetime.now().isoformat(),
-        "status": "new",
-        "vendor": "Scanned Endpoint",
+        "status": "active",
+        "vendor": scan_data.get("hosting", {}).get("provider", "Unknown"),
         "region": "Dynamic",
-        "ip_address": "Resolving...",
+        "ip_address": scan_data["ipv4"],
         "risk": risk_data,
         "scan_result": scan_data,
-        "metadata": {"source": "manual_scan", "mode": request.mode}
+        "vulnerabilities": scan_data.get("vulnerabilities", []),
+        "hosting": scan_data.get("hosting", {"provider": "Unknown", "type": "internal"}),
+        "mobile_apps": scan_data.get("mobile_info", {}).get("apps", []),
+        "subdomains": scan_data.get("subdomains_info", {}).get("subdomains", []),
+        "is_active": True,
+        "metadata": {"source": "advanced_scan", "mode": request.mode, "scanned_by_role": x_user_role}
     }
     
     db_assets[asset_id] = new_asset
@@ -105,6 +115,13 @@ def run_scan(request: ScanRequest, background_tasks: BackgroundTasks):
     db_nodes.append({"id": domain, "type": "Domain", "risk": risk_data["risk_level"]})
     
     return new_asset
+
+# --- NEW FULL ASSET DISCOVERY ENDPOINT ---
+@app.get("/api/discover")
+def run_discovery(domain: str):
+    """Module 1: Full scan means domain + subdomains"""
+    from engines.scanner import discover_subdomains
+    return discover_subdomains(domain)
 
 # --- MODULE 4: CBOM GENERATOR ---
 @app.get("/api/cbom")
@@ -197,12 +214,16 @@ def generate_report():
         ]
     }
 
+from fastapi import Query
+
 @app.get("/api/reports/download")
-def download_pdf_report():
+def download_pdf_report(x_user_role: Optional[str] = Query(None)):
     """Generates and downloads a robust PDF report of the current infrastructure."""
+    if x_user_role != "Super Admin":
+        raise HTTPException(status_code=403, detail="Only Super Admins can export the full CISO-level PDF report.")
     risk_data = get_dashboard_metrics()
     all_assets = get_all_assets_list()
-    vuln_assets = [a for a in all_assets if a.get("risk", {}).get("risk_level") in ["High", "Medium"]]
+    vuln_assets = [a for a in all_assets if a.get("risk", {}).get("risk_level") in ["High", "Medium", "Critical"]]
     
     overall_risk = "High" if risk_data["summary"]["high_risk"] > 0 else "Low"
     
@@ -230,11 +251,13 @@ def download_pdf_report():
     )
 
 @app.get("/api/reports/vulnerable-download")
-def download_vulnerable_pdf_report():
+def download_vulnerable_pdf_report(x_user_role: Optional[str] = Query(None)):
     """Generates and downloads a PDF report containing ONLY vulnerable assets."""
+    if x_user_role == "User":
+        raise HTTPException(status_code=403, detail="Basic users cannot export full CISO reports.")
     risk_data = get_dashboard_metrics()
     all_assets = get_all_assets_list()
-    vuln_assets = [a for a in all_assets if a.get("risk", {}).get("risk_level") in ["High", "Medium"]]
+    vuln_assets = [a for a in all_assets if a.get("risk", {}).get("risk_level") in ["High", "Medium", "Critical"]]
     
     overall_risk = "High" if risk_data["summary"]["high_risk"] > 0 else "Low"
     
@@ -263,6 +286,75 @@ def download_vulnerable_pdf_report():
         media_type="application/pdf", 
         headers={"Content-Disposition": f"attachment; filename={pdf_name}"}
     )
+
+# --- MODULE 11: GOVERNANCE & ACCESS CONTROL ---
+class CreateUserRequest(BaseModel):
+    username: str
+    target_role: str
+    name: str
+
+from database import db_users
+
+@app.post("/api/users/create")
+def create_user(request: CreateUserRequest, x_user_role: Optional[str] = Header(None)):
+    """Creates a user. Honors RBAC constraints."""
+    if not x_user_role:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+        
+    if request.target_role == "Super Admin" and x_user_role != "Super Admin":
+        raise HTTPException(status_code=403, detail="Admin cannot create Super Admin.")
+        
+    if x_user_role == "User":
+        raise HTTPException(status_code=403, detail="Normal users cannot create accounts.")
+        
+    user_id = str(uuid.uuid4())
+    db_users[user_id] = {
+        "username": request.username,
+        "role": request.target_role,
+        "name": request.name
+    }
+    return {"message": f"User {request.name} created successfully with role {request.target_role}"}
+
+@app.get("/api/users")
+def list_users(x_user_role: Optional[str] = Header(None)):
+    """Review User Access (Governance)."""
+    if x_user_role == "User":
+        raise HTTPException(status_code=403, detail="Governance review requires Admin+")
+    return list(db_users.values())
+
+@app.get("/api/reports/asset-discovery")
+def report_asset_discovery():
+    all_assets = get_all_assets_list()
+    return {"report_type": "Asset Discovery", "assets": [
+        {"domain": a["name"], "subdomains": a.get("subdomains", []), "active": a.get("is_active", True)} for a in all_assets
+    ]}
+
+@app.get("/api/reports/subdomain-risk")
+def report_subdomain_risk():
+    all_assets = get_all_assets_list()
+    results = []
+    for a in all_assets:
+        for sub in a.get("subdomains", []):
+            results.append({"subdomain": sub, "parent_risk": a.get("risk", {})})
+    return {"report_type": "Subdomain Risk", "data": results}
+
+@app.get("/api/reports/vulnerability")
+def report_vulnerabilities():
+    all_assets = get_all_assets_list()
+    results = []
+    for a in all_assets:
+        if a.get("vulnerabilities"):
+            results.append({"domain": a["name"], "vulnerabilities": a["vulnerabilities"], "hosting": a.get("hosting")})
+    return {"report_type": "Vulnerabilities", "data": results}
+
+@app.get("/api/reports/mobile-app")
+def report_mobile_app():
+    all_assets = get_all_assets_list()
+    results = []
+    for a in all_assets:
+        if a.get("mobile_apps"):
+            results.append({"domain": a["name"], "apps": a["mobile_apps"]})
+    return {"report_type": "Mobile Apps", "data": results}
 
 # --- MODULE 9: AI CHATBOT ---
 class ChatRequest(BaseModel):

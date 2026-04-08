@@ -11,11 +11,13 @@ const Scanner = () => {
   const handleScan = async () => {
     if (!target) return;
     setIsScanning(true);
+    const role = localStorage.getItem('userRole') || 'Super Admin';
     try {
       const res = await fetch((import.meta.env.VITE_API_URL || 'http://localhost:8000') + '/api/scan', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'x-user-role': role
         },
         body: JSON.stringify({ domain: target, mode: scanMode })
       });

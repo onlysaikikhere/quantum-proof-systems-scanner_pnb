@@ -8,6 +8,14 @@ db_jobs: List[dict] = []
 db_nodes: List[dict] = []
 db_edges: List[dict] = []
 
+# RBAC & Gov module Data
+db_users: Dict[str, dict] = {
+    "super_admin": {"username": "admin@quantumshield.local", "role": "Super Admin", "name": "System Administrator"},
+    "admin": {"username": "j.doe", "role": "Admin", "name": "John Doe"},
+    "user": {"username": "guest", "role": "User", "name": "Guest Viewer"}
+}
+db_audit_logs: List[dict] = []
+
 def seed_database():
     """Seed the database with initial enterprise architecture mock data."""
     if len(db_assets) > 0:

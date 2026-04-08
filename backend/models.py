@@ -1,12 +1,27 @@
 from pydantic import BaseModel, Field
 from typing import List, Optional, Literal
-from datetime import datetime
+
+class HostInfo(BaseModel):
+    provider: str
+    type: str
+
+class Vulnerability(BaseModel):
+    type: str
+    severity: str
+
+class MobileApp(BaseModel):
+    platform: str
+    name: str
+    risk_score: int
 
 class RiskScore(BaseModel):
     score: int
-    risk_level: Literal["High", "Medium", "Low"]
-    status: Literal["Vulnerable", "Partial", "Secure"]
-    label: Literal["Quantum Safe", "PQC Ready", "Not Safe"]
+    risk_level: str
+    status: str
+    label: str
+    category: Optional[str] = None
+    baseline_score: Optional[int] = None
+    improvement: Optional[str] = None
 
 class ScanResult(BaseModel):
     tls_version: str
@@ -21,16 +36,23 @@ class ScanResult(BaseModel):
 
 class Asset(BaseModel):
     id: str
-    type: str # "Domain", "IP", "Software", "SSL Certificate"
-    name: str # e.g. "api.nexus-core.com"
+    type: str
+    name: str 
     detection_date: str
-    status: Literal["new", "false_positive", "confirmed"]
+    status: str
     vendor: str
     region: str
     ip_address: Optional[str] = None
     risk: Optional[RiskScore] = None
     scan_result: Optional[ScanResult] = None
     metadata: dict = Field(default_factory=dict)
+    
+    # Module additions
+    vulnerabilities: List[Vulnerability] = Field(default_factory=list)
+    hosting: Optional[HostInfo] = None
+    mobile_apps: List[MobileApp] = Field(default_factory=list)
+    subdomains: List[str] = Field(default_factory=list)
+    is_active: bool = True
 
 # Action-Based Chatbot Models
 class ChatCommand(BaseModel):

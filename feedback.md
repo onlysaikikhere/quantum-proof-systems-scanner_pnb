@@ -1,0 +1,21 @@
+*Feedback received*
+- subdomains, not only domains for scanning. 
+- use a better mathematical calculation
+- json output - go through it, what all parameters are ignored, use help of it.
+- full scan means domain and subdomain
+- classify based on output of json
+- compare and create and competitivee score with an existing model.
+- Website particular report
+- Penalizing dual compatibility in case of TLS protocols and giving it s worse risk score
+- level access (user access - 3 steps) + governance and review user access review
+- How can it get controlled - admin, super admin, normal user.  In reporting part CISO reporting only to super admin.
+- Super admin can create user 
+- Admin cannot create super admin, only 1 super admin (based on requirement - can get created by another super admin)
+- user will get normal reports...so it shall be used in governance
+- Scanning the assets, and coming in report - in the report split it into 4 kinds of reports
+- Mainpuralbank has 40 domains, our scan should show all domains.  Active domains and inactive domains (1 report), anotehr report (inside subdomains - give rating to each subdomain and that rating you can segregate the assets critical, non critical etc) eg 15 subdomains are PQC readiness, then standard, elite - 10 assets. 15 assets are in critical stage. 
+- Do report based 
+- Mobile part discovery - manipular bank has how many mobile apps? In itunes, android. Eg out of 40, 2 are mobile apps dc and dr. Mobx (key words etc). These are all mobile banking apps. Iphone store, android playstore.  What is the rating? 
+- Vulnerability scanning (Cross side scriping, server cross side scripiting, sql injection, hosting - hosted in domain/subdomain environment...eg - if the owner is aamazong webs erverices instead of maniupral bank, then segreagate it as 3rd party)
+- Out of 45, 20 would be servers, out of all vulnerability scaning. If it's succestuable to sql injection, scripting. Then we shall implement it. 
+- Mobile friendly - It is having mobile friendly features. It will be helpful for super admins. 90% would be ciso, departemnt heads...

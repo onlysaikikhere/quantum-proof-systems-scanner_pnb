@@ -78,16 +78,37 @@ def run_scan(request: ScanRequest, background_tasks: BackgroundTasks, x_user_rol
     # 1. Run full discovery scan
     scan_data = scan_target(domain)
     
+    # Normalize scan fields to avoid runtime failures when handshake fails/inactive targets
+    normalized_tls_versions = scan_data.get("tls_versions_list") or []
+    if not normalized_tls_versions:
+        main_domain_payload = scan_data.get("subdomains_discovery", {}).get("main_domain", {})
+        normalized_tls_versions = main_domain_payload.get("tls_versions", [])
+    if not normalized_tls_versions:
+        normalized_tls_versions = ["TLS 1.2"]
+
+    normalized_algorithm = scan_data.get("algorithm") or "RSA"
+    normalized_key_size = scan_data.get("key_size")
+    if not isinstance(normalized_key_size, int):
+        normalized_key_size = 2048
+
+    normalized_days_to_expiry = scan_data.get("days_to_expiry")
+    if not isinstance(normalized_days_to_expiry, int):
+        normalized_days_to_expiry = 0
+
     # 2. Compute advanced risk grading
     risk_data = calculate_advanced_risk(
-        scan_data.get("tls_versions_list", [scan_data.get("tls_version", "TLS 1.2")]),
-        scan_data["algorithm"],
-        scan_data["key_size"],
-        scan_data["days_to_expiry"],
+        normalized_tls_versions,
+        normalized_algorithm,
+        normalized_key_size,
+        normalized_days_to_expiry,
         scan_data.get("vulnerabilities", []),
         scan_data.get("hosting", {"type": "internal"})
     )
     
+    normalized_cipher_suite = scan_data.get("cipher_suite") or "Unknown"
+    normalized_certificate_issuer = scan_data.get("certificate_issuer") or "Unknown"
+    normalized_expiry_date = scan_data.get("expiry_date") or datetime.datetime.now().strftime("%Y-%m-%d")
+
     # 3. Create or Update Asset Record
     asset_id = str(uuid.uuid4())
     new_asset = {
@@ -100,7 +121,19 @@ def run_scan(request: ScanRequest, background_tasks: BackgroundTasks, x_user_rol
         "region": "Dynamic",
         "ip_address": scan_data["ipv4"],
         "risk": risk_data,
-        "scan_result": scan_data,
+        "scan_result": {
+            **scan_data,
+            "tls_version": ", ".join(normalized_tls_versions),
+            "tls_versions_list": normalized_tls_versions,
+            "cipher_suite": normalized_cipher_suite,
+            "key_size": normalized_key_size,
+            "certificate_issuer": normalized_certificate_issuer,
+            "expiry_date": normalized_expiry_date,
+            "algorithm": normalized_algorithm,
+            "days_to_expiry": normalized_days_to_expiry,
+            "ipv4": scan_data.get("ipv4") or "0.0.0.0",
+            "ipv6": scan_data.get("ipv6") or "::"
+        },
         "vulnerabilities": scan_data.get("vulnerabilities", []),
         "hosting": scan_data.get("hosting", {"provider": "Unknown", "type": "internal"}),
         "mobile_apps": scan_data.get("mobile_info", {}).get("apps", []),

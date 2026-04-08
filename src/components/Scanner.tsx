@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 const Scanner = () => {
   const [target, setTarget] = useState("");
@@ -10,6 +10,7 @@ const Scanner = () => {
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
   const [bucketFilter, setBucketFilter] = useState<'all' | 'pqc_ready' | 'standard' | 'critical'>('all');
   const [subdomainQuery, setSubdomainQuery] = useState('');
+  const [subdomainPage, setSubdomainPage] = useState(0);
   const role = localStorage.getItem('userRole') || 'User';
 
   const subdomainRows = useMemo(() => {
@@ -36,11 +37,22 @@ const Scanner = () => {
     });
   }, [subdomainRows, statusFilter, bucketFilter, subdomainQuery]);
 
+  const subdomainPageSize = 10;
+  const subdomainPageCount = Math.max(1, Math.ceil(filteredSubdomainRows.length / subdomainPageSize));
+  const pagedSubdomainRows = useMemo(() => {
+    const start = subdomainPage * subdomainPageSize;
+    return filteredSubdomainRows.slice(start, start + subdomainPageSize);
+  }, [filteredSubdomainRows, subdomainPage]);
+
+  useEffect(() => {
+    setSubdomainPage(0);
+  }, [scanResult, statusFilter, bucketFilter, subdomainQuery]);
+
   const handleScan = async () => {
     if (!target) return;
     setIsScanning(true);
     try {
-      const res = await fetch((import.meta.env.VITE_API_URL || 'http://localhost:8000') + '/api/scan', {
+      const res = await fetch((import.meta.env.VITE_API_URL || 'http://localhost:8010') + '/api/scan', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -83,7 +95,7 @@ const Scanner = () => {
                   alert('Only Super Admin can export the full CISO PDF report.');
                   return;
                 }
-                window.open((import.meta.env.VITE_API_URL || 'http://localhost:8000') + `/api/reports/download?x_user_role=${encodeURIComponent(role)}`);
+                window.open((import.meta.env.VITE_API_URL || 'http://localhost:8010') + `/api/reports/download?x_user_role=${encodeURIComponent(role)}`);
               }}
               className="px-5 py-2.5 bg-surface-container-highest text-on-surface rounded font-semibold text-sm transition-all hover:bg-surface-dim w-full sm:w-auto"
             >
@@ -291,7 +303,7 @@ const Scanner = () => {
                     </div>
                     <div className="grid grid-cols-2 gap-2 text-[11px]">
                       <div className="px-3 py-2 rounded bg-surface-container-highest">Total: <span className="font-bold">{subdomainRows.length}</span></div>
-                      <div className="px-3 py-2 rounded bg-surface-container-highest">Showing: <span className="font-bold">{filteredSubdomainRows.length}</span></div>
+                      <div className="px-3 py-2 rounded bg-surface-container-highest">Showing: <span className="font-bold">{Math.min((subdomainPage + 1) * subdomainPageSize, filteredSubdomainRows.length)}</span></div>
                     </div>
                   </div>
 
@@ -345,12 +357,12 @@ const Scanner = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {filteredSubdomainRows.length === 0 ? (
+                        {pagedSubdomainRows.length === 0 ? (
                           <tr>
                             <td className="px-3 py-6 text-sm text-on-surface-variant" colSpan={14}>No subdomains match current filters.</td>
                           </tr>
                         ) : (
-                          filteredSubdomainRows.map((row: any, idx: number) => (
+                          pagedSubdomainRows.map((row: any, idx: number) => (
                             <tr key={`${row.subdomain}-${idx}`} className="border-t border-outline-variant/10 hover:bg-surface-container-highest/50 transition-colors">
                               <td className="px-3 py-2 text-xs font-medium text-on-surface whitespace-nowrap">{row.subdomain || 'N/A'}</td>
                               <td className="px-3 py-2 text-xs whitespace-nowrap">
@@ -392,6 +404,32 @@ const Scanner = () => {
                       </tbody>
                     </table>
                   </div>
+
+                  {filteredSubdomainRows.length > subdomainPageSize && (
+                    <div className="mt-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+                      <p className="text-on-surface-variant">
+                        Page <span className="font-bold text-on-surface">{subdomainPage + 1}</span> of <span className="font-bold text-on-surface">{subdomainPageCount}</span>
+                      </p>
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setSubdomainPage((page) => Math.max(0, page - 1))}
+                          disabled={subdomainPage === 0}
+                          className="px-3 py-2 rounded bg-surface-container-highest text-on-surface font-semibold disabled:opacity-40 disabled:cursor-not-allowed hover:bg-surface-variant transition-colors"
+                        >
+                          Previous 10
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setSubdomainPage((page) => Math.min(subdomainPageCount - 1, page + 1))}
+                          disabled={subdomainPage >= subdomainPageCount - 1}
+                          className="px-3 py-2 rounded bg-primary text-white font-semibold disabled:opacity-40 disabled:cursor-not-allowed hover:opacity-90 transition-colors"
+                        >
+                          Next 10
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>

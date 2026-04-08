@@ -781,22 +781,37 @@ class OTPVerify(BaseModel):
     email: str
     otp: str
 
+class DirectLoginRequest(BaseModel):
+    email: str
+    password: str
+    role: str
+
+def find_user_by_credentials(email: str, password: str, role: str):
+    return next(
+        (
+            user for user in db_users.values()
+            if str(user.get("username", "")).lower() == email.lower()
+            and user.get("password") == password
+            and user.get("role") == role
+        ),
+        None,
+    )
+
+def build_auth_session(user: dict) -> dict:
+    return {
+        "username": user.get("username"),
+        "name": user.get("name"),
+        "role": user.get("role")
+    }
+
 @app.post("/api/auth/send-otp")
 def auth_send_otp(request: OTPRequest):
     if request.role not in VALID_ROLES:
         raise HTTPException(status_code=400, detail="Invalid role selected.")
 
-    user = next(
-        (
-            u for u in db_users.values()
-            if str(u.get("username", "")).lower() == request.email.lower() and u.get("role") == request.role
-        ),
-        None,
-    )
+    user = find_user_by_credentials(request.email, request.password, request.role)
     if not user:
         raise HTTPException(status_code=401, detail="User not found for selected role.")
-    if user.get("password") != request.password:
-        raise HTTPException(status_code=401, detail="Invalid credentials.")
 
     code = f"{random.randint(100000, 999999)}"
     otp_store[request.email.lower()] = {
@@ -822,6 +837,20 @@ def auth_verify_otp(request: OTPVerify):
             "username": otp_record.get("username")
         }
     raise HTTPException(status_code=400, detail="Invalid OTP code")
+
+    @app.post("/api/auth/direct-login")
+    def auth_direct_login(request: DirectLoginRequest):
+        if request.role not in VALID_ROLES:
+            raise HTTPException(status_code=400, detail="Invalid role selected.")
+
+        user = find_user_by_credentials(request.email, request.password, request.role)
+        if not user:
+            raise HTTPException(status_code=401, detail="Invalid credentials for selected role.")
+
+        return {
+            "success": True,
+            **build_auth_session(user)
+        }
 
 class EmailRequest(BaseModel):
     recipient: str

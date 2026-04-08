@@ -10,6 +10,7 @@ export default function Login({ onLogin }: { onLogin: (session: AuthSession) => 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState<'Super Admin' | 'Admin' | 'User'>('User');
+  const [mode, setMode] = useState<'direct' | 'otp'>('direct');
   const [step, setStep] = useState<'login' | 'otp'>('login');
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
 
@@ -22,16 +23,27 @@ export default function Login({ onLogin }: { onLogin: (session: AuthSession) => 
       setLoading(true);
       setErrorMsg('');
       try {
-        const res = await fetch((import.meta.env.VITE_API_URL || 'http://localhost:8000') + '/api/auth/send-otp', {
+        const endpoint = mode === 'otp' ? '/api/auth/send-otp' : '/api/auth/direct-login';
+        const res = await fetch((import.meta.env.VITE_API_URL || 'http://localhost:8000') + endpoint, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, password, role })
         });
         if (res.ok) {
-          setStep('otp');
+          if (mode === 'otp') {
+            setStep('otp');
+          } else {
+            const payload = await res.json();
+            const session: AuthSession = {
+              username: payload.username || email,
+              name: payload.name || email,
+              role: payload.role || role
+            };
+            onLogin(session);
+          }
         } else {
           const payload = await res.json().catch(() => ({}));
-          setErrorMsg(payload.detail || 'Failed to send OTP. Is the backend running?');
+          setErrorMsg(payload.detail || (mode === 'otp' ? 'Failed to send OTP. Is the backend running?' : 'Direct login failed.'));
         }
       } catch (err) {
         setErrorMsg('Network error connecting to backend.');
@@ -93,11 +105,27 @@ export default function Login({ onLogin }: { onLogin: (session: AuthSession) => 
         </div>
         <h2 className="text-2xl font-extrabold text-on-surface text-center mb-2">Quantum Shield</h2>
         <p className="text-sm font-medium text-on-surface-variant text-center mb-8">
-          {step === 'login' ? 'Enterprise Secure Gateway' : 'Two-Factor Authentication'}
+          {step === 'login' ? (mode === 'otp' ? 'Two-Factor Authentication' : 'Direct Secure Gateway Login') : 'Two-Factor Authentication'}
         </p>
 
         {step === 'login' ? (
           <form onSubmit={handleLogin} className="space-y-5">
+            <div className="grid grid-cols-2 gap-2 p-1 bg-surface-container-highest rounded-xl border border-outline-variant/20">
+              <button
+                type="button"
+                onClick={() => setMode('direct')}
+                className={`py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors ${mode === 'direct' ? 'bg-primary text-white' : 'text-on-surface-variant hover:text-on-surface'}`}
+              >
+                Direct Login
+              </button>
+              <button
+                type="button"
+                onClick={() => setMode('otp')}
+                className={`py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors ${mode === 'otp' ? 'bg-primary text-white' : 'text-on-surface-variant hover:text-on-surface'}`}
+              >
+                OTP Login
+              </button>
+            </div>
             <div>
               <label className="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Work Email</label>
               <input
@@ -138,7 +166,7 @@ export default function Login({ onLogin }: { onLogin: (session: AuthSession) => 
               disabled={loading}
               className="w-full py-3 bg-primary text-white rounded-xl font-bold text-sm shadow-md hover:bg-primary/90 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
             >
-              {loading ? 'Sending OTP...' : 'Sign In with 2FA'} <span className="material-symbols-outlined text-[18px]">lock_open</span>
+              {loading ? (mode === 'otp' ? 'Sending OTP...' : 'Signing In...') : (mode === 'otp' ? 'Sign In with OTP' : 'Direct Login')} <span className="material-symbols-outlined text-[18px]">lock_open</span>
             </button>
             <div className="rounded-xl bg-surface-container-highest p-3 text-[11px] text-on-surface-variant leading-relaxed border border-outline-variant/20">
               Demo credentials: super admin <b>admin@quantumshield.local / Admin@123</b>, admin <b>j.doe@quantumshield.local / Admin@123</b>, user <b>guest@quantumshield.local / User@123</b>.
@@ -174,10 +202,10 @@ export default function Login({ onLogin }: { onLogin: (session: AuthSession) => 
             {errorMsg && <p className="text-error text-xs font-bold text-center mt-2">{errorMsg}</p>}
             <button
               type="button"
-              onClick={() => { setStep('login'); setErrorMsg(''); setOtp(['','','','','','']); }}
+              onClick={() => { setMode(mode === 'otp' ? 'direct' : 'otp'); setStep('login'); setErrorMsg(''); setOtp(['','','','','','']); }}
               className="w-full py-2 text-primary font-bold text-xs uppercase hover:underline mt-2"
             >
-              Back to Login
+              Switch to {mode === 'otp' ? 'Direct Login' : 'OTP Login'}
             </button>
           </form>
         )}

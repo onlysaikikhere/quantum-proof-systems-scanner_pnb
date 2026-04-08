@@ -838,24 +838,24 @@ def auth_verify_otp(request: OTPVerify):
         }
     raise HTTPException(status_code=400, detail="Invalid OTP code")
 
-    @app.post("/api/auth/direct-login")
-    def auth_direct_login(request: DirectLoginRequest):
-        if request.role not in VALID_ROLES:
-            raise HTTPException(status_code=400, detail="Invalid role selected.")
+@app.post("/api/auth/direct-login")
+def auth_direct_login(request: DirectLoginRequest):
+    if request.role not in VALID_ROLES:
+        raise HTTPException(status_code=400, detail="Invalid role selected.")
 
-        if request.email and request.password:
-            user = find_user_by_credentials(request.email, request.password, request.role)
-            if not user:
-                raise HTTPException(status_code=401, detail="Invalid credentials for selected role.")
-        else:
-            user = next((u for u in db_users.values() if u.get("role") == request.role), None)
-            if not user:
-                raise HTTPException(status_code=404, detail="No user found for selected role.")
+    if request.email and request.password:
+        user = find_user_by_credentials(request.email, request.password, request.role)
+        if not user:
+            raise HTTPException(status_code=401, detail="Invalid credentials for selected role.")
+    else:
+        user = next((u for u in db_users.values() if u.get("role") == request.role), None)
+        if not user:
+            raise HTTPException(status_code=404, detail="No user found for selected role.")
 
-        return {
-            "success": True,
-            **build_auth_session(user)
-        }
+    return {
+        "success": True,
+        **build_auth_session(user)
+    }
 
 class EmailRequest(BaseModel):
     recipient: str

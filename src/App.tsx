@@ -37,6 +37,12 @@ function App() {
     setSession(authSession);
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('authSession');
+    localStorage.removeItem('userRole');
+    setSession(null);
+  };
+
   if (!session) {
     return <Login onLogin={handleLogin} />;
   }
@@ -45,7 +51,7 @@ function App() {
     <Router>
       <div className="min-h-screen">
         <Sidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
-        <Header setSidebarOpen={setSidebarOpen} />
+        <Header setSidebarOpen={setSidebarOpen} onSwitchAccount={handleLogout} />
         <Routes>
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="/dashboard" element={<Dashboard />} />

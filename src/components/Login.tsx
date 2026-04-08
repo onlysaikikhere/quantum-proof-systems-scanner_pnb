@@ -17,35 +17,39 @@ export default function Login({ onLogin }: { onLogin: (session: AuthSession) => 
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
+  const getPrototypeSessionByRole = (selectedRole: 'Super Admin' | 'Admin' | 'User'): AuthSession => {
+    if (selectedRole === 'Super Admin') {
+      return { username: 'admin@quantumshield.local', name: 'System Administrator', role: 'Super Admin' };
+    }
+    if (selectedRole === 'Admin') {
+      return { username: 'j.doe@quantumshield.local', name: 'John Doe', role: 'Admin' };
+    }
+    return { username: 'guest@quantumshield.local', name: 'Guest Viewer', role: 'User' };
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setErrorMsg('');
     try {
-      const endpoint = mode === 'otp' ? '/api/auth/send-otp' : '/api/auth/direct-login';
-      const payloadBody = mode === 'otp'
-        ? { email, password, role }
-        : { role };
+      if (mode === 'direct') {
+        // Prototype mode: direct login should work on static/Vercel deployments even without backend API.
+        onLogin(getPrototypeSessionByRole(role));
+        setLoading(false);
+        return;
+      }
+
+      const endpoint = '/api/auth/send-otp';
       const res = await fetch((import.meta.env.VITE_API_URL || 'http://localhost:8000') + endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payloadBody)
+        body: JSON.stringify({ email, password, role })
       });
       if (res.ok) {
-        if (mode === 'otp') {
-          setStep('otp');
-        } else {
-          const payload = await res.json();
-          const session: AuthSession = {
-            username: payload.username || `${role.toLowerCase().replace(' ', '_')}@quantumshield.local`,
-            name: payload.name || role,
-            role: payload.role || role
-          };
-          onLogin(session);
-        }
+        setStep('otp');
       } else {
         const payload = await res.json().catch(() => ({}));
-        setErrorMsg(payload.detail || (mode === 'otp' ? 'Failed to send OTP. Is the backend running?' : 'Direct login failed.'));
+        setErrorMsg(payload.detail || 'Failed to send OTP. Is the backend running?');
       }
     } catch (err) {
       setErrorMsg('Network error connecting to backend.');

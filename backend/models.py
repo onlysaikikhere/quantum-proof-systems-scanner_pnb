@@ -14,6 +14,23 @@ class MobileApp(BaseModel):
     name: str
     risk_score: int
 
+class SubdomainInfo(BaseModel):
+    subdomain: str
+    status: str
+    is_active: bool
+    connection_successful: bool
+    tls_versions: List[str] = Field(default_factory=list)
+    cipher_suite: Optional[str] = None
+    key_size: Optional[int] = None
+    certificate_issuer: Optional[str] = None
+    expiry_date: Optional[str] = None
+    days_to_expiry: Optional[int] = None
+    algorithm: Optional[str] = None
+    response_time_ms: Optional[int] = None
+    has_vulnerabilities: bool = False
+    certificate_valid: bool = False
+    ssl_rating: Optional[str] = None
+
 class RiskScore(BaseModel):
     score: int
     risk_level: str
@@ -33,6 +50,26 @@ class ScanResult(BaseModel):
     days_to_expiry: int
     ipv4: Optional[str] = None
     ipv6: Optional[str] = None
+    
+    # Subdomain discovery fields
+    all_subdomains_detailed: List[SubdomainInfo] = Field(default_factory=list)
+    active_subdomains: List[SubdomainInfo] = Field(default_factory=list)
+    inactive_subdomains: List[SubdomainInfo] = Field(default_factory=list)
+    pqc_ready_subdomains: List[SubdomainInfo] = Field(default_factory=list)
+    standard_subdomains: List[SubdomainInfo] = Field(default_factory=list)
+    critical_subdomains: List[SubdomainInfo] = Field(default_factory=list)
+    
+    # Metadata
+    vulnerabilities: List[dict] = Field(default_factory=list)
+    hosting: Optional[dict] = None
+    mobile_info: Optional[dict] = None
+    subdomains_discovery: Optional[dict] = None
+    subdomains_info: Optional[dict] = None
+    scan_timestamp: Optional[str] = None
+    full_scan: Optional[bool] = None
+    
+    class Config:
+        extra = "allow"  # Allow extra fields to pass through
 
 class Asset(BaseModel):
     id: str

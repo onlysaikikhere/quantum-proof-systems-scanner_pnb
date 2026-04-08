@@ -67,9 +67,6 @@ class ScanResult(BaseModel):
     subdomains_info: Optional[dict] = None
     scan_timestamp: Optional[str] = None
     full_scan: Optional[bool] = None
-    
-    class Config:
-        extra = "allow"  # Allow extra fields to pass through
 
 class Asset(BaseModel):
     id: str

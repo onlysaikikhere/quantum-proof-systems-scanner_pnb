@@ -19,37 +19,38 @@ export default function Login({ onLogin }: { onLogin: (session: AuthSession) => 
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (email && password) {
-      setLoading(true);
-      setErrorMsg('');
-      try {
-        const endpoint = mode === 'otp' ? '/api/auth/send-otp' : '/api/auth/direct-login';
-        const res = await fetch((import.meta.env.VITE_API_URL || 'http://localhost:8000') + endpoint, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password, role })
-        });
-        if (res.ok) {
-          if (mode === 'otp') {
-            setStep('otp');
-          } else {
-            const payload = await res.json();
-            const session: AuthSession = {
-              username: payload.username || email,
-              name: payload.name || email,
-              role: payload.role || role
-            };
-            onLogin(session);
-          }
+    setLoading(true);
+    setErrorMsg('');
+    try {
+      const endpoint = mode === 'otp' ? '/api/auth/send-otp' : '/api/auth/direct-login';
+      const payloadBody = mode === 'otp'
+        ? { email, password, role }
+        : { role };
+      const res = await fetch((import.meta.env.VITE_API_URL || 'http://localhost:8000') + endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payloadBody)
+      });
+      if (res.ok) {
+        if (mode === 'otp') {
+          setStep('otp');
         } else {
-          const payload = await res.json().catch(() => ({}));
-          setErrorMsg(payload.detail || (mode === 'otp' ? 'Failed to send OTP. Is the backend running?' : 'Direct login failed.'));
+          const payload = await res.json();
+          const session: AuthSession = {
+            username: payload.username || `${role.toLowerCase().replace(' ', '_')}@quantumshield.local`,
+            name: payload.name || role,
+            role: payload.role || role
+          };
+          onLogin(session);
         }
-      } catch (err) {
-        setErrorMsg('Network error connecting to backend.');
+      } else {
+        const payload = await res.json().catch(() => ({}));
+        setErrorMsg(payload.detail || (mode === 'otp' ? 'Failed to send OTP. Is the backend running?' : 'Direct login failed.'));
       }
-      setLoading(false);
+    } catch (err) {
+      setErrorMsg('Network error connecting to backend.');
     }
+    setLoading(false);
   };
 
   const handleVerify = async (e: React.FormEvent) => {
@@ -127,17 +128,6 @@ export default function Login({ onLogin }: { onLogin: (session: AuthSession) => 
               </button>
             </div>
             <div>
-              <label className="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Work Email</label>
-              <input
-                type="email"
-                required
-                className="w-full px-4 py-3 bg-surface-container-highest rounded-xl border border-outline-variant/30 focus:border-primary focus:ring-1 focus:ring-primary transition-all text-sm font-medium text-on-surface"
-                placeholder="admin@quantumshield.local"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-            <div>
               <label className="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Role</label>
               <select
                 required
@@ -150,17 +140,32 @@ export default function Login({ onLogin }: { onLogin: (session: AuthSession) => 
                 <option value="User">User</option>
               </select>
             </div>
-            <div>
-              <label className="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Password</label>
-              <input
-                type="password"
-                required
-                className="w-full px-4 py-3 bg-surface-container-highest rounded-xl border border-outline-variant/30 focus:border-primary focus:ring-1 focus:ring-primary transition-all text-sm font-medium text-on-surface"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
+            {mode === 'otp' && (
+              <>
+                <div>
+                  <label className="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Work Email</label>
+                  <input
+                    type="email"
+                    required
+                    className="w-full px-4 py-3 bg-surface-container-highest rounded-xl border border-outline-variant/30 focus:border-primary focus:ring-1 focus:ring-primary transition-all text-sm font-medium text-on-surface"
+                    placeholder="admin@quantumshield.local"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Password</label>
+                  <input
+                    type="password"
+                    required
+                    className="w-full px-4 py-3 bg-surface-container-highest rounded-xl border border-outline-variant/30 focus:border-primary focus:ring-1 focus:ring-primary transition-all text-sm font-medium text-on-surface"
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                </div>
+              </>
+            )}
             <button
               type="submit"
               disabled={loading}

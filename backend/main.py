@@ -11,16 +11,16 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Import models and DB
-from models import Asset, ScanResult, RiskScore, ChatCommand
-from database import db_assets, db_jobs, db_nodes, db_edges, seed_database
+from .models import Asset, ScanResult, RiskScore, ChatCommand
+from .database import db_assets, db_jobs, db_nodes, db_edges, seed_database
 
 # Import Engines
-from engines.scanner import scan_target
-from engines.risk_engine import calculate_advanced_risk
-from engines.cbom_generator import generate_cbom
-from engines.chatbot import process_chat_message, summarize_report, send_email
-from engines.scheduler import start_scheduler, schedule_scan_job
-from engines.report_generator import generate_pdf_report
+from .engines.scanner import scan_target
+from .engines.risk_engine import calculate_advanced_risk
+from .engines.cbom_generator import generate_cbom
+from .engines.chatbot import process_chat_message, summarize_report, send_email
+from .engines.scheduler import start_scheduler, schedule_scan_job
+from .engines.report_generator import generate_pdf_report
 
 def get_all_assets_list():
     return list(db_assets.values())
@@ -68,7 +68,7 @@ class ScanRequest(BaseModel):
     mode: Optional[str] = "Full Deep Scan"
 
 from fastapi import Header
-from engines.risk_engine import calculate_advanced_risk
+from .engines.risk_engine import calculate_advanced_risk
 
 @app.post("/api/scan", response_model=Asset)
 def run_scan(request: ScanRequest, background_tasks: BackgroundTasks, x_user_role: Optional[str] = Header(None)):
@@ -120,7 +120,7 @@ def run_scan(request: ScanRequest, background_tasks: BackgroundTasks, x_user_rol
 @app.get("/api/discover")
 def run_discovery(domain: str):
     """Module 1: Full scan means domain + subdomains"""
-    from engines.scanner import discover_subdomains
+    from .engines.scanner import discover_subdomains
     return discover_subdomains(domain)
 
 # --- MODULE 4: CBOM GENERATOR ---
@@ -293,7 +293,7 @@ class CreateUserRequest(BaseModel):
     target_role: str
     name: str
 
-from database import db_users
+from .database import db_users
 
 @app.post("/api/users/create")
 def create_user(request: CreateUserRequest, x_user_role: Optional[str] = Header(None)):

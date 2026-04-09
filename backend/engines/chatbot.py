@@ -110,7 +110,7 @@ def summarize_report(data: dict) -> str:
         print(f"Gemini API Error: {e}")
         return fallback
 
-def send_email(to_email: str, subject: str, body: str, attachments: list = None) -> bool:
+def send_email(to_email: str, subject: str, body: str, attachments: list = None, vuln_pdf_bytes: bytes = None) -> bool:
     """
     Sends an SMTP email using TLS encryption with optional PDF attachment.
     Expects SMTP_EMAIL and SMTP_PASSWORD in environment.
@@ -153,8 +153,28 @@ def send_email(to_email: str, subject: str, body: str, attachments: list = None)
     
     msg.attach(MIMEText(html_body, 'html'))
     
+    # Normalize legacy and current attachment formats.
+    normalized_attachments = []
+    if isinstance(attachments, (bytes, bytearray)):
+        date_prefix = datetime.datetime.now().strftime('%Y_%m_%d')
+        normalized_attachments.append({
+            "filename": f"{date_prefix}-CyberRiot_Report.pdf",
+            "bytes": attachments,
+        })
+    elif isinstance(attachments, dict):
+        normalized_attachments.append(attachments)
+    elif isinstance(attachments, list):
+        normalized_attachments.extend(attachments)
+
+    if vuln_pdf_bytes:
+        date_prefix = datetime.datetime.now().strftime('%Y_%m_%d')
+        normalized_attachments.append({
+            "filename": f"{date_prefix}-Vulnerable_Assets_Report.pdf",
+            "bytes": vuln_pdf_bytes,
+        })
+
     # Attach PDFs if provided
-    for attachment in attachments or []:
+    for attachment in normalized_attachments:
         if not attachment:
             continue
         pdf_bytes = attachment.get("bytes")

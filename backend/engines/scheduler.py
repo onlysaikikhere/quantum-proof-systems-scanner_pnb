@@ -72,7 +72,7 @@ def _execute_scheduled_scan(domain: str, email: str = "admin@quantumshield.local
         # 6. Send Email
         subject = f"Scheduled Quantum Security Report – Risk Level: {risk_data['risk_level']}"
         body = f"Hello,\n\nYour scheduled cryptographic scan for {domain} has completed.\n\nSummary:\n{report_data['executive_summary']}\n\nPlease find the detailed PDF attached.\n\nRegards,\nPrecise Sentinel AI"
-        send_email(email, subject, body, pdf_bytes)
+        send_email(email, subject, body, [{"filename": "Scheduled_Scan_Report.pdf", "bytes": pdf_bytes}])
         
         print(f"Scheduled scan completed for {domain}. Email sent to {email}.")
     except Exception as e:

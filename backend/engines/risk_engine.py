@@ -17,10 +17,20 @@ def calculate_advanced_risk(
     elif algo_upper in ["ECC", "ECDSA"]:
         crypto_risk += 30
     
-    if key_size < 2048:
-        crypto_risk += 40
-    elif key_size == 2048:
-        crypto_risk += 20
+    if algo_upper == "RSA":
+        if key_size < 2048:
+            crypto_risk += 40
+        elif key_size == 2048:
+            crypto_risk += 20
+    elif algo_upper in ["ECC", "ECDSA"]:
+        # ECC uses smaller key sizes with equivalent security levels.
+        if key_size < 224:
+            crypto_risk += 40
+        elif key_size < 256:
+            crypto_risk += 20
+    else:
+        if key_size < 2048:
+            crypto_risk += 40
         
     crypto_risk = min(100, crypto_risk)
 
